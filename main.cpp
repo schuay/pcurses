@@ -25,8 +25,8 @@
 #include <vector>
 #include <stdarg.h>
 
-#include "lib/package.h"
-#include "lib/alpmexception.h"
+#include "package.h"
+#include "alpmexception.h"
 
 typedef struct __pmdb_t pmdb_t;
 typedef struct __pmpkg_t pmpkg_t;

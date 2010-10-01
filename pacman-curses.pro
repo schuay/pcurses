@@ -10,12 +10,12 @@ TARGET = pacman-curses
 TEMPLATE = app
 
 SOURCES += \
-    lib/package.cpp \
-    frontend/main.cpp
+    package.cpp \
+    main.cpp
 
 HEADERS += \
-    lib/alpmexception.h \
-    lib/package.h \
+    alpmexception.h \
+    package.h \
 
 LIBS += -lalpm \
     -lncursesw
