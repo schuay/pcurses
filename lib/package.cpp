@@ -21,6 +21,10 @@
 
 #include "package.h"
 
-//Package::Package()
-//{
-//}
+Package::Package(pmpkg_t* pkg) :
+        _pkg(NULL),
+        _localpkg(NULL)
+{
+    _pkg = pkg;
+    _localpkg = alpm_db_get_pkg(alpm_option_get_localdb(), name().c_str());
+}

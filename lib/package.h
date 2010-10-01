@@ -31,10 +31,10 @@ typedef struct __pmpkg_t pmpkg_t;
 class Package
 {
 public:
-    Package(pmpkg_t *pkg) { _pkg = pkg; }
+    Package(pmpkg_t *pkg);
 
     std::string name() const { return alpm_pkg_get_name(_pkg); }
-    std::string desc() const { return alpm_pkg_get_desc(_pkg); }
+    std::string desc() const { const char *d = alpm_pkg_get_desc(_pkg); if (d == NULL) return ""; return d; }
     std::string version() const { return alpm_pkg_get_version(_pkg); }
     std::string dbname() const { return alpm_db_get_name(alpm_pkg_get_db(_pkg)); }
     std::string reason() const { return ( alpm_pkg_get_reason(_pkg) == PM_PKG_REASON_EXPLICIT ? "explicit" : "as dependency" ); }
@@ -42,9 +42,13 @@ public:
         time_t t = alpm_pkg_get_builddate(_pkg);
         std::string timestr = std::ctime(&t);
         return timestr.substr(0, timestr.length() - 1); }
+    bool installed() const { return _localpkg != NULL; }
+    bool needsupdate() const { if (_localpkg == NULL) return false;
+        return alpm_pkg_vercmp(alpm_pkg_get_version(_pkg), alpm_pkg_get_version(_localpkg)) > 0; }
 private:
     pmpkg_t
-            *_pkg;
+            *_pkg,
+            *_localpkg;
 };
 
 #endif // PACKAGE_H

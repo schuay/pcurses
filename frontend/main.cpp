@@ -48,6 +48,10 @@ std::string
         searchphrase,
         op;
 
+int
+        windowpos = 0,
+        cursorpos = 0;
+
 enum ModeEnum {
     MODE_STANDARD,
     MODE_INPUT,
@@ -67,6 +71,7 @@ void init() {
 
     init_pair(1, COLOR_WHITE, COLOR_BLACK);
     init_pair(2, COLOR_RED, COLOR_BLACK);
+    init_pair(3, COLOR_GREEN, COLOR_BLACK);
 
     int
             lwidth;
@@ -111,22 +116,26 @@ void updatedisplay(int windowpos, int cursorpos) {
             break;
 
         pkg = filteredpackages[windowpos + i];
-        if (alpm_db_get_pkg(localdb, pkg->name().c_str()) != NULL)
+        if (pkg->installed())
             wattron(list_pane, COLOR_PAIR(2));
+        if(pkg->needsupdate())
+            wattron(list_pane, COLOR_PAIR(3));
 
         if (i == cursorpos) wattron(list_pane,A_STANDOUT);
 
-        mvwprintw(list_pane, i, 0, pkg->name().c_str());
+        mvwprintw(list_pane, i, 0, pkg->name().substr(0, list_pane->_maxx + 1).c_str());
 
-        wattroff(list_pane, A_STANDOUT | COLOR_PAIR(2));
+        wattroff(list_pane, A_STANDOUT | COLOR_PAIR(2) | COLOR_PAIR(3));
     }
 
-    pkg = filteredpackages[windowpos + cursorpos];
-    printinfosection("name:", pkg->name());
-    printinfosection("version:", pkg->version());
-    printinfosection("repo:", pkg->dbname());
-    printinfosection("builddate:", pkg->builddate());
-    printinfosection("desc:", pkg->desc());
+    if (windowpos + cursorpos < filteredpackages.size()) {
+        pkg = filteredpackages[windowpos + cursorpos];
+        printinfosection("name:", pkg->name());
+        printinfosection("version:", pkg->version());
+        printinfosection("repo:", pkg->dbname());
+        printinfosection("builddate:", pkg->builddate());
+        printinfosection("desc:", pkg->desc());
+    }
 
     wborder(left_border, '|', '|', '-', '-', '+', '+', '+', '+');
     wborder(right_border, '|', '|', '-', '-', '+', '+', '+', '+');
@@ -158,7 +167,34 @@ bool eqname(const Package *a, const std::string name) {
     return a->name() == name;
 }
 bool cmpname(const Package *a, const std::string name) {
-    return a->name().find(name) == std::string::npos;
+    return a->name().find(name) == std::string::npos &&
+           a->desc().find(name) == std::string::npos;
+}
+
+bool isinbounds(int pos) {
+    if (pos < 0)
+        return false;
+    if ((unsigned int)(pos) >= filteredpackages.size())
+        return false;
+    return true;
+}
+void mvfocus(int step) {
+    if (!isinbounds(windowpos + cursorpos + step))
+        return;
+    else if (cursorpos + step >= 0 && cursorpos + step <= list_pane->_maxy)
+        cursorpos += step;
+    else if (windowpos + step >= 0 && windowpos + step <= filteredpackages.size())
+        windowpos += step;
+}
+void updatefocus() {
+    if ((unsigned int)(windowpos + cursorpos) >= filteredpackages.size()) {
+        if ((int)filteredpackages.size() - list_pane->_maxy < 0)
+            windowpos = 0;
+        else
+            windowpos = (int)filteredpackages.size() - list_pane->_maxy;
+
+        cursorpos = filteredpackages.size() - windowpos - 1;
+    }
 }
 
 void filterpackages(std::string searchphrase) {
@@ -180,10 +216,6 @@ void filterpackages(std::string searchphrase) {
 
 int main() {
 
-    int
-            windowpos = 0,
-            cursorpos = 0;
-
     mode = MODE_STANDARD;
 
     if (alpm_initialize() != 0)
@@ -201,7 +233,9 @@ int main() {
 
     localdb = alpm_option_get_localdb();
 
-    for (alpm_list_t *dbs = alpm_option_get_syncdbs(); dbs; dbs = alpm_list_next(dbs)) {
+    alpm_list_t *dbs = alpm_list_copy(alpm_option_get_syncdbs());
+    dbs = alpm_list_add(dbs, localdb);
+    for ( ; dbs; dbs = alpm_list_next(dbs)) {
         pmdb_t *db = (pmdb_t*)alpm_list_getdata(dbs);
         for (alpm_list_t *pkgs = alpm_db_get_pkgcache(db); pkgs; pkgs = alpm_list_next(pkgs)) {
             pmpkg_t *pkg = (pmpkg_t*)alpm_list_getdata(pkgs);
@@ -212,10 +246,13 @@ int main() {
                               cmp)) {
                 packages.push_back(p);
             }
+            else
+                delete p;
         }
+        std::sort(packages.begin(), packages.end(), cmp);
     }
+    alpm_list_free(dbs);
 
-    std::sort(packages.begin(), packages.end(), cmp);
     filteredpackages = packages;
 
     init();
@@ -225,17 +262,16 @@ int main() {
         if (mode == MODE_STANDARD) {
             switch (ch) {
             case KEY_UP:
-                if (cursorpos != 0) cursorpos--;
-                else if (windowpos != 0)
-                    windowpos--;
+                mvfocus(-1);
                 break;
             case KEY_DOWN:
-                if ((unsigned int)(windowpos + cursorpos + 1) >= filteredpackages.size())
-                    break;
-                else if (cursorpos != list_pane->_maxy)
-                    cursorpos++;
-                else if ((unsigned int)windowpos < filteredpackages.size() - list_pane->_maxy)
-                    windowpos++;
+                mvfocus(1);
+                break;
+            case 339:   /* page up */
+                mvfocus(list_pane->_maxy * -1);
+                break;
+            case 338:   /* page down */
+                mvfocus(list_pane->_maxy);
                 break;
             case '/':
                 mode = MODE_INPUT;
@@ -254,6 +290,7 @@ int main() {
             case 10:    /* ENTER */
                 mode = MODE_STANDARD;
                 filterpackages(searchphrase);
+                updatefocus();
                 break;
             default:
                 searchphrase += ch;
