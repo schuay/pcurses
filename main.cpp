@@ -46,7 +46,7 @@ pmdb_t
 
 std::string
         searchphrase,
-        op;
+        op = "";
 
 int
         windowpos = 0,
@@ -166,9 +166,16 @@ bool cmp(const Package *a, const Package *b) {
 bool eqname(const Package *a, const std::string name) {
     return a->name() == name;
 }
-bool cmpname(const Package *a, const std::string name) {
-    return a->name().find(name) == std::string::npos &&
-           a->desc().find(name) == std::string::npos;
+bool pkgsearch(const Package *a, const std::string needle) {
+    bool found = false;
+
+    if (op == "n/" || op == "/") {
+        found = found || a->name().find(needle) != std::string::npos;
+    }
+    if (op == "d/" || op == "/") {
+        found = found || a->desc().find(needle) != std::string::npos;
+    }
+    return !found;
 }
 
 bool isinbounds(int pos) {
@@ -206,11 +213,11 @@ void filterpackages(std::string searchphrase) {
 
     for (std::vector<Package*>::iterator it = std::find_if(filteredpackages.begin(),
                                                  filteredpackages.end(),
-                                                 std::bind2nd(std::ptr_fun(cmpname), searchphrase));
+                                                 std::bind2nd(std::ptr_fun(pkgsearch), searchphrase));
         it != filteredpackages.end();
         it = std::find_if(filteredpackages.begin(),
                           filteredpackages.end(),
-                          std::bind2nd(std::ptr_fun(cmpname), searchphrase)))
+                          std::bind2nd(std::ptr_fun(pkgsearch), searchphrase)))
         filteredpackages.erase(it);
 }
 
@@ -273,10 +280,16 @@ int main() {
             case 338:   /* page down */
                 mvfocus(list_pane->_maxy);
                 break;
+            case 'n':
+                op = "n";
+                break;
+            case 'd':
+                op = "d";
+                break;
             case '/':
                 mode = MODE_INPUT;
                 searchphrase = "";
-                op = "/";
+                op += "/";
                 break;
             default:
                 break;
@@ -286,10 +299,12 @@ int main() {
             switch (ch) {
             case 27:    /* ESC */
                 mode = MODE_STANDARD;
+                op = "";
                 break;
             case 10:    /* ENTER */
                 mode = MODE_STANDARD;
                 filterpackages(searchphrase);
+                op = "";
                 updatefocus();
                 break;
             default:
