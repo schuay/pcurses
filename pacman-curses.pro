@@ -11,11 +11,15 @@ TEMPLATE = app
 
 SOURCES += \
     package.cpp \
-    main.cpp
+    main.cpp \
+    cursesframe.cpp \
+    curseslistbox.cpp
 
 HEADERS += \
     alpmexception.h \
     package.h \
+    cursesframe.h \
+    curseslistbox.h
 
 LIBS += -lalpm \
     -lncursesw

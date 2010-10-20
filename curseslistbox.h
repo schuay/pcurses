@@ -19,36 +19,37 @@
 
  ***************************************************************************/
 
-#ifndef PACKAGE_H
-#define PACKAGE_H
+#ifndef CURSESLISTBOX_H
+#define CURSESLISTBOX_H
 
-#include <alpm.h>
-#include <string>
-#include <ctime>
+#include <vector>
 
-typedef struct __pmpkg_t pmpkg_t;
+#include "cursesframe.h"
+#include "package.h"
 
-using std::string;
+using std::vector;
 
-class Package
+class CursesListBox : public CursesFrame
 {
 public:
-    Package(pmpkg_t *pkg);
+    CursesListBox(int w, int h, int x, int y, bool hasborder);
 
-    string name() const;
-    string desc() const;
-    string version() const;
-    string dbname() const;
-    _pmpkgreason_t reason() const;
-    string builddate() const;
-    bool installed() const;
-    bool needsupdate() const;
+    void SetList(vector<Package*> *l);
+    void Move(int step);
+    void MoveAbs(int pos);
+    int FocusedIndex() const;
+    virtual void Refresh();
 
-private:
+protected:
 
-    pmpkg_t
-            *_pkg,
-            *_localpkg;
+    bool IsInBounds(int pos) const;
+    void UpdateFocus();
+
+    std::vector<Package*>
+            *list;
+    int
+            windowpos,
+            cursorpos;
 };
 
-#endif // PACKAGE_H
+#endif // CURSESLISTBOX_H

@@ -27,20 +27,21 @@
 
 #include "package.h"
 #include "alpmexception.h"
+#include "cursesframe.h"
+#include "curseslistbox.h"
 
 typedef struct __pmdb_t pmdb_t;
-typedef struct __pmpkg_t pmpkg_t;
 typedef struct __alpm_list_t alpm_list_t;
 
-WINDOW
-        *left_border,
-        *right_border,
-        *list_pane,
+CursesListBox
+        *list_pane;
+CursesFrame
         *info_pane;
 
 std::vector<Package*>
         packages,
         filteredpackages;
+
 pmdb_t
         *localdb;
 
@@ -48,17 +49,30 @@ std::string
         searchphrase,
         op = "";
 
-int
-        windowpos = 0,
-        cursorpos = 0;
-
 enum ModeEnum {
     MODE_STANDARD,
     MODE_INPUT,
 };
 ModeEnum mode;
 
-void init() {
+void init_alpm() {
+    if (alpm_initialize() != 0)
+        throw AlpmException("failed to initialize alpm library");
+
+//    alpm_option_set_logcb(cb_log);
+    alpm_option_set_dbpath("/var/lib/pacman");
+
+    alpm_db_register_local();
+
+    alpm_db_register_sync("testing");
+    alpm_db_register_sync("community");
+    alpm_db_register_sync("extra");
+    alpm_db_register_sync("core");
+
+    localdb = alpm_option_get_localdb();
+}
+
+void init_curses() {
 
     setlocale(LC_ALL, "");
 
@@ -69,96 +83,69 @@ void init() {
     curs_set(0);
     noecho();
 
-    init_pair(1, COLOR_WHITE, COLOR_BLACK);
+    init_pair(1, COLOR_BLACK, COLOR_WHITE);
     init_pair(2, COLOR_RED, COLOR_BLACK);
     init_pair(3, COLOR_GREEN, COLOR_BLACK);
 
-    int
-            lwidth;
+    const int lwidth = 30;
+    list_pane = new CursesListBox(lwidth, LINES - 1, 0, 0, true);
+    info_pane = new CursesFrame(COLS - lwidth + 1, LINES - 1, 0, lwidth - 1, true);
 
-    lwidth = 30;//COLS / 2;
-    left_border = newwin(LINES, lwidth, 0, 0);
-    list_pane = newwin(LINES - 2, lwidth - 2, 1, 1);
-    right_border = newwin(LINES, COLS - lwidth + 1, 0, lwidth - 1);
-    info_pane = newwin(LINES - 2, COLS - lwidth + 1 - 2, 1, lwidth - 1 + 1);
-
-//    wborder(left_border, L'│', L'│', L'─', L'─', L'┌', L'┐', L'┘', L'└');
-//    wborder(right_border, L'│', L'│', L'─', L'─', L'┌', L'┐', L'┘', L'└');
-
+    list_pane->SetHeader("Pkg List");
+    info_pane->SetHeader("Pkg Info");
 }
+void deinit_curses() {
+    delete list_pane;
+    delete info_pane;
 
-void deinit() {
-    delwin(list_pane);
-    delwin(info_pane);
+    nocbreak();
+    curs_set(1);
+    echo();
+
     endwin();
 }
 
 void printinfosection(std::string header, std::string text) {
 
-    std::string hdr = header + "\n";
-    std::string txt = text + "\n\n";
+    std::string hdr = header;
+    std::string txt = text + "\n";
 
-    wattron(info_pane,A_BOLD);
-    wprintw(info_pane, hdr.c_str());
-    wattroff(info_pane,A_BOLD);
-
-    wprintw(info_pane, txt.c_str());
+    info_pane->PrintW(hdr, COLOR_PAIR(3));
+    info_pane->PrintW(txt);
 }
-void updatedisplay(int windowpos, int cursorpos) {
+void updatedisplay() {
 
     Package *pkg;
 
-    wclear(list_pane);
-    wclear(info_pane);
+    clear();
+    list_pane->Clear();
+    info_pane->Clear();
 
-    for (int i = 0; i <= list_pane->_maxy; i++) {
-        if ((unsigned int)(windowpos + i + 1) > filteredpackages.size())
-            break;
-
-        pkg = filteredpackages[windowpos + i];
-        if (pkg->installed())
-            wattron(list_pane, COLOR_PAIR(2));
-        if(pkg->needsupdate())
-            wattron(list_pane, COLOR_PAIR(3));
-
-        if (i == cursorpos) wattron(list_pane,A_STANDOUT);
-
-        mvwprintw(list_pane, i, 0, pkg->name().substr(0, list_pane->_maxx + 1).c_str());
-
-        wattroff(list_pane, A_STANDOUT | COLOR_PAIR(2) | COLOR_PAIR(3));
+    if ((unsigned int)(list_pane->FocusedIndex()) < filteredpackages.size()) {
+        pkg = filteredpackages[list_pane->FocusedIndex()];
+        printinfosection("name: ", pkg->name());
+        printinfosection("version: ", pkg->version());
+        printinfosection("repo: ", pkg->dbname());
+        printinfosection("builddate: ", pkg->builddate());
+        printinfosection("desc: ", pkg->desc());
     }
-
-    if (windowpos + cursorpos < filteredpackages.size()) {
-        pkg = filteredpackages[windowpos + cursorpos];
-        printinfosection("name:", pkg->name());
-        printinfosection("version:", pkg->version());
-        printinfosection("repo:", pkg->dbname());
-        printinfosection("builddate:", pkg->builddate());
-        printinfosection("desc:", pkg->desc());
-    }
-
-    wborder(left_border, '|', '|', '-', '-', '+', '+', '+', '+');
-    wborder(right_border, '|', '|', '-', '-', '+', '+', '+', '+');
 
     std::string label = op + searchphrase;
     if (mode == MODE_INPUT)
-        mvwprintw(left_border, LINES - 1, 1, label.c_str());
+        mvprintw(LINES - 1, 0, label.c_str());
 
     refresh();
-    wrefresh(left_border);
-    wrefresh(right_border);
-    wrefresh(list_pane);
-    wrefresh(info_pane);
+    list_pane->Refresh();
+    info_pane->Refresh();
 }
 
-void cb_log(pmloglevel_t/* level*/, char *fmt, va_list args)
-{
-  if(!fmt) {
-    return;
-  }
-
-  printf(fmt, args);
-}
+//void cb_log(pmloglevel_t/* level*/, char *fmt, va_list args)
+//{
+//  if(!fmt) {
+//    return;
+//  }
+//  printf(fmt, args);
+//}
 
 bool cmp(const Package *a, const Package *b) {
     return a->name() < b->name();
@@ -176,32 +163,6 @@ bool pkgsearch(const Package *a, const std::string needle) {
         found = found || a->desc().find(needle) != std::string::npos;
     }
     return !found;
-}
-
-bool isinbounds(int pos) {
-    if (pos < 0)
-        return false;
-    if ((unsigned int)(pos) >= filteredpackages.size())
-        return false;
-    return true;
-}
-void mvfocus(int step) {
-    if (!isinbounds(windowpos + cursorpos + step))
-        return;
-    else if (cursorpos + step >= 0 && cursorpos + step <= list_pane->_maxy)
-        cursorpos += step;
-    else if (windowpos + step >= 0 && windowpos + step <= filteredpackages.size())
-        windowpos += step;
-}
-void updatefocus() {
-    if ((unsigned int)(windowpos + cursorpos) >= filteredpackages.size()) {
-        if ((int)filteredpackages.size() - list_pane->_maxy < 0)
-            windowpos = 0;
-        else
-            windowpos = (int)filteredpackages.size() - list_pane->_maxy;
-
-        cursorpos = filteredpackages.size() - windowpos - 1;
-    }
 }
 
 void filterpackages(std::string searchphrase) {
@@ -225,20 +186,9 @@ int main() {
 
     mode = MODE_STANDARD;
 
-    if (alpm_initialize() != 0)
-        throw AlpmException("failed to initialize alpm library");
+    std::cout << "Reading package dbs, please wait..." << std::endl;
 
-//    alpm_option_set_logcb(cb_log);
-    alpm_option_set_dbpath("/var/lib/pacman");
-
-    alpm_db_register_local();
-
-    alpm_db_register_sync("testing");
-    alpm_db_register_sync("community");
-    alpm_db_register_sync("extra");
-    alpm_db_register_sync("core");
-
-    localdb = alpm_option_get_localdb();
+    init_alpm();
 
     alpm_list_t *dbs = alpm_list_copy(alpm_option_get_syncdbs());
     dbs = alpm_list_add(dbs, localdb);
@@ -262,23 +212,31 @@ int main() {
 
     filteredpackages = packages;
 
-    init();
-    updatedisplay(0, 0);
+    system("clear");
+    init_curses();
+    list_pane->SetList(&filteredpackages);
+    updatedisplay();
     int ch = getch();
     while (mode == MODE_INPUT || ch != 'q') {
         if (mode == MODE_STANDARD) {
             switch (ch) {
             case KEY_UP:
-                mvfocus(-1);
+                list_pane->Move(-1);
                 break;
             case KEY_DOWN:
-                mvfocus(1);
+                list_pane->Move(1);
+                break;
+            case 262:   /* pos 1 */
+                list_pane->MoveAbs(0);
+                break;
+            case 360:   /* end */
+                list_pane->MoveAbs(filteredpackages.size() - 1);
                 break;
             case 339:   /* page up */
-                mvfocus(list_pane->_maxy * -1);
+                list_pane->Move(list_pane->UsableHeight() * -1);
                 break;
             case 338:   /* page down */
-                mvfocus(list_pane->_maxy);
+                list_pane->Move(list_pane->UsableHeight());
                 break;
             case 'n':
                 op = "n";
@@ -304,8 +262,9 @@ int main() {
             case 10:    /* ENTER */
                 mode = MODE_STANDARD;
                 filterpackages(searchphrase);
+                list_pane->SetList(&filteredpackages);
+                list_pane->SetHeader("Pkg List (filter: " + op + searchphrase + " )");
                 op = "";
-                updatefocus();
                 break;
             default:
                 searchphrase += ch;
@@ -313,10 +272,10 @@ int main() {
             }
         }
 
-        updatedisplay(windowpos, cursorpos);
+        updatedisplay();
         ch = getch();
     }
-    deinit();
+    deinit_curses();
 
     for (unsigned int i = 0; i < filteredpackages.size(); i++)
         delete filteredpackages[i];

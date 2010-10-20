@@ -19,36 +19,36 @@
 
  ***************************************************************************/
 
-#ifndef PACKAGE_H
-#define PACKAGE_H
+#ifndef CURSESFRAME_H
+#define CURSESFRAME_H
 
-#include <alpm.h>
+#include <ncurses.h>
 #include <string>
-#include <ctime>
-
-typedef struct __pmpkg_t pmpkg_t;
 
 using std::string;
 
-class Package
+class CursesFrame
 {
 public:
-    Package(pmpkg_t *pkg);
+    CursesFrame(int w, int h, int x, int y, bool hasborder);
+    virtual ~CursesFrame();
 
-    string name() const;
-    string desc() const;
-    string version() const;
-    string dbname() const;
-    _pmpkgreason_t reason() const;
-    string builddate() const;
-    bool installed() const;
-    bool needsupdate() const;
+    void SetHeader(string str);
+    void SetFooter(string str);
+    virtual void Refresh();
+    void PrintW(string str, int attr = 0);
+    void MvPrintW(int x, int y, string str, int attr = 0);
+    void Clear();
 
-private:
-
-    pmpkg_t
-            *_pkg,
-            *_localpkg;
+    int UsableHeight() const;
+    int UsableWidth() const;
+protected:
+    WINDOW
+            *w_main,
+            *w_border;
+    string
+            header,
+            footer;
 };
 
-#endif // PACKAGE_H
+#endif // CURSESFRAME_H
