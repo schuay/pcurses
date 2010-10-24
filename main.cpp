@@ -34,13 +34,16 @@ typedef struct __pmdb_t pmdb_t;
 typedef struct __alpm_list_t alpm_list_t;
 
 CursesListBox
-        *list_pane;
+        *list_pane,
+        *queue_pane,
+        *focused_pane;
 CursesFrame
         *info_pane;
 
 std::vector<Package*>
         packages,
-        filteredpackages;
+        filteredpackages,
+        opqueue;
 
 pmdb_t
         *localdb;
@@ -48,6 +51,12 @@ pmdb_t
 std::string
         searchphrase,
         op = "";
+
+enum RightPaneEnum {
+    RPE_INFO,
+    RPE_QUEUE
+};
+RightPaneEnum rightpane = RPE_INFO;
 
 enum ModeEnum {
     MODE_STANDARD,
@@ -84,18 +93,21 @@ void init_curses() {
     noecho();
 
     init_pair(1, COLOR_BLACK, COLOR_WHITE);
-    init_pair(2, COLOR_RED, COLOR_BLACK);
-    init_pair(3, COLOR_GREEN, COLOR_BLACK);
+    init_pair(2, COLOR_GREEN, COLOR_BLACK);
+    init_pair(3, COLOR_CYAN, COLOR_BLACK);
 
     const int lwidth = 30;
     list_pane = new CursesListBox(lwidth, LINES - 1, 0, 0, true);
     info_pane = new CursesFrame(COLS - lwidth + 1, LINES - 1, 0, lwidth - 1, true);
+    queue_pane = new CursesListBox(COLS - lwidth + 1, LINES - 1, 0, lwidth - 1, true);
 
     list_pane->SetHeader("Pkg List");
     info_pane->SetHeader("Pkg Info");
+    queue_pane->SetHeader("Pkg Queue");
 }
 void deinit_curses() {
     delete list_pane;
+    delete queue_pane;
     delete info_pane;
 
     nocbreak();
@@ -120,13 +132,17 @@ void updatedisplay() {
     clear();
     list_pane->Clear();
     info_pane->Clear();
+    queue_pane->Clear();
 
     if ((unsigned int)(list_pane->FocusedIndex()) < filteredpackages.size()) {
         pkg = filteredpackages[list_pane->FocusedIndex()];
         printinfosection("name: ", pkg->name());
         printinfosection("version: ", pkg->version());
+        printinfosection("url: ", pkg->url());
         printinfosection("repo: ", pkg->dbname());
+        printinfosection("packager: ", pkg->packager());
         printinfosection("builddate: ", pkg->builddate());
+        printinfosection("install reason: ", pkg->reasonstring());
         printinfosection("desc: ", pkg->desc());
     }
 
@@ -136,16 +152,11 @@ void updatedisplay() {
 
     refresh();
     list_pane->Refresh();
-    info_pane->Refresh();
+    if (rightpane == RPE_INFO)
+        info_pane->Refresh();
+    else
+        queue_pane->Refresh();
 }
-
-//void cb_log(pmloglevel_t/* level*/, char *fmt, va_list args)
-//{
-//  if(!fmt) {
-//    return;
-//  }
-//  printf(fmt, args);
-//}
 
 bool cmp(const Package *a, const Package *b) {
     return a->name() < b->name();
@@ -214,29 +225,47 @@ int main() {
 
     system("clear");
     init_curses();
+    focused_pane = list_pane;
     list_pane->SetList(&filteredpackages);
+    queue_pane->SetList(&opqueue);
     updatedisplay();
     int ch = getch();
     while (mode == MODE_INPUT || ch != 'q') {
         if (mode == MODE_STANDARD) {
             switch (ch) {
             case KEY_UP:
-                list_pane->Move(-1);
+                focused_pane->Move(-1);
                 break;
             case KEY_DOWN:
-                list_pane->Move(1);
+                focused_pane->Move(1);
                 break;
             case 262:   /* pos 1 */
-                list_pane->MoveAbs(0);
+                focused_pane->MoveAbs(0);
                 break;
             case 360:   /* end */
-                list_pane->MoveAbs(filteredpackages.size() - 1);
+                focused_pane->MoveAbs(filteredpackages.size() - 1);
                 break;
             case 339:   /* page up */
-                list_pane->Move(list_pane->UsableHeight() * -1);
+                focused_pane->Move(list_pane->UsableHeight() * -1);
                 break;
             case 338:   /* page down */
-                list_pane->Move(list_pane->UsableHeight());
+                focused_pane->Move(list_pane->UsableHeight());
+                break;
+            case 9:     /* tab */
+                focused_pane = (focused_pane == list_pane) ?
+                               queue_pane : list_pane;
+                break;
+            case 32:    /* space */
+                rightpane = (rightpane == RPE_INFO) ?
+                            RPE_QUEUE : RPE_INFO;
+                break;
+            case KEY_RIGHT:
+                if (focused_pane != list_pane) break;
+                if (filteredpackages.size() == 0) break;
+                opqueue.push_back(filteredpackages[list_pane->FocusedIndex()]);
+                break;
+            case KEY_LEFT:
+                /* TODO */
                 break;
             case 'n':
                 op = "n";

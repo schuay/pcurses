@@ -93,21 +93,22 @@ void CursesListBox::Refresh() {
 
         pkg = list->at(windowpos + i);
 
-        string installreason;
-        if (!pkg->installed()) installreason = '-';
-        else if (pkg->reason() == PM_PKG_REASON_EXPLICIT) installreason = 'E';
-        else installreason = 'D';
+        InstallReasonEnum installreason = pkg->reason();
+        string installreasonstr;
+        if (installreason == IRE_NOTINSTALLED) installreasonstr = '-';
+        else if (installreason == IRE_EXPLICIT) installreasonstr = 'E';
+        else installreasonstr = 'D';
 
         string updateavailable;
         if (pkg->needsupdate()) updateavailable = 'U';
         else updateavailable = '-';
 
         int attr = 0;
-//        if (pkg->installed()) attr |= COLOR_PAIR(2);
-//        if (pkg->needsupdate()) attr |= COLOR_PAIR(3);
+        if (installreason == IRE_EXPLICIT) attr = COLOR_PAIR(2);
+        else if (installreason == IRE_ASDEPS) attr = COLOR_PAIR(3);
         if (i == cursorpos) attr = COLOR_PAIR(1);
 
-        string pkgstring = "[" + installreason + updateavailable + "] " +
+        string pkgstring = "[" + installreasonstr + updateavailable + "] " +
                            pkg->name();
 
         MvPrintW(0, i, pkgstring.substr(0, UsableWidth() + 1), attr);

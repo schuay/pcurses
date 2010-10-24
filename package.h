@@ -30,25 +30,47 @@ typedef struct __pmpkg_t pmpkg_t;
 
 using std::string;
 
+enum InstallReasonEnum {
+    IRE_EXPLICIT,
+    IRE_ASDEPS,
+    IRE_NOTINSTALLED
+};
+
+enum OperationEnum {
+    OE_INSTALL_EXPLICIT,
+    OE_INSTALL_ASDEPS,
+    OE_UPGRADE,
+    OE_REMOVE
+};
+
 class Package
 {
 public:
     Package(pmpkg_t *pkg);
 
     string name() const;
+    string url() const;
+    string packager() const;
     string desc() const;
     string version() const;
     string dbname() const;
-    _pmpkgreason_t reason() const;
+    InstallReasonEnum reason() const;
+    string reasonstring() const;
     string builddate() const;
     bool installed() const;
     bool needsupdate() const;
+
+    void setop(OperationEnum oe);
+    OperationEnum getop() const;
 
 private:
 
     pmpkg_t
             *_pkg,
             *_localpkg;
+
+    OperationEnum
+            op;
 };
 
 #endif // PACKAGE_H

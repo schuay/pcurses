@@ -47,9 +47,30 @@ string Package::dbname() const
 {
     return alpm_db_get_name(alpm_pkg_get_db(_pkg));
 }
-_pmpkgreason_t Package::reason() const
+InstallReasonEnum Package::reason() const
 {
-    return alpm_pkg_get_reason(_localpkg);
+    if (_localpkg == NULL) return IRE_NOTINSTALLED;
+    if (alpm_pkg_get_reason(_localpkg) == PM_PKG_REASON_DEPEND) return IRE_ASDEPS;
+    return IRE_EXPLICIT;
+}
+string Package::reasonstring() const {
+    InstallReasonEnum ire = reason();
+    switch (ire) {
+    case IRE_NOTINSTALLED:
+        return "not installed";
+    case IRE_EXPLICIT:
+        return "explicit";
+    case IRE_ASDEPS:
+        return "as dependency";
+    default:
+        return "";
+    }
+}
+string Package::packager() const {
+    return alpm_pkg_get_packager(_pkg);
+}
+string Package::url() const {
+    return alpm_pkg_get_url(_pkg);
 }
 string Package::builddate() const {
     time_t t = alpm_pkg_get_builddate(_pkg);
@@ -64,4 +85,10 @@ bool Package::needsupdate() const
 {
     if (_localpkg == NULL) return false;
     return alpm_pkg_vercmp(alpm_pkg_get_version(_pkg), alpm_pkg_get_version(_localpkg)) > 0;
+}
+void Package::setop(OperationEnum oe) {
+    op = oe;
+}
+OperationEnum Package::getop() const {
+    return op;
 }
