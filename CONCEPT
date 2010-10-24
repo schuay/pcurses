@@ -2,22 +2,25 @@
 Purpose
 -------
 
-pacman-curses is a curses frontend to libalpm. It is intended to provide an
-alternative to pacman for simple tasks such as browsing, searching, and
-installing / updating / removing packages. It is NOT intended for advanced
-tasks, which are better left to pacman itself. Seeing this as a side by side
-companion to pacman is probably the correct point of view. The interface should
-be very simple and intuitive, similar to mc and mocp. Likewise, the code itself
-should be very simple - this is a one man project and like this it has the best
-chance of staying clean and actually getting finished.
+pacman-curses is a curses frontend to libalpm. It is intended to provide a
+"graphical", convenient, easy to use alternative to pacman for simple routine
+tasks such as browsing, searching, and installing / removing packages. It is
+NOT intended for any more advanced tasks, which are better left to pacman
+itself. Seeing this as a side by side companion to pacman is probably the
+correct point of view. 
+The interface should be very simple, friendly and intuitive, similar to mc and
+mocp. Likewise, the code itself should be very simple - this is a one man
+project and like this it has the best chance of staying clean and actually
+getting finished.
 
 ------------------
 Technical Overview
 ------------------
 
 pacman-curses is written in C++ using ncurses and libalpm. The interface will
-consist of two panes, very similar to mc and mocp. It reads configuration from
-pacman.conf.
+consist of two panes, very similar to mc and mocp. 
+
+Info View:
 
 +Pkg List--------------------+Pkg Info-----------------------------------------+
 |[--] 3ddesktop              |name: 3ddesktop                                  |
@@ -35,6 +38,8 @@ pacman.conf.
 |[--] acct                   |                                                 |
 +-2498 Pkgs (400 installed)--+-------------------------------------------------+
 
+Queue View:
+
 +Pkg List--------------------+Pkg Queue----------------------------------------+
 |[--] 3ddesktop              |S pkg1                                           |
 |[--] 6tunnel                |R pkg2                                           |
@@ -51,15 +56,18 @@ pacman.conf.
 |[--] acct                   |                                                 |
 +-2498 Pkgs (400 installed)--+-10 R 20 I 200.3 MB DL +500 MB/-200 MB INST------+
 
+Configuration is read from pacman.conf.
+
 The left pane displays an (optionally filtered) package list. Each package is
 displayed only once, regardless if it appears in more than one repository.
-Earlier repositories win, which means testing/make is displayed and core/make is
-hidden.
-It can be navigated using the up/down arrow keys, page up/down and pos 1/end. 
-Filtering is accomplished by pressing '/' followed by the phrase to filter by.
-Filtering can be restricted to fields (like name, description, ...).
+Earlier repositories win, which means testing/make would be displayed while
+core/make is hidden.
+It can be navigated by record, by page, and by jumping to the beginning / end
+of the list.
+The list can be filtered by fields (like name, description, ...) and other
+criteria such as install status.
 The list uses colors. These can display a packages installation status (not
-installed / explicit / as dep).
+installed / explicit / as dep) and more.
 It also shows a summary of appropriate details.
 
 The right pane has 2 modes, Info and Queue.
@@ -69,14 +77,11 @@ focused or scrolled. It is updated every time the focused package in the list
 pane changes.
 
 In queue mode, the right pane displays all packages queued for an operation
-(upgrade / remove / install) as well as the operation and other details
+(remove / install) as well as the operation and other details
 (download size, installed size, ...). This list is also color coded. The queue
 displays only packages added by the user. Implicit dependencies are either 1)
 NOT displayed or 2) displayed but greyed out and cannot be directly modified by
 the user.
-
-Additionally, we need to provide a way for entering text (filtering only atm).
-Either keep the bottom row for this purpose, or a popup?
 
 --------
 Commands
@@ -85,14 +90,13 @@ Commands
 Global
 ------
 
-Sync DBs:
-    Same as pacman -Sy. Drops out of ncurses mode and displays progress using
-    pacmans callbacks. After finishing and confirming 'press any key to
-    continue', curses mode is restored.
 Filter Pkg List:
     Filters the displayed packages by a filter phrase. Filtering can be specific
     to a package field, eg name/repo/group/provides. Field selection is handled
     in the syntax of the filter phrase. Default is name/desc/provides/groups.
+Sort Pkg List:
+Colorcode Pkg List:
+    Similar to Filter Pkg List
 Clear Pkg List Filter:
     Reverts to displaying all available packages.
 Quit:
@@ -108,6 +112,8 @@ Switch Focused Pane:
     Switch focus between list and queue pane. If info pane is currently
     displayed, automatically switch to queue mode. The caption of the selected
     pane is highlighted.
+Help:
+    Display a popup window listing all commands.
 
 List Pane
 ---------
@@ -119,13 +125,11 @@ Add Pkg to Queue:
 Remove Pkg from Queue:
     Removes the selected pkg(s) from the queue. If pkg is not in queue, does
     nothing.
-Multiselect:
+Multiselect Toggle:
     The user is able to select a collection of packages by using the multiselect
     command. Toggles the selected state of a Pkg.
-Remove Orphans:
-    Adds the equivalent of 'pacman -Qtdq' to the queue.
-Update All:
-    Adds the equivalent of 'pacman -Qu' to the queue (respecting --asdeps).
+Multiselect Regexp:
+    Similar to Filter Pkg List
 
 Queue Pane
 ----------
@@ -178,6 +182,12 @@ In the status bar, display:
     Nr of installed pkgs in filtered list
 
 -------------------
+Details: Info Pane
+-------------------
+
+The info pane indicates which attributes are used to sort / color code.
+
+-------------------
 Details: Queue Pane
 -------------------
 
@@ -207,12 +217,61 @@ A text entry area is needed for filtering. The simplest way to handle this that
 I can think of right now is to overlay the bottom row with an input area when
 needed and hide it when not needed.
 
+Color Coding
+------------
+
+Only applies to package list.
+Color coding is done using the similar syntax as filtering (except it uses a
+different operator).Allows color coding anything that is listed in the info
+pane (Name/Desc/Repo/Install Status/...). Of course this doesn't make sense for
+things like Name, but its very consistent with filtering.  We define a sequence
+of colors, get the distinct values of the defined field, and apply the colors
+according to that. If there are more values than defined colors, cycle around
+and start from the first color. Applies only to contents of currently filtered
+list. Values are sorted alphabetically, so assigned colors are always the same
+for the same set of values.
+
+Syntax could be:
+
+12
+.[ndg...]
+
+1 is the command to start color code mode
+2 is a single field descriptor
+
+Default is install status.
+
+Multiselect
+-----------
+
+Multi select can either be done manually by using the Toggle Multiselect
+command, or with a syntax identical to filtering. 
+
+Syntax could be:
+
+,[ndg...:]regexp
+
+This doesn't toggle all selected states; it toggles the selection state of the
+first package and applies that state to all others. Applies only to the current
+contents of the filtered pkg list.
+
 Groups
 ------
 
 For simplicity, pacman-curses does not have foldable lists (treelists) or
-navigateable lists. Installation/removal of groups is handled by filtering the list by a
-group name and then adding the desired packages.
+navigateable lists. Installation/removal of groups is handled by filtering the
+list by a group name and then adding the desired packages.
+
+Sorting
+-------
+
+Handled using syntax similar to filtering.
+
+m[ndg]
+
+Sorting is always ascending. Secondary sort field is always Name
+
+Default is Name.
 
 Filtering
 ---------
@@ -237,13 +296,21 @@ Besides text matching filters, it should be possible to filter by things like:
     Orphan status:  Orphan/Not Orphan
     Foreign status: Foreign/Not Foreign
     Queue status: Queued/Not Queued
+    Selection status: Selected/Not Selected
 
 With these nontext filters, it would also make sense to allow chaining filters.
 Make all filters apply using AND logic, and only clear them when the user
 specifically uses the 'clear filters' command. This can be implemented by
 filtering the same list over and over again.
 
-Use a menu like interface for this? I don't see any other options currently.
+We might be able to handle this using standard text filters by listing this
+stuff in the info pane in an easily filterable way. Something like:
+
+Orphan: y (/n)
+Foreign: y (/n)
+...
+
+Clearing a filter does NOT reset the colors and selection states.
 
 System Update
 -------------
@@ -286,12 +353,5 @@ Next up:
 Ideas/Open Questions/Misc
 ----------
 
-Allow user to alter color coding in list pane.
-Allow user to choose list pane sort method?
-Run as root??
-Foldable lists?
-Navigateable lists (folder like)?
-How to handle groups?
-If we handle upgrading, we need to provide a way to display and switch
-asdeps/asexplicit status for user (since -Su does that)
+Run as root/get root when needed??
 List and queue pane both display packages. Do they use the same object (class)??
