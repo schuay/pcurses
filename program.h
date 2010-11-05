@@ -43,11 +43,6 @@ enum ModeEnum {
     MODE_INPUT,
 };
 
-
-bool cmp(const Package *a, const Package *b);
-bool eqname(const Package *a, const std::string name);
-bool pkgsearch(const Package *a, const std::string needle, const std::string op);
-
 class Program
 {
 public:
@@ -70,12 +65,16 @@ private:
     RightPaneEnum rightpane;
     ModeEnum mode;
 
+    bool
+            quit;
+
     CursesListBox
             *list_pane,
             *queue_pane,
             *focused_pane;
     CursesFrame
-            *info_pane;
+            *info_pane,
+            *input_pane;
 
     std::vector<Package*>
             packages,

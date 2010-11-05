@@ -17,27 +17,18 @@
 
 #include "program.h"
 
-bool cmp(const Package *a, const Package *b) {
-    return a->name() < b->name();
-}
-bool pkgsearch(const Package *a, const std::string needle, const std::string op) {
-    bool found = false;
-
-    if (op == "n/" || op == "/") {
-        found = found || a->name().find(needle) != std::string::npos;
-    }
-    if (op == "d/" || op == "/") {
-        found = found || a->desc().find(needle) != std::string::npos;
-    }
-    return !found;
-}
-
 int main() {
 
     Program *p = new Program();
 
-    p->Init();
-    p->MainLoop();
+    try {
+        p->Init();
+        p->MainLoop();
+    } catch (AlpmException e) {
+        std::cerr << e.GetMessage() << std::endl;
+    } catch (...) {
+        std::cerr << "guru meditation" << std::endl;
+    }
 
     delete p;
 

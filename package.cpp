@@ -25,6 +25,20 @@ Package::Package(pmpkg_t* pkg) :
     _localpkg = alpm_db_get_pkg(alpm_option_get_localdb(), name().c_str());
 }
 
+bool Package::matches(const Package *a, const std::string needle, const std::string op) {
+    bool found = false;
+
+    if (op == "n/" || op == "/") {
+        found = found || a->name().find(needle) != std::string::npos;
+    }
+    if (op == "d/" || op == "/") {
+        found = found || a->desc().find(needle) != std::string::npos;
+    }
+    return !found;
+}
+bool Package::cmp(const Package *lhs, const Package *rhs) {
+    return lhs->name() < rhs->name();
+}
 string Package::name() const
 {
     return alpm_pkg_get_name(_pkg);

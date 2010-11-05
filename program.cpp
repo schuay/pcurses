@@ -19,6 +19,7 @@
 
 Program::Program()
 {
+    quit = false;
     op = "";
     rightpane = RPE_INFO;
     mode = MODE_STANDARD;
@@ -37,8 +38,10 @@ void Program::Init() {
 
     std::cout << "Reading package dbs, please wait..." << std::endl;
 
+    /* initialize libalpm */
     init_alpm();
 
+    /* create our package list */
     alpm_list_t *dbs = alpm_list_copy(alpm_option_get_syncdbs());
     dbs = alpm_list_add(dbs, localdb);
     for ( ; dbs; dbs = alpm_list_next(dbs)) {
@@ -49,18 +52,19 @@ void Program::Init() {
             Package *parray[] = { p };
             if (!std::includes(packages.begin(), packages.end(),
                               parray, parray + 1,
-                              cmp)) {
+                              std::ptr_fun(&Package::cmp))) {
                 packages.push_back(p);
             }
             else
                 delete p;
         }
-        std::sort(packages.begin(), packages.end(), cmp);
+        std::sort(packages.begin(), packages.end(), std::ptr_fun(&Package::cmp));
     }
     alpm_list_free(dbs);
 
     filteredpackages = packages;
 
+    /* initialize curses */
     system("clear");
     init_curses();
     focused_pane = list_pane;
@@ -70,8 +74,10 @@ void Program::Init() {
 }
 
 void Program::MainLoop() {
-    int ch = getch();
-    while (mode == MODE_INPUT || ch != 'q') {
+    int ch;
+    while (!quit) {
+        ch = getch();
+
         if (mode == MODE_STANDARD) {
             switch (ch) {
             case KEY_UP:
@@ -114,6 +120,9 @@ void Program::MainLoop() {
             case 'd':
                 op = "d";
                 break;
+            case 'q':
+                quit = true;
+                break;
             case '/':
                 mode = MODE_INPUT;
                 searchphrase = "";
@@ -143,7 +152,6 @@ void Program::MainLoop() {
         }
 
         updatedisplay();
-        ch = getch();
     }
 }
 
@@ -151,7 +159,7 @@ void Program::init_alpm() {
     if (alpm_initialize() != 0)
         throw AlpmException("failed to initialize alpm library");
 
-//    alpm_option_set_logcb(cb_log);
+    // TODO: remove hardcoded stuff
     alpm_option_set_dbpath("/var/lib/pacman");
 
     alpm_db_register_local();
@@ -180,18 +188,21 @@ void Program::init_curses() {
     init_pair(3, COLOR_CYAN, COLOR_BLACK);
 
     const int lwidth = 30;
-    list_pane = new CursesListBox(lwidth, LINES - 1, 0, 0, true);
-    info_pane = new CursesFrame(COLS - lwidth + 1, LINES - 1, 0, lwidth - 1, true);
-    queue_pane = new CursesListBox(COLS - lwidth + 1, LINES - 1, 0, lwidth - 1, true);
+    list_pane = new CursesListBox(lwidth, LINES, 0, 0, true);
+    info_pane = new CursesFrame(COLS - lwidth + 1, LINES, 0, lwidth - 1, true);
+    queue_pane = new CursesListBox(COLS - lwidth + 1, LINES, 0, lwidth - 1, true);
+    input_pane = new CursesFrame(COLS, 3, LINES - 2, 0, true);
 
     list_pane->SetHeader("Pkg List");
     info_pane->SetHeader("Pkg Info");
     queue_pane->SetHeader("Pkg Queue");
+    input_pane->SetHeader("Input");
 }
 void Program::deinit_curses() {
     delete list_pane;
     delete queue_pane;
     delete info_pane;
+    delete input_pane;
 
     nocbreak();
     curs_set(1);
@@ -215,6 +226,7 @@ void Program::updatedisplay() {
     clear();
     list_pane->Clear();
     info_pane->Clear();
+    input_pane->Clear();
     queue_pane->Clear();
 
     if ((unsigned int)(list_pane->FocusedIndex()) < filteredpackages.size()) {
@@ -229,9 +241,6 @@ void Program::updatedisplay() {
         printinfosection("desc: ", pkg->desc());
     }
 
-    std::string label = op + searchphrase;
-    if (mode == MODE_INPUT)
-        mvprintw(LINES - 1, 0, label.c_str());
 
     refresh();
     list_pane->Refresh();
@@ -239,6 +248,11 @@ void Program::updatedisplay() {
         info_pane->Refresh();
     else
         queue_pane->Refresh();
+
+    if (mode == MODE_INPUT) {
+        input_pane->PrintW(op + searchphrase);
+        input_pane->Refresh();
+    }
 }
 
 void Program::filterpackages(std::string searchphrase) {
@@ -250,10 +264,10 @@ void Program::filterpackages(std::string searchphrase) {
 
     for (std::vector<Package*>::iterator it = std::find_if(filteredpackages.begin(),
                                                  filteredpackages.end(),
-                                                 boost::bind(pkgsearch, _1, searchphrase, op));
+                                                 boost::bind(&Package::matches, _1, searchphrase, op));
         it != filteredpackages.end();
         it = std::find_if(filteredpackages.begin(),
                           filteredpackages.end(),
-                          boost::bind(pkgsearch, _1, searchphrase, op)))
+                          boost::bind(&Package::matches, _1, searchphrase, op)))
         filteredpackages.erase(it);
 }

@@ -59,6 +59,9 @@ public:
     void setop(OperationEnum oe);
     OperationEnum getop() const;
 
+    static bool cmp(const Package *lhs, const Package *rhs);
+    static bool matches(const Package *a, const std::string needle, const std::string op);
+
 private:
 
     pmpkg_t
