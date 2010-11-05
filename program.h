@@ -15,37 +15,79 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
  ************************************************************************* */
 
-#ifndef CURSESLISTBOX_H
-#define CURSESLISTBOX_H
+#ifndef PROGRAM_H
+#define PROGRAM_H
 
+#include <algorithm>
+#include <iostream>
+#include <ncurses.h>
 #include <vector>
+#include <stdarg.h>
+#include <boost/bind.hpp>
 
-#include "cursesframe.h"
 #include "package.h"
+#include "alpmexception.h"
+#include "cursesframe.h"
+#include "curseslistbox.h"
 
-using std::vector;
+typedef struct __pmdb_t pmdb_t;
+typedef struct __alpm_list_t alpm_list_t;
 
-class CursesListBox : public CursesFrame
-{
-public:
-    CursesListBox(int w, int h, int x, int y, bool hasborder);
-
-    void SetList(vector<Package*> *l);
-    void Move(int step);
-    void MoveAbs(int pos);
-    int FocusedIndex() const;
-    virtual void Refresh();
-
-protected:
-
-    bool IsInBounds(int pos) const;
-    void UpdateFocus();
-
-    std::vector<Package*>
-            *list;
-    int
-            windowpos,
-            cursorpos;
+enum RightPaneEnum {
+    RPE_INFO,
+    RPE_QUEUE
 };
 
-#endif // CURSESLISTBOX_H
+enum ModeEnum {
+    MODE_STANDARD,
+    MODE_INPUT,
+};
+
+
+bool cmp(const Package *a, const Package *b);
+bool eqname(const Package *a, const std::string name);
+bool pkgsearch(const Package *a, const std::string needle, const std::string op);
+
+class Program
+{
+public:
+    Program();
+    ~Program();
+
+    void Init();
+    void MainLoop();
+
+private:
+
+    void init_alpm();
+    void init_curses();
+    void deinit_curses();
+    void printinfosection(std::string header, std::string text);
+    void updatedisplay();
+    void filterpackages(std::string searchphrase);
+
+
+    RightPaneEnum rightpane;
+    ModeEnum mode;
+
+    CursesListBox
+            *list_pane,
+            *queue_pane,
+            *focused_pane;
+    CursesFrame
+            *info_pane;
+
+    std::vector<Package*>
+            packages,
+            filteredpackages,
+            opqueue;
+
+    pmdb_t
+            *localdb;
+
+    std::string
+            searchphrase,
+            op;
+};
+
+#endif // PROGRAM_H

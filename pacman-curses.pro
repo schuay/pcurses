@@ -13,13 +13,15 @@ SOURCES += \
     package.cpp \
     main.cpp \
     cursesframe.cpp \
-    curseslistbox.cpp
+    curseslistbox.cpp \
+    program.cpp
 
 HEADERS += \
     alpmexception.h \
     package.h \
     cursesframe.h \
-    curseslistbox.h
+    curseslistbox.h \
+    program.h
 
 LIBS += -lalpm \
     -lncursesw
