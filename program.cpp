@@ -103,8 +103,7 @@ void Program::MainLoop() {
                                queue_pane : list_pane;
                 break;
             case 32:    /* space */
-                rightpane = (rightpane == RPE_INFO) ?
-                            RPE_QUEUE : RPE_INFO;
+                rightpane = (rightpane == RPE_INFO) ? RPE_QUEUE : RPE_INFO;
                 break;
             case KEY_RIGHT:
                 if (focused_pane != list_pane) break;
