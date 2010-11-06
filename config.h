@@ -15,79 +15,54 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
  ************************************************************************* */
 
-#ifndef PROGRAM_H
-#define PROGRAM_H
+#ifndef CONFIG_H
+#define CONFIG_H
 
-#include <algorithm>
-#include <iostream>
-#include <ncurses.h>
+#include <string>
 #include <vector>
-#include <stdarg.h>
-#include <boost/bind.hpp>
+#include <iostream>
+#include <fstream>
+#include <boost/algorithm/string/predicate.hpp>
 
-#include "package.h"
 #include "alpmexception.h"
-#include "cursesframe.h"
-#include "curseslistbox.h"
-#include "config.h"
 
-typedef struct __pmdb_t pmdb_t;
-typedef struct __alpm_list_t alpm_list_t;
+using std::string;
+using std::vector;
+using std::cerr;
+using std::endl;
 
-enum RightPaneEnum {
-    RPE_INFO,
-    RPE_QUEUE
-};
-
-enum ModeEnum {
-    MODE_STANDARD,
-    MODE_INPUT,
-};
-
-class Program
+class Config
 {
 public:
-    Program();
-    ~Program();
+    Config();
+    ~Config();
 
-    void Init();
-    void MainLoop();
+    void parse();
+
+    string getConfigFile() const { return configfile; }
+    string getRootDir() const { return rootdir; }
+    string getDBPath() const { return dbpath; }
+    string getLogFile() const { return logfile; }
+
+    vector<string> getRepos() const { return repos; }
 
 private:
 
-    void init_alpm();
-    void init_curses();
-    void deinit_curses();
-    void printinfosection(std::string header, std::string text);
-    void updatedisplay();
-    void filterpackages(std::string searchphrase);
+    string getconfvalue(const string) const;
 
+    string
+            configfile,
+            rootdir,
+            dbpath,
+            logfile;
+    vector<string>
+            repos;
 
-    RightPaneEnum rightpane;
-    ModeEnum mode;
-
-    bool
-            quit;
-
-    CursesListBox
-            *list_pane,
-            *queue_pane,
-            *focused_pane;
-    CursesFrame
-            *info_pane,
-            *input_pane;
-
-    std::vector<Package*>
-            packages,
-            filteredpackages,
-            opqueue;
-
-    pmdb_t
-            *localdb;
-
-    std::string
-            searchphrase,
-            op;
+    enum ConfSection {
+        CS_NONE,
+        CS_OPTIONS,
+        CS_REPO
+    };
 };
 
-#endif // PROGRAM_H
+#endif // CONFIG_H

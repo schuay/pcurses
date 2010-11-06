@@ -158,16 +158,18 @@ void Program::init_alpm() {
     if (alpm_initialize() != 0)
         throw AlpmException("failed to initialize alpm library");
 
-    // TODO: remove hardcoded stuff
-    alpm_option_set_dbpath("/var/lib/pacman");
+    Config conf;
+    conf.parse();
+
+    alpm_option_set_dbpath(conf.getDBPath().c_str());
+    alpm_option_set_logfile(conf.getLogFile().c_str());
+    alpm_option_set_root(conf.getRootDir().c_str());
+
+    vector<string> repos = conf.getRepos();
+    for (unsigned int i = 0; i < repos.size(); i++)
+        alpm_db_register_sync(repos[i].c_str());
 
     alpm_db_register_local();
-
-    alpm_db_register_sync("testing");
-    alpm_db_register_sync("community");
-    alpm_db_register_sync("extra");
-    alpm_db_register_sync("core");
-
     localdb = alpm_option_get_localdb();
 }
 
