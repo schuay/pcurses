@@ -113,15 +113,12 @@ void Program::MainLoop() {
             case KEY_LEFT:
                 /* TODO */
                 break;
-            case 'n':
-                op = "n";
-                break;
-            case 'd':
-                op = "d";
-                break;
             case 'q':
                 quit = true;
                 break;
+            case 'n':
+            case 'd':
+                op = ch;
             case '/':
                 mode = MODE_INPUT;
                 searchphrase = "";
