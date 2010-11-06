@@ -22,7 +22,7 @@ Package::Package(pmpkg_t* pkg) :
         _localpkg(NULL)
 {
     _pkg = pkg;
-    _localpkg = alpm_db_get_pkg(alpm_option_get_localdb(), name().c_str());
+    _localpkg = alpm_db_get_pkg(alpm_option_get_localdb(), alpm_pkg_get_name(_pkg));
 
     _name = char2str(alpm_pkg_get_name(_pkg));
     _url = char2str(alpm_pkg_get_url(_pkg));
