@@ -6,7 +6,7 @@
 
 QT       -= core gui
 
-TARGET = pacman-curses
+TARGET = pcurses
 TEMPLATE = app
 
 SOURCES += \
