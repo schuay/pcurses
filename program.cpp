@@ -144,6 +144,7 @@ void Program::MainLoop() {
                 op = "";
                 break;
             case KEY_BACKSPACE:
+            case KEY_KONSOLEBACKSPACE:
                 if (searchphrase.length() > 0)
                     searchphrase = searchphrase.substr(0, searchphrase.length() - 1);
                 break;
@@ -167,14 +168,16 @@ void Program::MainLoop() {
     }
 }
 
+#define PRINTH(a, b) help_pane->PrintW(a, A_BOLD); help_pane->PrintW(b);
 void Program::print_help() {
-    help_pane->PrintW("COMMANDS\n");
+    help_pane->PrintW("COMMANDS\n", A_BOLD);
     help_pane->PrintW("\n");
-    help_pane->PrintW("ESC: cancel\n");
-    help_pane->PrintW("q: quit\n");
-    help_pane->PrintW("/: filter\n");
-    help_pane->PrintW("arrows, pg up/down, home/end: navigation\n");
-    help_pane->PrintW("return: exit help\n");
+    PRINTH("ESC: ", "cancel\n");
+    PRINTH("q: ", "quit\n");
+    PRINTH("/: ", "filter packages by desc and name (using regexp)\n");
+    PRINTH("n: ", "filter packages by name (using regexp)\n");
+    PRINTH("arrows, pg up/down, home/end: ", "navigation\n");
+    PRINTH("return: ", "exit help\n");
     help_pane->PrintW("\n");
     help_pane->PrintW("\n");
     help_pane->PrintW("\n");
@@ -301,12 +304,30 @@ void Program::filterpackages(std::string searchphrase) {
     if (searchphrase.length() == 0)
         return;
 
-    for (std::vector<Package*>::iterator it = std::find_if(filteredpackages.begin(),
-                                                 filteredpackages.end(),
-                                                 boost::bind(&Package::matches, _1, searchphrase, op));
-        it != filteredpackages.end();
-        it = std::find_if(filteredpackages.begin(),
-                          filteredpackages.end(),
-                          boost::bind(&Package::matches, _1, searchphrase, op)))
-        filteredpackages.erase(it);
+    /* if search phrase is alphanumeric only,
+       perform a fast and simple search, else run slower regexp search */
+
+    sregex resimple = sregex::compile("[:alnum:]+");
+    smatch what;
+
+    if (regex_match(searchphrase, what, resimple)) {
+        for (std::vector<Package*>::iterator it = std::find_if(filteredpackages.begin(),
+                                                     filteredpackages.end(),
+                                                     boost::bind(&Package::matches, _1, searchphrase, op));
+            it != filteredpackages.end();
+            it = std::find_if(filteredpackages.begin(),
+                              filteredpackages.end(),
+                              boost::bind(&Package::matches, _1, searchphrase, op)))
+            filteredpackages.erase(it);
+    } else {
+        sregex needle = sregex::compile(searchphrase);
+        for (std::vector<Package*>::iterator it = std::find_if(filteredpackages.begin(),
+                                                     filteredpackages.end(),
+                                                     boost::bind(&Package::matchesre, _1, needle, op));
+            it != filteredpackages.end();
+            it = std::find_if(filteredpackages.begin(),
+                              filteredpackages.end(),
+                              boost::bind(&Package::matchesre, _1, needle, op)))
+            filteredpackages.erase(it);
+    }
 }

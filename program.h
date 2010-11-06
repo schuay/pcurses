@@ -38,6 +38,7 @@ typedef struct __alpm_list_t alpm_list_t;
 #define KEY_RETURN (10)
 #define KEY_SPACE (32)
 #define KEY_TAB (9)
+#define KEY_KONSOLEBACKSPACE (127)
 
 enum RightPaneEnum {
     RPE_INFO,

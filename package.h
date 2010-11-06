@@ -21,12 +21,15 @@
 #include <alpm.h>
 #include <string>
 #include <ctime>
+#include <boost/xpressive/xpressive.hpp>
 
 #include "alpmexception.h"
 
 typedef struct __pmpkg_t pmpkg_t;
 
 using std::string;
+
+using namespace boost::xpressive;
 
 enum InstallReasonEnum {
     IRE_EXPLICIT,
@@ -61,7 +64,8 @@ public:
     OperationEnum getop() const;
 
     static bool cmp(const Package *lhs, const Package *rhs);
-    static bool matches(const Package *a, const std::string needle, const std::string op);
+    static bool matchesre(const Package *a, const sregex needle, const string op);
+    static bool matches(const Package *a, const string needle, const string op);
 
 private:
 

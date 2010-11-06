@@ -53,7 +53,19 @@ string Package::char2str(const char *c) const {
         return str.substr( startpos, endpos-startpos+1 );
 }
 
-bool Package::matches(const Package *a, const std::string needle, const std::string op) {
+bool Package::matchesre(const Package *a, const sregex needle, const string op) {
+    bool found = false;
+    smatch what;
+
+    if (op == "n/" || op == "/") {
+        found = found || regex_search(a->name(), what, needle);
+    }
+    if (op == "d/" || op == "/") {
+        found = found || regex_search(a->desc(), what, needle);
+    }
+    return !found;
+}
+bool Package::matches(const Package *a, const string needle, const string op) {
     bool found = false;
 
     if (op == "n/" || op == "/") {

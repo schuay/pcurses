@@ -28,27 +28,20 @@ Config::~Config() {
 }
 
 string Config::getconfvalue(const string str) const {
-    if (str.length() == 0)
-        return "";
+    sregex rex = sregex::compile("\\w+.*?=\\s*(.+?)\\s*$");
+    smatch what;
 
-    size_t found = str.find("=");
-    if (found == string::npos)
-        return NULL;
-
-    found++;
-    for (; found < str.length(); found++)
-        if (str[found] != ' ' && str[found != '\t'])
-            break;
-
-    return str.substr(found);
+    if (regex_match(str, what, rex)) {
+        return what[1];
+    } else return "";
 }
 void Config::parse() {
-    const string
-            s_rootdir = "RootDir",
-            s_dbpath = "DBPath",
-            s_logfile = "LogFile";
-    std::ifstream
-            conf;
+    const string s_rootdir = "RootDir",
+                 s_dbpath = "DBPath",
+                 s_logfile = "LogFile";
+    std::ifstream conf;
+    sregex secrex = sregex::compile("^\\[(\\w+)\\].*$");
+    smatch what;
 
     conf.open(configfile.c_str());
     if (!conf.is_open()) {
@@ -63,13 +56,15 @@ void Config::parse() {
         if (line.length() == 0)
             continue;
 
-        if (line == "[options]") {
-            section = CS_OPTIONS;
-            continue;
-        } else if (line[0] == '[' && line[line.length() - 1]) {
-            section = CS_REPO;
-            repos.push_back(line.substr(1, line.length() - 2));
-            continue;
+        if (regex_match(line, what, secrex)) {
+            if (what[1] == "options") {
+                section = CS_OPTIONS;
+                continue;
+            } else {
+                section = CS_REPO;
+                repos.push_back(what[1]);
+                continue;
+            }
         }
 
         if (section != CS_OPTIONS)

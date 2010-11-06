@@ -23,6 +23,7 @@
 #include <iostream>
 #include <fstream>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/xpressive/xpressive.hpp>
 
 #include "alpmexception.h"
 
@@ -30,6 +31,8 @@ using std::string;
 using std::vector;
 using std::cerr;
 using std::endl;
+
+using namespace boost::xpressive;
 
 class Config
 {
