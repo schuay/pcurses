@@ -86,23 +86,23 @@ void Program::MainLoop() {
             case KEY_DOWN:
                 focused_pane->Move(1);
                 break;
-            case 262:   /* pos 1 */
+            case KEY_HOME:
                 focused_pane->MoveAbs(0);
                 break;
-            case 360:   /* end */
+            case KEY_END:
                 focused_pane->MoveAbs(filteredpackages.size() - 1);
                 break;
-            case 339:   /* page up */
+            case KEY_PPAGE:   /* page up */
                 focused_pane->Move(list_pane->UsableHeight() * -1);
                 break;
-            case 338:   /* page down */
+            case KEY_NPAGE:   /* page down */
                 focused_pane->Move(list_pane->UsableHeight());
                 break;
-            case 9:     /* tab */
+            case KEY_TAB:
                 focused_pane = (focused_pane == list_pane) ?
                                queue_pane : list_pane;
                 break;
-            case 32:    /* space */
+            case KEY_SPACE:
                 rightpane = (rightpane == RPE_INFO) ? RPE_QUEUE : RPE_INFO;
                 break;
             case KEY_RIGHT:
@@ -112,6 +112,9 @@ void Program::MainLoop() {
                 break;
             case KEY_LEFT:
                 /* TODO */
+                break;
+            case 'h':
+                mode = MODE_HELP;
                 break;
             case 'q':
                 quit = true;
@@ -127,28 +130,57 @@ void Program::MainLoop() {
             default:
                 break;
             }
-        }
-        else if (mode == MODE_INPUT) {
+        } else if (mode == MODE_INPUT) {
             switch (ch) {
-            case 27:    /* ESC */
+            case KEY_ESC:
                 mode = MODE_STANDARD;
                 op = "";
                 break;
-            case 10:    /* ENTER */
+            case KEY_RETURN:
                 mode = MODE_STANDARD;
                 filterpackages(searchphrase);
                 list_pane->SetList(&filteredpackages);
                 list_pane->SetHeader("Pkg List (filter: " + op + searchphrase + " )");
                 op = "";
                 break;
+            case KEY_BACKSPACE:
+                if (searchphrase.length() > 0)
+                    searchphrase = searchphrase.substr(0, searchphrase.length() - 1);
+                break;
             default:
                 searchphrase += ch;
+                break;
+            }
+        } else if (mode == MODE_HELP) {
+            switch (ch) {
+            case KEY_ESC:
+            case KEY_RETURN:
+            case KEY_SPACE:
+                mode = MODE_STANDARD;
+                break;
+            default:
                 break;
             }
         }
 
         updatedisplay();
     }
+}
+
+void Program::print_help() {
+    help_pane->PrintW("COMMANDS\n");
+    help_pane->PrintW("\n");
+    help_pane->PrintW("ESC: cancel\n");
+    help_pane->PrintW("q: quit\n");
+    help_pane->PrintW("/: filter\n");
+    help_pane->PrintW("arrows, pg up/down, home/end: navigation\n");
+    help_pane->PrintW("return: exit help\n");
+    help_pane->PrintW("\n");
+    help_pane->PrintW("\n");
+    help_pane->PrintW("\n");
+    help_pane->PrintW("\n");
+    help_pane->PrintW("\n");
+    help_pane->PrintW("\n");
 }
 
 void Program::init_alpm() {
@@ -190,17 +222,21 @@ void Program::init_curses() {
     info_pane = new CursesFrame(COLS - lwidth + 1, LINES, 0, lwidth - 1, true);
     queue_pane = new CursesListBox(COLS - lwidth + 1, LINES, 0, lwidth - 1, true);
     input_pane = new CursesFrame(COLS, 3, LINES - 2, 0, true);
+    help_pane = new CursesFrame(COLS - 10, LINES - 10, 5, 5, true);
 
     list_pane->SetHeader("Pkg List");
     info_pane->SetHeader("Pkg Info");
+    info_pane->SetFooter("Press h for help");
     queue_pane->SetHeader("Pkg Queue");
     input_pane->SetHeader("Input");
+    help_pane->SetHeader("Help");
 }
 void Program::deinit_curses() {
     delete list_pane;
     delete queue_pane;
     delete info_pane;
     delete input_pane;
+    delete help_pane;
 
     nocbreak();
     curs_set(1);
@@ -219,36 +255,42 @@ void Program::printinfosection(std::string header, std::string text) {
 }
 void Program::updatedisplay() {
 
-    Package *pkg;
+    if (mode == MODE_INPUT || mode == MODE_STANDARD) {
+        Package *pkg;
 
-    clear();
-    list_pane->Clear();
-    info_pane->Clear();
-    input_pane->Clear();
-    queue_pane->Clear();
+        clear();
+        list_pane->Clear();
+        info_pane->Clear();
+        input_pane->Clear();
+        queue_pane->Clear();
 
-    if ((unsigned int)(list_pane->FocusedIndex()) < filteredpackages.size()) {
-        pkg = filteredpackages[list_pane->FocusedIndex()];
-        printinfosection("Name: ", pkg->name());
-        printinfosection("Version: ", pkg->version());
-        printinfosection("Url: ", pkg->url());
-        printinfosection("Repo: ", pkg->dbname());
-        printinfosection("Packager: ", pkg->packager());
-        printinfosection("Builddate: ", pkg->builddate());
-        printinfosection("install State: ", pkg->reasonstring());
-        printinfosection("Desc: ", pkg->desc());
-    }
+        if ((unsigned int)(list_pane->FocusedIndex()) < filteredpackages.size()) {
+            pkg = filteredpackages[list_pane->FocusedIndex()];
+            printinfosection("Name: ", pkg->name());
+            printinfosection("Version: ", pkg->version());
+            printinfosection("Url: ", pkg->url());
+            printinfosection("Repo: ", pkg->dbname());
+            printinfosection("Packager: ", pkg->packager());
+            printinfosection("Builddate: ", pkg->builddate());
+            printinfosection("install State: ", pkg->reasonstring());
+            printinfosection("Desc: ", pkg->desc());
+        }
 
-    refresh();
-    list_pane->Refresh();
-    if (rightpane == RPE_INFO)
-        info_pane->Refresh();
-    else
-        queue_pane->Refresh();
+        refresh();
+        list_pane->Refresh();
+        if (rightpane == RPE_INFO)
+            info_pane->Refresh();
+        else
+            queue_pane->Refresh();
 
-    if (mode == MODE_INPUT) {
-        input_pane->PrintW(op + searchphrase);
-        input_pane->Refresh();
+        if (mode == MODE_INPUT) {
+            input_pane->PrintW(op + searchphrase);
+            input_pane->Refresh();
+        }
+    } else if (mode == MODE_HELP) {
+        help_pane->Clear();
+        print_help();
+        help_pane->Refresh();
     }
 }
 

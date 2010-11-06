@@ -34,6 +34,11 @@
 typedef struct __pmdb_t pmdb_t;
 typedef struct __alpm_list_t alpm_list_t;
 
+#define KEY_ESC (27)
+#define KEY_RETURN (10)
+#define KEY_SPACE (32)
+#define KEY_TAB (9)
+
 enum RightPaneEnum {
     RPE_INFO,
     RPE_QUEUE
@@ -42,6 +47,7 @@ enum RightPaneEnum {
 enum ModeEnum {
     MODE_STANDARD,
     MODE_INPUT,
+    MODE_HELP,
 };
 
 class Program
@@ -57,6 +63,7 @@ private:
 
     void init_alpm();
     void init_curses();
+    void print_help();
     void deinit_curses();
     void printinfosection(std::string header, std::string text);
     void updatedisplay();
@@ -75,7 +82,8 @@ private:
             *focused_pane;
     CursesFrame
             *info_pane,
-            *input_pane;
+            *input_pane,
+            *help_pane;
 
     std::vector<Package*>
             packages,
