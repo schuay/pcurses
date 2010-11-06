@@ -24,6 +24,7 @@
 #include <vector>
 #include <stdarg.h>
 #include <boost/bind.hpp>
+#include <boost/format.hpp>
 
 #include "package.h"
 #include "alpmexception.h"
@@ -69,6 +70,7 @@ private:
     void printinfosection(std::string header, std::string text);
     void updatedisplay();
     void filterpackages(std::string searchphrase);
+    void updatelistfooter();
 
 
     RightPaneEnum rightpane;

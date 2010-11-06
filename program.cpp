@@ -70,6 +70,7 @@ void Program::Init() {
     focused_pane = list_pane;
     list_pane->SetList(&filteredpackages);
     queue_pane->SetList(&opqueue);
+    updatelistfooter();
     updatedisplay();
 }
 
@@ -301,8 +302,10 @@ void Program::filterpackages(std::string searchphrase) {
 
     filteredpackages = packages;
 
-    if (searchphrase.length() == 0)
+    if (searchphrase.length() == 0) {
+        updatelistfooter();
         return;
+    }
 
     /* if search phrase is alphanumeric only,
        perform a fast and simple search, else run slower regexp search */
@@ -330,4 +333,9 @@ void Program::filterpackages(std::string searchphrase) {
                               boost::bind(&Package::matchesre, _1, needle, op)))
             filteredpackages.erase(it);
     }
+
+    updatelistfooter();
+}
+void Program::updatelistfooter() {
+    list_pane->SetFooter(boost::str(boost::format("%d Package(s)") % filteredpackages.size()));
 }
