@@ -35,10 +35,25 @@ CursesFrame::~CursesFrame()
     delwin(w_main);
 }
 
+string CursesFrame::FitStrToWin(string in, int x) const {
+    int len = in.length();
+
+    if (len == 0 || in[len-1] != '\n')
+        return in;
+
+    /* avoid situations which gives us double line breaks through wrapping */
+
+    int pos = (x == -1) ? getcurx(w_main) : x;
+
+    if ((pos - 1 + len - 1) % UsableWidth() != 0)
+        return in;
+
+    return in.substr(0, len-1);
+}
 void CursesFrame::Refresh() {
     if (w_border != NULL) {
         wborder(w_border, '|', '|', '-', '-', '+', '+', '+', '+');
-        //wborder(left_border, L'│', L'│', L'─', L'─', L'┌', L'┐', L'┘', L'└');
+        //wborder(w_border, L'│', L'│', L'─', L'─', L'┌', L'┐', L'┘', L'└');
 
         wattron(w_border, A_BOLD);
         mvwprintw(w_border, 0, 1, header.c_str());
@@ -51,13 +66,13 @@ void CursesFrame::Refresh() {
 
 void CursesFrame::PrintW(string str, int attr) {
     if (attr != 0) wattron(w_main, attr);
-    wprintw(w_main, str.c_str());
+    wprintw(w_main, FitStrToWin(str).c_str());
     if (attr != 0) wattroff(w_main, attr);
 }
 
 void CursesFrame::MvPrintW(int x, int y, string str, int attr) {
     if (attr != 0) wattron(w_main, attr);
-    mvwprintw(w_main, y, x, str.c_str());
+    mvwprintw(w_main, y, x, FitStrToWin(str, x).c_str());
     if (attr != 0) wattroff(w_main, attr);
 }
 

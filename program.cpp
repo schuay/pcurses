@@ -232,16 +232,15 @@ void Program::updatedisplay() {
 
     if ((unsigned int)(list_pane->FocusedIndex()) < filteredpackages.size()) {
         pkg = filteredpackages[list_pane->FocusedIndex()];
-        printinfosection("name: ", pkg->name());
-        printinfosection("version: ", pkg->version());
-        printinfosection("url: ", pkg->url());
-        printinfosection("repo: ", pkg->dbname());
-        printinfosection("packager: ", pkg->packager());
-        printinfosection("builddate: ", pkg->builddate());
-        printinfosection("install reason: ", pkg->reasonstring());
-        printinfosection("desc: ", pkg->desc());
+        printinfosection("Name: ", pkg->name());
+        printinfosection("Version: ", pkg->version());
+        printinfosection("Url: ", pkg->url());
+        printinfosection("Repo: ", pkg->dbname());
+        printinfosection("Packager: ", pkg->packager());
+        printinfosection("Builddate: ", pkg->builddate());
+        printinfosection("install State: ", pkg->reasonstring());
+        printinfosection("Desc: ", pkg->desc());
     }
-
 
     refresh();
     list_pane->Refresh();

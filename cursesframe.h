@@ -38,7 +38,11 @@ public:
 
     int UsableHeight() const;
     int UsableWidth() const;
+
 protected:
+
+    string FitStrToWin(string in, int x = -1) const;
+
     WINDOW
             *w_main,
             *w_border;

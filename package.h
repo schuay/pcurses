@@ -22,6 +22,8 @@
 #include <string>
 #include <ctime>
 
+#include "alpmexception.h"
+
 typedef struct __pmpkg_t pmpkg_t;
 
 using std::string;
@@ -53,7 +55,6 @@ public:
     InstallReasonEnum reason() const;
     string reasonstring() const;
     string builddate() const;
-    bool installed() const;
     bool needsupdate() const;
 
     void setop(OperationEnum oe);
@@ -64,9 +65,25 @@ public:
 
 private:
 
+    string char2str(const char *c) const;
+
     pmpkg_t
             *_pkg,
             *_localpkg;
+
+    string
+            _name,
+            _url,
+            _packager,
+            _desc,
+            _version,
+            _dbname;
+
+    time_t
+            _builddate;
+
+    InstallReasonEnum
+            _reason;
 
     OperationEnum
             op;
