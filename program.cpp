@@ -320,7 +320,7 @@ void Program::filterpackages(std::string searchphrase) {
                               boost::bind(&Package::matches, _1, searchphrase, op)))
             filteredpackages.erase(it);
     } else {
-        sregex needle = sregex::compile(searchphrase);
+        sregex needle = sregex::compile(searchphrase, regex_constants::icase);
         for (std::vector<Package*>::iterator it = std::find_if(filteredpackages.begin(),
                                                      filteredpackages.end(),
                                                      boost::bind(&Package::matchesre, _1, needle, op));

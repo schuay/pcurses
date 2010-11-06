@@ -68,11 +68,18 @@ bool Package::matchesre(const Package *a, const sregex needle, const string op) 
 bool Package::matches(const Package *a, const string needle, const string op) {
     bool found = false;
 
+    string lneedle = needle;
+    boost::to_lower(lneedle);
+
     if (op == "n/" || op == "/") {
-        found = found || a->name().find(needle) != std::string::npos;
+        string name = a->name();
+        boost::to_lower(name);
+        found = found || name.find(lneedle) != std::string::npos;
     }
     if (op == "d/" || op == "/") {
-        found = found || a->desc().find(needle) != std::string::npos;
+        string desc = a->desc();
+        boost::to_lower(desc);
+        found = found || desc.find(lneedle) != std::string::npos;
     }
     return !found;
 }

@@ -22,6 +22,7 @@
 #include <string>
 #include <ctime>
 #include <boost/xpressive/xpressive.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "alpmexception.h"
 
