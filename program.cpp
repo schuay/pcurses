@@ -139,9 +139,11 @@ void Program::MainLoop() {
                 break;
             case KEY_RETURN:
                 mode = MODE_STANDARD;
+                displayprocessingmsg();
                 filterpackages(searchphrase);
                 list_pane->SetList(&filteredpackages);
                 list_pane->SetHeader("Pkg List (filter: " + op + searchphrase + " )");
+                flushinp();
                 op = "";
                 break;
             case KEY_BACKSPACE:
@@ -167,6 +169,11 @@ void Program::MainLoop() {
 
         updatedisplay();
     }
+}
+
+void Program::displayprocessingmsg() {
+    list_pane->SetFooter("Processing...");
+    updatedisplay();
 }
 
 #define PRINTH(a, b) help_pane->PrintW(a, A_BOLD); help_pane->PrintW(b);

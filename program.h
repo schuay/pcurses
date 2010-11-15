@@ -71,6 +71,7 @@ private:
     void updatedisplay();
     void filterpackages(std::string searchphrase);
     void updatelistfooter();
+    void displayprocessingmsg();
 
 
     RightPaneEnum rightpane;
