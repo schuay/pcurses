@@ -53,39 +53,31 @@ string Package::char2str(const char *c) const {
         return str.substr( startpos, endpos-startpos+1 );
 }
 
-bool Package::matchesre(const Package *a, const sregex needle, const string op) {
-    bool found = false;
-    smatch what;
-
-    if (op == "n/" || op == "/") {
-        found = found || regex_search(a->name(), what, needle);
+string Package::getattr(AttributeEnum attr) const {
+    switch(attr) {
+    case A_NAME:
+        return name();
+    case A_VERSION:
+        return version();
+    case A_URL:
+        return url();
+    case A_REPO:
+        return dbname();
+    case A_PACKAGER:
+        return packager();
+    case A_BUILDDATE:
+        return builddate();
+    case A_INSTALLSTATE:
+        return reasonstring();
+    case A_DESC:
+        return desc();
+    case A_NONE:
+        return "";
+    default:
+        throw AlpmException("Invalid attribute passed.");
     }
-    if (op == "d/" || op == "/") {
-        found = found || regex_search(a->desc(), what, needle);
-    }
-    return !found;
 }
-bool Package::matches(const Package *a, const string needle, const string op) {
-    bool found = false;
 
-    string lneedle = needle;
-    boost::to_lower(lneedle);
-
-    if (op == "n/" || op == "/") {
-        string name = a->name();
-        boost::to_lower(name);
-        found = found || name.find(lneedle) != std::string::npos;
-    }
-    if (op == "d/" || op == "/") {
-        string desc = a->desc();
-        boost::to_lower(desc);
-        found = found || desc.find(lneedle) != std::string::npos;
-    }
-    return !found;
-}
-bool Package::cmp(const Package *lhs, const Package *rhs) {
-    return lhs->name() < rhs->name();
-}
 string Package::name() const
 {
     return _name;

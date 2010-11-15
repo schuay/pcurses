@@ -15,7 +15,8 @@ SOURCES += \
     cursesframe.cpp \
     curseslistbox.cpp \
     program.cpp \
-    config.cpp
+    config.cpp \
+    filter.cpp
 
 HEADERS += \
     alpmexception.h \
@@ -23,7 +24,8 @@ HEADERS += \
     cursesframe.h \
     curseslistbox.h \
     program.h \
-    config.h
+    config.h \
+    filter.h
 
 LIBS += -lalpm \
     -lncursesw

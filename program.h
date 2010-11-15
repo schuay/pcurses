@@ -31,6 +31,7 @@
 #include "cursesframe.h"
 #include "curseslistbox.h"
 #include "config.h"
+#include "filter.h"
 
 typedef struct __pmdb_t pmdb_t;
 typedef struct __alpm_list_t alpm_list_t;
@@ -50,6 +51,13 @@ enum ModeEnum {
     MODE_STANDARD,
     MODE_INPUT,
     MODE_HELP,
+};
+
+enum FilterOperationEnum {
+    OP_SEARCH,
+    OP_FILTER,
+    OP_COLORCODE,
+    OP_NONE,
 };
 
 class Program
@@ -72,6 +80,7 @@ private:
     void filterpackages(std::string searchphrase);
     void updatelistfooter();
     void displayprocessingmsg();
+    string optostr(FilterOperationEnum o) const;
 
 
     RightPaneEnum rightpane;
@@ -98,7 +107,9 @@ private:
             *localdb;
 
     std::string
-            searchphrase,
+            searchphrase;
+
+    FilterOperationEnum
             op;
 };
 

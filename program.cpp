@@ -20,7 +20,7 @@
 Program::Program()
 {
     quit = false;
-    op = "";
+    op = OP_NONE;
     rightpane = RPE_INFO;
     mode = MODE_STANDARD;
 }
@@ -52,13 +52,13 @@ void Program::Init() {
             Package *parray[] = { p };
             if (!std::includes(packages.begin(), packages.end(),
                               parray, parray + 1,
-                              std::ptr_fun(&Package::cmp))) {
+                              std::ptr_fun(&Filter::cmp))) {
                 packages.push_back(p);
             }
             else
                 delete p;
         }
-        std::sort(packages.begin(), packages.end(), std::ptr_fun(&Package::cmp));
+        std::sort(packages.begin(), packages.end(), std::ptr_fun(&Filter::cmp));
     }
     alpm_list_free(dbs);
 
@@ -122,11 +122,15 @@ void Program::MainLoop() {
                 break;
             case 'n':
             case 'd':
-                op = ch;
+                mode = MODE_INPUT;
+                searchphrase = ch;
+                searchphrase += ":";
+                op = OP_FILTER;
+                break;
             case '/':
                 mode = MODE_INPUT;
                 searchphrase = "";
-                op += "/";
+                op = OP_FILTER;
                 break;
             default:
                 break;
@@ -135,16 +139,16 @@ void Program::MainLoop() {
             switch (ch) {
             case KEY_ESC:
                 mode = MODE_STANDARD;
-                op = "";
+                op = OP_NONE;
                 break;
             case KEY_RETURN:
                 mode = MODE_STANDARD;
                 displayprocessingmsg();
                 filterpackages(searchphrase);
                 list_pane->SetList(&filteredpackages);
-                list_pane->SetHeader("Pkg List (filter: " + op + searchphrase + " )");
+                list_pane->SetHeader("Pkgs (flt: '" + searchphrase + "')");
                 flushinp();
-                op = "";
+                op = OP_NONE;
                 break;
             case KEY_BACKSPACE:
             case KEY_KONSOLEBACKSPACE:
@@ -235,7 +239,7 @@ void Program::init_curses() {
     input_pane = new CursesFrame(COLS, 3, LINES - 2, 0, true);
     help_pane = new CursesFrame(COLS - 10, LINES - 10, 5, 5, true);
 
-    list_pane->SetHeader("Pkg List");
+    list_pane->SetHeader("Pkgs");
     info_pane->SetHeader("Pkg Info");
     info_pane->SetFooter("Press h for help");
     queue_pane->SetHeader("Pkg Queue");
@@ -266,6 +270,11 @@ void Program::printinfosection(std::string header, std::string text) {
 }
 void Program::updatedisplay() {
 
+    /* this runs **at least** once per loop iteration
+       for example it can run more than once if we need to display
+       a 'processing' message during filtering
+     */
+
     if (mode == MODE_INPUT || mode == MODE_STANDARD) {
         Package *pkg;
 
@@ -295,7 +304,7 @@ void Program::updatedisplay() {
             queue_pane->Refresh();
 
         if (mode == MODE_INPUT) {
-            input_pane->PrintW(op + searchphrase);
+            input_pane->PrintW(optostr(op) + searchphrase);
             input_pane->Refresh();
         }
     } else if (mode == MODE_HELP) {
@@ -305,11 +314,30 @@ void Program::updatedisplay() {
     }
 }
 
-void Program::filterpackages(std::string searchphrase) {
+string Program::optostr(FilterOperationEnum o) const {
+    switch (o) {
+    case OP_FILTER: return "/";
+    case OP_NONE: return "";
+    default: assert(0);
+    }
+}
+
+void Program::filterpackages(std::string searchstr) {
 
     filteredpackages = packages;
 
-    if (searchphrase.length() == 0) {
+    /* first, split actual search phrase from field prefix */
+    sregex reprefix = sregex::compile("^([A-Za-z]*):(.*)");
+    smatch what;
+
+    Filter::clearattrs();
+    if (regex_search(searchstr, what, reprefix)) {
+        Filter::setattrs(what[1]);
+        searchstr = what[2];
+    }
+
+    /* if search phrase is empty, nothing to do */
+    if (searchstr.length() == 0) {
         updatelistfooter();
         return;
     }
@@ -318,26 +346,25 @@ void Program::filterpackages(std::string searchphrase) {
        perform a fast and simple search, else run slower regexp search */
 
     sregex resimple = sregex::compile("[:alnum:]+");
-    smatch what;
 
-    if (regex_match(searchphrase, what, resimple)) {
+    if (regex_match(searchstr, what, resimple)) {
         for (std::vector<Package*>::iterator it = std::find_if(filteredpackages.begin(),
                                                      filteredpackages.end(),
-                                                     boost::bind(&Package::matches, _1, searchphrase, op));
+                                                     boost::bind(&Filter::matches, _1, searchstr));
             it != filteredpackages.end();
             it = std::find_if(filteredpackages.begin(),
                               filteredpackages.end(),
-                              boost::bind(&Package::matches, _1, searchphrase, op)))
+                              boost::bind(&Filter::matches, _1, searchstr)))
             filteredpackages.erase(it);
     } else {
-        sregex needle = sregex::compile(searchphrase, regex_constants::icase);
+        sregex needle = sregex::compile(searchstr, regex_constants::icase);
         for (std::vector<Package*>::iterator it = std::find_if(filteredpackages.begin(),
                                                      filteredpackages.end(),
-                                                     boost::bind(&Package::matchesre, _1, needle, op));
+                                                     boost::bind(&Filter::matchesre, _1, needle));
             it != filteredpackages.end();
             it = std::find_if(filteredpackages.begin(),
                               filteredpackages.end(),
-                              boost::bind(&Package::matchesre, _1, needle, op)))
+                              boost::bind(&Filter::matchesre, _1, needle)))
             filteredpackages.erase(it);
     }
 

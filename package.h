@@ -45,6 +45,18 @@ enum OperationEnum {
     OE_REMOVE
 };
 
+enum AttributeEnum {
+    A_NAME,
+    A_VERSION,
+    A_URL,
+    A_REPO,
+    A_PACKAGER,
+    A_BUILDDATE,
+    A_INSTALLSTATE,
+    A_DESC,
+    A_NONE,
+};
+
 class Package
 {
 public:
@@ -61,12 +73,10 @@ public:
     string builddate() const;
     bool needsupdate() const;
 
+    string getattr(AttributeEnum attr) const;
+
     void setop(OperationEnum oe);
     OperationEnum getop() const;
-
-    static bool cmp(const Package *lhs, const Package *rhs);
-    static bool matchesre(const Package *a, const sregex needle, const string op);
-    static bool matches(const Package *a, const string needle, const string op);
 
 private:
 
