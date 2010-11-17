@@ -31,8 +31,9 @@ using std::string;
 using std::vector;
 using std::cerr;
 using std::endl;
-
-using namespace boost::xpressive;
+using boost::xpressive::sregex;
+using boost::xpressive::smatch;
+using boost::xpressive::regex_constants::icase;
 
 class Config
 {

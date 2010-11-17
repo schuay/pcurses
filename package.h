@@ -29,8 +29,9 @@
 typedef struct __pmpkg_t pmpkg_t;
 
 using std::string;
-
-using namespace boost::xpressive;
+using boost::xpressive::sregex;
+using boost::xpressive::smatch;
+using boost::xpressive::regex_constants::icase;
 
 enum InstallReasonEnum {
     IRE_EXPLICIT,
