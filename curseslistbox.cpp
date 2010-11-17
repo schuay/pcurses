@@ -104,10 +104,7 @@ void CursesListBox::Refresh() {
         else if (installreason == IRE_ASDEPS) attr = COLOR_PAIR(3);
         if (i == cursorpos) attr = COLOR_PAIR(1);
 
-        string pkgstring = "[" + installreasonstr + updateavailable + "] " +
-                           pkg->getname();
-
-        MvPrintW(0, i, pkgstring.substr(0, UsableWidth() + 1), attr);
+        MvPrintW(0, i, pkg->getname().substr(0, UsableWidth() + 1), attr);
     }
 
     CursesFrame::Refresh();
