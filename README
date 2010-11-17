@@ -1,3 +1,44 @@
-PACMAN-CURSES
+PCURSES
+-------
 
 A curses frontend to libalpm, currently in development.
+
+QUICK TUTORIAL
+--------------
+
+Keybindings are displayed by pressing the 'h' (Help) key in pcurses.
+
+Filtering takes the following syntax:
+
+nd:game
+1 23
+
+1
+is a list of field specifiers. These tell pcurses which fields to search. Field
+specifiers are the capitalized characters in the field names in the info pane.
+In this example, this means that the Name and Description are searched for the
+phrase 'game'. The field specifier for arcH would be 'h'.
+
+2 
+the character ':' separates the field specifier list from the search phrase. If
+this character is not present, the entire string is interpreted as the search
+phrase.
+
+3
+is the actual search phrase. If it contains only alphanumeric characters, a
+simple and quick string search is used. Otherwise, it is treated as a regular
+expression (which is a bit slower). The search is case INSENSITIVE.
+
+1 and 2 are OPTIONAL.
+
+These searches can be chained. This means that a search for 'n:^a', followed by
+'b:2010' will show all packages beginning with the letter 'a' and having a build
+date in the year 2010.
+
+Previous filters are cleared by pressing the 'c' key.
+
+FURTHER READING
+---------------
+
+For some of the things I've been thinking about or am planning on doing, read
+the CONCEPTS file.
