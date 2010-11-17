@@ -24,20 +24,32 @@ Package::Package(pmpkg_t* pkg) :
     _pkg = pkg;
     _localpkg = alpm_db_get_pkg(alpm_option_get_localdb(), alpm_pkg_get_name(_pkg));
 
-    _name = char2str(alpm_pkg_get_name(_pkg));
-    _url = char2str(alpm_pkg_get_url(_pkg));
-    _packager = char2str(alpm_pkg_get_packager(_pkg));
-    _desc = char2str(alpm_pkg_get_desc(_pkg));
-    _version = char2str(alpm_pkg_get_version(_pkg));
-    _dbname = char2str(alpm_db_get_name(alpm_pkg_get_db(_pkg)));
+    _name = trimstr(alpm_pkg_get_name(_pkg));
+    _url = trimstr(alpm_pkg_get_url(_pkg));
+    _packager = trimstr(alpm_pkg_get_packager(_pkg));
+    _desc = trimstr(alpm_pkg_get_desc(_pkg));
+    _version = trimstr(alpm_pkg_get_version(_pkg));
+    _dbname = trimstr(alpm_db_get_name(alpm_pkg_get_db(_pkg)));
     _builddate = alpm_pkg_get_builddate(_pkg);
+    _arch = alpm_pkg_get_arch(_pkg);
+
+    _size = alpm_pkg_get_size(_pkg);
+    _installsize = alpm_pkg_get_isize(_pkg);
+
+    _licenses = list2str(alpm_pkg_get_licenses(_pkg));
+    _groups = list2str(alpm_pkg_get_groups(_pkg));
+    _depends = list2str(alpm_pkg_get_depends(_pkg));
+    _optdepends = list2str(alpm_pkg_get_optdepends(_pkg));
+    _conflicts = list2str(alpm_pkg_get_conflicts(_pkg));
+    _provides = list2str(alpm_pkg_get_provides(_pkg));
+    _replaces = list2str(alpm_pkg_get_replaces(_pkg));
 
     _reason = ((_localpkg == NULL) ? IRE_NOTINSTALLED :
                (alpm_pkg_get_reason(_localpkg) == PM_PKG_REASON_DEPEND) ? IRE_ASDEPS :
                IRE_EXPLICIT);
 }
 
-string Package::char2str(const char *c) const {
+string Package::trimstr(const char *c) const {
     if (c == NULL) return "";
 
     string str = c;
@@ -53,44 +65,79 @@ string Package::char2str(const char *c) const {
         return str.substr( startpos, endpos-startpos+1 );
 }
 
-string Package::getattr(AttributeEnum attr) const {
+string Package::list2str(alpm_list_t *l) const {
+    string s, res = "";
+    for (alpm_list_t *i = l; i != NULL; i = alpm_list_next(i)) {
+        s = (char*)alpm_list_getdata(i);
+        if (i != l) res += " ";
+        res += s;
+    }
+    return res;
+}
+
+string Package::attrname(AttributeEnum attr) {
     switch(attr) {
-    case A_NAME:
-        return name();
-    case A_VERSION:
-        return version();
-    case A_URL:
-        return url();
-    case A_REPO:
-        return dbname();
-    case A_PACKAGER:
-        return packager();
-    case A_BUILDDATE:
-        return builddate();
-    case A_INSTALLSTATE:
-        return reasonstring();
-    case A_DESC:
-        return desc();
-    case A_NONE:
-        return "";
-    default:
-        throw AlpmException("Invalid attribute passed.");
+    case A_NAME: return "Name";
+    case A_VERSION: return "Version";
+    case A_URL: return "Url";
+    case A_REPO: return "Repo";
+    case A_PACKAGER: return "pAckager";
+    case A_BUILDDATE: return "Builddate";
+    case A_INSTALLSTATE: return "install sTate";
+    case A_DESC: return "Desc";
+    case A_ARCH: return "arcH";
+    case A_LICENSES: return "Licenses";
+    case A_GROUPS: return "Groups";
+    case A_DEPENDS: return "dEpends";
+    case A_OPTDEPENDS: return "Optdepends";
+    case A_CONFLICTS: return "Conflicts";
+    case A_PROVIDES: return "Provides";
+    case A_REPLACES: return "replaceS";
+    case A_SIZE: return "download siZe";
+    case A_ISIZE: return "Install size";
+    case A_NONE: return "";
+    default: throw AlpmException("Invalid attribute passed.");
     }
 }
 
-string Package::name() const
+string Package::getattr(AttributeEnum attr) const {
+    switch(attr) {
+    case A_NAME: return getname();
+    case A_VERSION: return getversion();
+    case A_URL: return geturl();
+    case A_REPO: return getrepo();
+    case A_PACKAGER: return getpackager();
+    case A_BUILDDATE: return getbuilddate();
+    case A_INSTALLSTATE: return getreason();
+    case A_DESC: return getdesc();
+    case A_ARCH: return getarch();
+    case A_LICENSES: return getlicenses();
+    case A_GROUPS: return getgroups();
+    case A_DEPENDS: return getdepends();
+    case A_OPTDEPENDS: return getoptdepends();
+    case A_CONFLICTS: return getconflicts();
+    case A_PROVIDES: return getprovides();
+    case A_REPLACES: return getreplaces();
+    case A_SIZE: return getsize();
+    case A_ISIZE: return getisize();
+    case A_NONE: return "";
+    default: throw AlpmException("Invalid attribute passed.");
+    }
+}
+
+string Package::getname() const
 {
     return _name;
 }
-string Package::desc() const
+string Package::getdesc() const
 {
     return _desc;
 }
-string Package::version() const
+string Package::getversion() const
 {
     return _version;
 }
-string Package::dbname() const
+string Package::getrepo() const
 {
     return _dbname;
 }
@@ -98,7 +145,7 @@ InstallReasonEnum Package::reason() const
 {
     return _reason;
 }
-string Package::reasonstring() const {
+string Package::getreason() const {
     switch (_reason) {
     case IRE_NOTINSTALLED:
         return "not installed";
@@ -110,16 +157,47 @@ string Package::reasonstring() const {
         throw AlpmException("no package install reason.");
     }
 }
-string Package::packager() const {
+string Package::getpackager() const {
     return _packager;
 }
-string Package::url() const {
+string Package::geturl() const {
     return _url;
 }
-string Package::builddate() const {
+string Package::getbuilddate() const {
     string timestr = std::ctime(&_builddate);
     return timestr.substr(0, timestr.length() - 1); //remove newline
 }
+string Package::getarch() const {
+    return _arch;
+}
+string Package::getlicenses() const {
+    return _licenses;
+}
+string Package::getgroups() const {
+    return _groups;
+}
+string Package::getdepends() const {
+    return "TODO";
+}
+string Package::getoptdepends() const {
+    return _optdepends;
+}
+string Package::getconflicts() const {
+    return _conflicts;
+}
+string Package::getprovides() const {
+    return _provides;
+}
+string Package::getreplaces() const {
+    return _replaces;
+}
+string Package::getsize() const {
+    return "TODO";
+}
+string Package::getisize() const {
+    return "TODO";
+}
+
 bool Package::needsupdate() const
 {
     if (_localpkg == NULL) return false;

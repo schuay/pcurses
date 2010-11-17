@@ -105,7 +105,7 @@ void CursesListBox::Refresh() {
         if (i == cursorpos) attr = COLOR_PAIR(1);
 
         string pkgstring = "[" + installreasonstr + updateavailable + "] " +
-                           pkg->name();
+                           pkg->getname();
 
         MvPrintW(0, i, pkgstring.substr(0, UsableWidth() + 1), attr);
     }

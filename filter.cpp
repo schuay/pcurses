@@ -47,14 +47,24 @@ void Filter::setattrs(string s) {
 
 AttributeEnum Filter::chartoattr(const char c) {
     switch (c) {
-    case 'n': return A_NAME;
-    case 'v': return A_VERSION;
-    case 'u': return A_URL;
-    case 'r': return A_REPO;
-    case 'p': return A_PACKAGER;
+    case 'a': return A_PACKAGER;
     case 'b': return A_BUILDDATE;
-    case 's': return A_INSTALLSTATE;
+    case 'c': return A_CONFLICTS;
     case 'd': return A_DESC;
+    case 'e': return A_DEPENDS;
+    case 'g': return A_GROUPS;
+    case 'h': return A_ARCH;
+    case 'i': return A_ISIZE;
+    case 'l': return A_LICENSES;
+    case 'n': return A_NAME;
+    case 'o': return A_OPTDEPENDS;
+    case 'p': return A_PROVIDES;
+    case 'r': return A_REPO;
+    case 's': return A_REPLACES;
+    case 't': return A_INSTALLSTATE;
+    case 'u': return A_URL;
+    case 'v': return A_VERSION;
+    case 'z': return A_SIZE;
     default: return A_NONE;
     }
 }
@@ -84,5 +94,5 @@ bool Filter::matches(const Package *a, const string needle) {
     return !found;
 }
 bool Filter::cmp(const Package *lhs, const Package *rhs) {
-    return lhs->name() < rhs->name();
+    return lhs->getname() < rhs->getname();
 }

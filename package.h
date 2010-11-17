@@ -23,12 +23,14 @@
 #include <ctime>
 #include <boost/xpressive/xpressive.hpp>
 #include <boost/algorithm/string.hpp>
+#include <vector>
 
 #include "alpmexception.h"
 
 typedef struct __pmpkg_t pmpkg_t;
 
 using std::string;
+using std::vector;
 using boost::xpressive::sregex;
 using boost::xpressive::smatch;
 using boost::xpressive::regex_constants::icase;
@@ -55,6 +57,16 @@ enum AttributeEnum {
     A_BUILDDATE,
     A_INSTALLSTATE,
     A_DESC,
+    A_ARCH,
+    A_LICENSES,
+    A_GROUPS,
+    A_DEPENDS,
+    A_OPTDEPENDS,
+    A_CONFLICTS,
+    A_PROVIDES,
+    A_REPLACES,
+    A_SIZE,
+    A_ISIZE,
     A_NONE,
 };
 
@@ -63,25 +75,38 @@ class Package
 public:
     Package(pmpkg_t *pkg);
 
-    string name() const;
-    string url() const;
-    string packager() const;
-    string desc() const;
-    string version() const;
-    string dbname() const;
-    InstallReasonEnum reason() const;
-    string reasonstring() const;
-    string builddate() const;
-    bool needsupdate() const;
+    string getname() const;
+    string geturl() const;
+    string getpackager() const;
+    string getdesc() const;
+    string getversion() const;
+    string getrepo() const;
+    string getreason() const;
+    string getbuilddate() const;
+    string getarch() const;
+    string getlicenses() const;
+    string getgroups() const;
+    string getdepends() const;
+    string getoptdepends() const;
+    string getconflicts() const;
+    string getprovides() const;
+    string getreplaces() const;
+    string getsize() const;
+    string getisize() const;
 
     string getattr(AttributeEnum attr) const;
+    static string attrname(AttributeEnum attr);
+
+    InstallReasonEnum reason() const;
+    bool needsupdate() const;
 
     void setop(OperationEnum oe);
     OperationEnum getop() const;
 
 private:
 
-    string char2str(const char *c) const;
+    string trimstr(const char *c) const;
+    string list2str(alpm_list_t *l) const;
 
     pmpkg_t
             *_pkg,
@@ -93,7 +118,19 @@ private:
             _packager,
             _desc,
             _version,
-            _dbname;
+            _dbname,
+            _arch,
+            _licenses,
+            _groups,
+            _depends,
+            _optdepends,
+            _conflicts,
+            _provides,
+            _replaces;
+
+    unsigned long
+            _size,
+            _installsize;
 
     time_t
             _builddate;

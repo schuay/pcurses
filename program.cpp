@@ -284,14 +284,13 @@ void Program::updatedisplay() {
 
         if ((unsigned int)(list_pane->FocusedIndex()) < filteredpackages.size()) {
             pkg = filteredpackages[list_pane->FocusedIndex()];
-            printinfosection("Name: ", pkg->name());
-            printinfosection("Version: ", pkg->version());
-            printinfosection("Url: ", pkg->url());
-            printinfosection("Repo: ", pkg->dbname());
-            printinfosection("Packager: ", pkg->packager());
-            printinfosection("Builddate: ", pkg->builddate());
-            printinfosection("install State: ", pkg->reasonstring());
-            printinfosection("Desc: ", pkg->desc());
+            for (int i = 0; i < A_NONE; i++) {
+                AttributeEnum attr = (AttributeEnum)i;
+                string txt = pkg->getattr(attr);
+                string caption = Package::attrname(attr) + ": ";
+                if (txt.length() != 0)
+                    printinfosection(caption, txt);
+            }
         }
 
         refresh();
