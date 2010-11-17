@@ -70,7 +70,7 @@ void Program::Init() {
     focused_pane = list_pane;
     list_pane->SetList(&filteredpackages);
     queue_pane->SetList(&opqueue);
-    updatelistfooter();
+    updatelistinfo();
     updatedisplay();
 }
 
@@ -120,16 +120,19 @@ void Program::MainLoop() {
             case 'q':
                 quit = true;
                 break;
+            case 'c':
+                clearfilter();
+                break;
             case 'n':
             case 'd':
                 mode = MODE_INPUT;
-                searchphrase = ch;
-                searchphrase += ":";
+                inputbuf = ch;
+                inputbuf += ":";
                 op = OP_FILTER;
                 break;
             case '/':
                 mode = MODE_INPUT;
-                searchphrase = "";
+                inputbuf = "";
                 op = OP_FILTER;
                 break;
             default:
@@ -144,19 +147,18 @@ void Program::MainLoop() {
             case KEY_RETURN:
                 mode = MODE_STANDARD;
                 displayprocessingmsg();
-                filterpackages(searchphrase);
+                filterpackages(inputbuf);
                 list_pane->SetList(&filteredpackages);
-                list_pane->SetHeader("Pkgs (flt: '" + searchphrase + "')");
                 flushinp();
                 op = OP_NONE;
                 break;
             case KEY_BACKSPACE:
             case KEY_KONSOLEBACKSPACE:
-                if (searchphrase.length() > 0)
-                    searchphrase = searchphrase.substr(0, searchphrase.length() - 1);
+                if (inputbuf.length() > 0)
+                    inputbuf = inputbuf.substr(0, inputbuf.length() - 1);
                 break;
             default:
-                searchphrase += ch;
+                inputbuf += ch;
                 break;
             }
         } else if (mode == MODE_HELP) {
@@ -187,16 +189,13 @@ void Program::print_help() {
     PRINTH("ESC: ", "cancel\n");
     PRINTH("q: ", "quit\n");
     PRINTH("/: ", "filter packages by desc and name (using regexp)\n");
+    PRINTH("", "   note that filters can be chained.\n")
     PRINTH("n: ", "filter packages by name (using regexp)\n");
+    PRINTH("c: ", "clear all package filters\n");
     PRINTH("arrows, pg up/down, home/end: ", "navigation\n");
     PRINTH("return: ", "exit help\n");
-    help_pane->PrintW("\n");
-    help_pane->PrintW("\n");
-    help_pane->PrintW("\n");
-    help_pane->PrintW("\n");
-    help_pane->PrintW("\n");
-    help_pane->PrintW("\n");
 }
+#undef PRINTH
 
 void Program::init_alpm() {
     if (alpm_initialize() != 0)
@@ -239,10 +238,9 @@ void Program::init_curses() {
     input_pane = new CursesFrame(COLS, 3, LINES - 2, 0, true);
     help_pane = new CursesFrame(COLS - 10, LINES - 10, 5, 5, true);
 
-    list_pane->SetHeader("Pkgs");
-    info_pane->SetHeader("Pkg Info");
+    info_pane->SetHeader("Info");
     info_pane->SetFooter("Press h for help");
-    queue_pane->SetHeader("Pkg Queue");
+    queue_pane->SetHeader("Queue");
     input_pane->SetHeader("Input");
     help_pane->SetHeader("Help");
 }
@@ -260,10 +258,10 @@ void Program::deinit_curses() {
     endwin();
 }
 
-void Program::printinfosection(std::string header, std::string text) {
+void Program::printinfosection(string header, string text) {
 
-    std::string hdr = header;
-    std::string txt = text + "\n";
+    string hdr = header;
+    string txt = text + "\n";
 
     info_pane->PrintW(hdr, COLOR_PAIR(3));
     info_pane->PrintW(txt);
@@ -304,7 +302,7 @@ void Program::updatedisplay() {
             queue_pane->Refresh();
 
         if (mode == MODE_INPUT) {
-            input_pane->PrintW(optostr(op) + searchphrase);
+            input_pane->PrintW(optostr(op) + inputbuf);
             input_pane->Refresh();
         }
     } else if (mode == MODE_HELP) {
@@ -322,43 +320,55 @@ string Program::optostr(FilterOperationEnum o) const {
     }
 }
 
-void Program::filterpackages(std::string searchstr) {
-
+void Program::clearfilter() {
     filteredpackages = packages;
+    searchphrases = "";
+    updatelistinfo();
+}
+
+void Program::filterpackages(string str) {
+
+    string fieldlist, searchphrase;
 
     /* first, split actual search phrase from field prefix */
     sregex reprefix = sregex::compile("^([A-Za-z]*):(.*)");
     smatch what;
 
     Filter::clearattrs();
-    if (regex_search(searchstr, what, reprefix)) {
-        Filter::setattrs(what[1]);
-        searchstr = what[2];
+    if (regex_search(str, what, reprefix)) {
+        fieldlist = what[1];
+        searchphrase = what[2];
+        Filter::setattrs(fieldlist);
+    } else {
+        searchphrase = str;
     }
 
     /* if search phrase is empty, nothing to do */
-    if (searchstr.length() == 0) {
-        updatelistfooter();
+    if (searchphrase.length() == 0) {
+        updatelistinfo();
         return;
     }
+
+    if (searchphrases.length() != 0) searchphrases += ", ";
+    searchphrases += str;
 
     /* if search phrase is alphanumeric only,
        perform a fast and simple search, else run slower regexp search */
 
     sregex resimple = sregex::compile("[:alnum:]+");
 
-    if (regex_match(searchstr, what, resimple)) {
-        for (std::vector<Package*>::iterator it = std::find_if(filteredpackages.begin(),
+    if (regex_match(searchphrase, what, resimple)) {
+        for (vector<Package*>::iterator it = std::find_if(filteredpackages.begin(),
                                                      filteredpackages.end(),
-                                                     boost::bind(&Filter::matches, _1, searchstr));
+                                                     boost::bind(&Filter::matches, _1, searchphrase));
             it != filteredpackages.end();
             it = std::find_if(filteredpackages.begin(),
                               filteredpackages.end(),
-                              boost::bind(&Filter::matches, _1, searchstr)))
+                              boost::bind(&Filter::matches, _1, searchphrase)))
             filteredpackages.erase(it);
     } else {
-        sregex needle = sregex::compile(searchstr, regex_constants::icase);
-        for (std::vector<Package*>::iterator it = std::find_if(filteredpackages.begin(),
+        sregex needle = sregex::compile(searchphrase, regex_constants::icase);
+        for (vector<Package*>::iterator it = std::find_if(filteredpackages.begin(),
                                                      filteredpackages.end(),
                                                      boost::bind(&Filter::matchesre, _1, needle));
             it != filteredpackages.end();
@@ -368,8 +378,9 @@ void Program::filterpackages(std::string searchstr) {
             filteredpackages.erase(it);
     }
 
-    updatelistfooter();
+    updatelistinfo();
 }
-void Program::updatelistfooter() {
+void Program::updatelistinfo() {
+    list_pane->SetHeader(searchphrases);
     list_pane->SetFooter(boost::str(boost::format("%d Package(s)") % filteredpackages.size()));
 }

@@ -33,6 +33,9 @@
 #include "config.h"
 #include "filter.h"
 
+using std::string;
+using std::vector;
+
 typedef struct __pmdb_t pmdb_t;
 typedef struct __alpm_list_t alpm_list_t;
 
@@ -75,10 +78,11 @@ private:
     void init_curses();
     void print_help();
     void deinit_curses();
-    void printinfosection(std::string header, std::string text);
+    void printinfosection(string header, string text);
     void updatedisplay();
-    void filterpackages(std::string searchphrase);
-    void updatelistfooter();
+    void clearfilter();
+    void filterpackages(string str);
+    void updatelistinfo();
     void displayprocessingmsg();
     string optostr(FilterOperationEnum o) const;
 
@@ -107,7 +111,8 @@ private:
             *localdb;
 
     std::string
-            searchphrase;
+            inputbuf,
+            searchphrases;
 
     FilterOperationEnum
             op;
