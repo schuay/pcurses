@@ -49,8 +49,8 @@ enum AttributeEnum {
 class AttributeInfo
 {
 public:
-    static AttributeEnum chartoattr(const char c);
-    static char attrtochar(const AttributeEnum attr);
+    static AttributeEnum chartoattr(char c);
+    static char attrtochar(AttributeEnum attr);
     static string attrname(AttributeEnum attr);
 };
 

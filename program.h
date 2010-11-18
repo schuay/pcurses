@@ -78,7 +78,7 @@ private:
     void init_curses();
     void print_help();
     void deinit_curses();
-    void printinfosection(string header, string text);
+    void printinfosection(AttributeEnum attr, string text);
     void updatedisplay();
     void clearfilter();
     void filterpackages(string str);

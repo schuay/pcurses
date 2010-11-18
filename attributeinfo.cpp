@@ -17,7 +17,9 @@
 
 #include "attributeinfo.h"
 
-AttributeEnum AttributeInfo::chartoattr(const char c) {
+AttributeEnum AttributeInfo::chartoattr(char c) {
+    c = tolower(c);
+
     switch (c) {
     case 'a': return A_PACKAGER;
     case 'b': return A_BUILDDATE;
@@ -40,7 +42,7 @@ AttributeEnum AttributeInfo::chartoattr(const char c) {
     default: return A_NONE;
     }
 }
-char AttributeInfo::attrtochar(const AttributeEnum attr) {
+char AttributeInfo::attrtochar(AttributeEnum attr) {
     for (char i = 'a'; i <= 'z'; i++)
         if (chartoattr(i) == attr) return i;
 
@@ -53,19 +55,19 @@ string AttributeInfo::attrname(AttributeEnum attr) {
     case A_VERSION: return "Version";
     case A_URL: return "Url";
     case A_REPO: return "Repo";
-    case A_PACKAGER: return "pAckager";
-    case A_BUILDDATE: return "Builddate";
-    case A_INSTALLSTATE: return "install sTate";
+    case A_PACKAGER: return "Packager";
+    case A_BUILDDATE: return "Build date";
+    case A_INSTALLSTATE: return "Install state";
     case A_DESC: return "Desc";
-    case A_ARCH: return "arcH";
+    case A_ARCH: return "Arch";
     case A_LICENSES: return "Licenses";
     case A_GROUPS: return "Groups";
-    case A_DEPENDS: return "dEpends";
+    case A_DEPENDS: return "Depends";
     case A_OPTDEPENDS: return "Optdepends";
     case A_CONFLICTS: return "Conflicts";
     case A_PROVIDES: return "Provides";
-    case A_REPLACES: return "replaceS";
-    case A_SIZE: return "download siZe";
+    case A_REPLACES: return "Replaces";
+    case A_SIZE: return "Download size";
     case A_ISIZE: return "Install size";
     case A_NONE: return "";
     default: throw AlpmException("Invalid attribute passed.");

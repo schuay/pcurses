@@ -258,12 +258,27 @@ void Program::deinit_curses() {
     endwin();
 }
 
-void Program::printinfosection(string header, string text) {
+void Program::printinfosection(AttributeEnum attr, string text) {
 
-    string hdr = header;
+    string caption = AttributeInfo::attrname(attr);
+    char hllower = AttributeInfo::attrtochar(attr);
+    char hlupper = toupper(hllower);
+    bool hldone = false;
+    int style;
+
+    for (unsigned int i = 0; i < caption.size(); i++) {
+        if (!hldone && (caption[i] == hllower || caption[i] == hlupper)) {
+            style = COLOR_PAIR(0);
+            hldone = true;
+        }
+        else style = COLOR_PAIR(3);
+
+
+        info_pane->PrintW(string(1, caption[i]), style);
+    }
+    info_pane->PrintW(": ", COLOR_PAIR(3));
+
     string txt = text + "\n";
-
-    info_pane->PrintW(hdr, COLOR_PAIR(3));
     info_pane->PrintW(txt);
 }
 void Program::updatedisplay() {
@@ -287,9 +302,8 @@ void Program::updatedisplay() {
             for (int i = 0; i < A_NONE; i++) {
                 AttributeEnum attr = (AttributeEnum)i;
                 string txt = pkg->getattr(attr);
-                string caption = AttributeInfo::attrname(attr) + ": ";
                 if (txt.length() != 0)
-                    printinfosection(caption, txt);
+                    printinfosection(attr, txt);
             }
         }
 
