@@ -1,10 +1,10 @@
 CXX  = g++
 LINK = g++
-CXXFLAGS = -pedantic -Wall -pipe -W -D_REENTRANT
+CXXFLAGS = -pedantic -Wall -pipe
 LDFLAGS = -m64 -Wl,--hash-style=gnu
 LIBS = -lalpm -lncursesw
 RM = rm
-INSTALL = install
+INSTALL_PROGRAM = install -Dm755
 SOURCES = package.cpp \
 		  main.cpp \
 		  cursesframe.cpp \
@@ -15,6 +15,7 @@ SOURCES = package.cpp \
 		  attributeinfo.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 TARGET = pcurses
+bindir = /usr/bin
 
 all: $(TARGET)
 
@@ -23,6 +24,9 @@ $(TARGET): $(OBJECTS)
 
 %.o: %.c
 	$(CXX) $(CFLAGS) $< -o $@
+
+install:
+	$(INSTALL_PROGRAM) $(TARGET) $(DESTDIR)/$(bindir)/$(TARGET)
 
 clean:
 	$(RM) -f $(TARGET) $(OBJECTS)
