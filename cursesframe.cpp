@@ -52,8 +52,7 @@ string CursesFrame::FitStrToWin(string in, int x) const {
 }
 void CursesFrame::Refresh() {
     if (w_border != NULL) {
-        wborder(w_border, '|', '|', '-', '-', '+', '+', '+', '+');
-        //wborder(w_border, L'│', L'│', L'─', L'─', L'┌', L'┐', L'┘', L'└');
+        box(w_border, ACS_VLINE, ACS_HLINE);
 
         wattron(w_border, A_BOLD);
         mvwprintw(w_border, 0, 1, header.c_str());
