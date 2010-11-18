@@ -43,7 +43,7 @@ enum AttributeEnum {
     A_REPLACES,
     A_SIZE,
     A_ISIZE,
-    A_NONE,
+    A_NONE
 };
 
 class AttributeInfo

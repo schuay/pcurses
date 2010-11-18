@@ -53,14 +53,14 @@ enum RightPaneEnum {
 enum ModeEnum {
     MODE_STANDARD,
     MODE_INPUT,
-    MODE_HELP,
+    MODE_HELP
 };
 
 enum FilterOperationEnum {
     OP_SEARCH,
     OP_FILTER,
     OP_COLORCODE,
-    OP_NONE,
+    OP_NONE
 };
 
 class Program
