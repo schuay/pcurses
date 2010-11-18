@@ -36,36 +36,12 @@ void Filter::setattrs(string s) {
     Filter::attrlist.clear();
 
     for (unsigned int i = 0; i < s.length(); i++) {
-        attr = chartoattr(s[i]);
+        attr = AttributeInfo::chartoattr(s[i]);
 
         if (attr == A_NONE) continue;
         if (find(Filter::attrlist.begin(), Filter::attrlist.end(), attr) != Filter::attrlist.end()) continue;
 
         Filter::attrlist.push_back(attr);
-    }
-}
-
-AttributeEnum Filter::chartoattr(const char c) {
-    switch (c) {
-    case 'a': return A_PACKAGER;
-    case 'b': return A_BUILDDATE;
-    case 'c': return A_CONFLICTS;
-    case 'd': return A_DESC;
-    case 'e': return A_DEPENDS;
-    case 'g': return A_GROUPS;
-    case 'h': return A_ARCH;
-    case 'i': return A_ISIZE;
-    case 'l': return A_LICENSES;
-    case 'n': return A_NAME;
-    case 'o': return A_OPTDEPENDS;
-    case 'p': return A_PROVIDES;
-    case 'r': return A_REPO;
-    case 's': return A_REPLACES;
-    case 't': return A_INSTALLSTATE;
-    case 'u': return A_URL;
-    case 'v': return A_VERSION;
-    case 'z': return A_SIZE;
-    default: return A_NONE;
     }
 }
 

@@ -15,31 +15,43 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
  ************************************************************************* */
 
-#ifndef FILTER_H
-#define FILTER_H
+#ifndef ATTRIBUTEINFO_H
+#define ATTRIBUTEINFO_H
 
-#include <vector>
-#include <algorithm>
+#include <string>
 
-#include "package.h"
+#include "alpmexception.h"
 
-using std::vector;
 using std::string;
 
-class Filter
-{
-public:
-    static void setattrs(string s);
-    static void clearattrs();
-
-    static bool cmp(const Package *lhs, const Package *rhs);
-    static bool matchesre(const Package *a, const sregex needle);
-    static bool matches(const Package *a, const string needle);
-
-private:
-
-    static vector<AttributeEnum>
-            attrlist;
+enum AttributeEnum {
+    A_NAME,
+    A_VERSION,
+    A_URL,
+    A_REPO,
+    A_PACKAGER,
+    A_BUILDDATE,
+    A_INSTALLSTATE,
+    A_DESC,
+    A_ARCH,
+    A_LICENSES,
+    A_GROUPS,
+    A_DEPENDS,
+    A_OPTDEPENDS,
+    A_CONFLICTS,
+    A_PROVIDES,
+    A_REPLACES,
+    A_SIZE,
+    A_ISIZE,
+    A_NONE,
 };
 
-#endif // FILTER_H
+class AttributeInfo
+{
+public:
+    static AttributeEnum chartoattr(const char c);
+    static char attrtochar(const AttributeEnum attr);
+    static string attrname(AttributeEnum attr);
+};
+
+#endif // ATTRIBUTEINFO_H

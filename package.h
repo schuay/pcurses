@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "alpmexception.h"
+#include "attributeinfo.h"
 
 struct __pmdepend_t {
         pmdepmod_t mod;
@@ -55,27 +56,6 @@ enum OperationEnum {
     OE_REMOVE
 };
 
-enum AttributeEnum {
-    A_NAME,
-    A_VERSION,
-    A_URL,
-    A_REPO,
-    A_PACKAGER,
-    A_BUILDDATE,
-    A_INSTALLSTATE,
-    A_DESC,
-    A_ARCH,
-    A_LICENSES,
-    A_GROUPS,
-    A_DEPENDS,
-    A_OPTDEPENDS,
-    A_CONFLICTS,
-    A_PROVIDES,
-    A_REPLACES,
-    A_SIZE,
-    A_ISIZE,
-    A_NONE,
-};
 
 class Package
 {
@@ -102,7 +82,6 @@ public:
     string getisize() const;
 
     string getattr(AttributeEnum attr) const;
-    static string attrname(AttributeEnum attr);
 
     InstallReasonEnum reason() const;
     bool needsupdate() const;

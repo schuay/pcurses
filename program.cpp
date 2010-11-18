@@ -287,7 +287,7 @@ void Program::updatedisplay() {
             for (int i = 0; i < A_NONE; i++) {
                 AttributeEnum attr = (AttributeEnum)i;
                 string txt = pkg->getattr(attr);
-                string caption = Package::attrname(attr) + ": ";
+                string caption = AttributeInfo::attrname(attr) + ": ";
                 if (txt.length() != 0)
                     printinfosection(caption, txt);
             }
