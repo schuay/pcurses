@@ -38,11 +38,17 @@ Package::Package(pmpkg_t* pkg) :
 
     _licenses = list2str(alpm_pkg_get_licenses(_pkg));
     _groups = list2str(alpm_pkg_get_groups(_pkg));
-    _depends = list2str(alpm_pkg_get_depends(_pkg));
     _optdepends = list2str(alpm_pkg_get_optdepends(_pkg));
     _conflicts = list2str(alpm_pkg_get_conflicts(_pkg));
     _provides = list2str(alpm_pkg_get_provides(_pkg));
     _replaces = list2str(alpm_pkg_get_replaces(_pkg));
+
+    for (alpm_list_t *deps = alpm_pkg_get_depends(_pkg); deps != NULL;
+         deps = alpm_list_next(deps)) {
+        pmdepend_t *depend = (pmdepend_t*)alpm_list_getdata(deps);
+        _depends += depend->name;
+        if (deps->next != NULL)_depends += " ";
+    }
 
     _reason = ((_localpkg == NULL) ? IRE_NOTINSTALLED :
                (alpm_pkg_get_reason(_localpkg) == PM_PKG_REASON_DEPEND) ? IRE_ASDEPS :
@@ -177,7 +183,7 @@ string Package::getgroups() const {
     return _groups;
 }
 string Package::getdepends() const {
-    return "TODO";
+    return _depends;
 }
 string Package::getoptdepends() const {
     return _optdepends;
