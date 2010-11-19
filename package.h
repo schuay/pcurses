@@ -83,6 +83,7 @@ public:
     string getisize() const;
 
     string getattr(AttributeEnum attr) const;
+    unsigned long getulongattr(AttributeEnum attr) const;
 
     InstallReasonEnum reason() const;
     bool needsupdate() const;

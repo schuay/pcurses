@@ -59,6 +59,7 @@ enum ModeEnum {
 enum FilterOperationEnum {
     OP_SEARCH,
     OP_FILTER,
+    OP_SORT,
     OP_COLORCODE,
     OP_NONE
 };
@@ -82,6 +83,7 @@ private:
     void updatedisplay();
     void clearfilter();
     void filterpackages(string str);
+    void sortpackages(string str);
     void updatelistinfo();
     void displayprocessingmsg();
     string optostr(FilterOperationEnum o) const;

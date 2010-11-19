@@ -52,13 +52,13 @@ void Program::Init() {
             Package *parray[] = { p };
             if (!std::includes(packages.begin(), packages.end(),
                               parray, parray + 1,
-                              std::ptr_fun(&Filter::cmp))) {
+                              boost::bind(&Filter::cmp, _1, _2, A_NAME))) {
                 packages.push_back(p);
             }
             else
                 delete p;
         }
-        std::sort(packages.begin(), packages.end(), std::ptr_fun(&Filter::cmp));
+        std::sort(packages.begin(), packages.end(), boost::bind(&Filter::cmp, _1, _2, A_NAME));
     }
     alpm_list_free(dbs);
 
@@ -135,6 +135,11 @@ void Program::MainLoop() {
                 inputbuf = "";
                 op = OP_FILTER;
                 break;
+            case '.':
+                mode = MODE_INPUT;
+                inputbuf = "";
+                op = OP_SORT;
+                break;
             default:
                 break;
             }
@@ -146,10 +151,14 @@ void Program::MainLoop() {
                 break;
             case KEY_RETURN:
                 mode = MODE_STANDARD;
-                displayprocessingmsg();
-                filterpackages(inputbuf);
-                list_pane->SetList(&filteredpackages);
-                flushinp();
+                if (op == OP_FILTER) {
+                    displayprocessingmsg();
+                    filterpackages(inputbuf);
+                    list_pane->SetList(&filteredpackages);
+                    flushinp();
+                } else if (op == OP_SORT) {
+                    sortpackages(inputbuf);
+                }
                 op = OP_NONE;
                 break;
             case KEY_BACKSPACE:
@@ -188,10 +197,11 @@ void Program::print_help() {
     help_pane->PrintW("\n");
     PRINTH("ESC: ", "cancel\n");
     PRINTH("q: ", "quit\n");
-    PRINTH("/: ", "filter packages by desc and name (using regexp)\n");
+    PRINTH("/: ", "filter packages by specified fields (using regexp)\n");
     PRINTH("", "   note that filters can be chained.\n")
     PRINTH("n: ", "filter packages by name (using regexp)\n");
     PRINTH("c: ", "clear all package filters\n");
+    PRINTH(".: ", "sort packages specified field\n");
     PRINTH("arrows, pg up/down, home/end: ", "navigation\n");
     PRINTH("return: ", "exit help\n");
 }
@@ -238,7 +248,7 @@ void Program::init_curses() {
     input_pane = new CursesFrame(COLS, 3, LINES - 2, 0, true);
     help_pane = new CursesFrame(COLS - 10, LINES - 10, 5, 5, true);
 
-    info_pane->SetHeader("Info");
+    info_pane->SetHeader("Sort by: " + AttributeInfo::attrname(A_NAME));
     info_pane->SetFooter("Press h for help");
     queue_pane->SetHeader("Queue");
     input_pane->SetHeader("Input");
@@ -328,6 +338,7 @@ void Program::updatedisplay() {
 string Program::optostr(FilterOperationEnum o) const {
     switch (o) {
     case OP_FILTER: return "/";
+    case OP_SORT: return ".";
     case OP_NONE: return "";
     default: assert(0);
     }
@@ -337,6 +348,27 @@ void Program::clearfilter() {
     filteredpackages = packages;
     searchphrases = "";
     updatelistinfo();
+}
+
+void Program::sortpackages(string str) {
+    if (str.length() < 1)
+        return;
+
+    AttributeEnum attr = A_NONE;
+    unsigned int i = 0;
+
+    while (attr == A_NONE && i < str.length()) {
+        attr = AttributeInfo::chartoattr(str[i]);
+        i++;
+    }
+
+    if (attr == A_NONE)
+        return;
+
+    info_pane->SetHeader("Sort by: " + AttributeInfo::attrname(attr));
+
+    std::sort(filteredpackages.begin(), filteredpackages.end(),
+              boost::bind(&Filter::cmp, _1, _2, attr));
 }
 
 void Program::filterpackages(string str) {

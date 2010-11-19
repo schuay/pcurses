@@ -127,6 +127,13 @@ string Package::getattr(AttributeEnum attr) const {
     default: throw AlpmException("Invalid attribute passed.");
     }
 }
+unsigned long Package::getulongattr(AttributeEnum attr) const {
+    switch(attr) {
+    case A_SIZE: return _size;
+    case A_ISIZE: return _installsize;
+    default: throw AlpmException("Invalid attribute passed.");
+    }
+}
 
 string Package::getname() const
 {

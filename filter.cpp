@@ -69,6 +69,9 @@ bool Filter::matches(const Package *a, const string needle) {
 
     return !found;
 }
-bool Filter::cmp(const Package *lhs, const Package *rhs) {
-    return lhs->getname() < rhs->getname();
+bool Filter::cmp(const Package *lhs, const Package *rhs, AttributeEnum attr) {
+    if (attr == A_SIZE || attr == A_ISIZE)
+        return lhs->getulongattr(attr) < rhs->getulongattr(attr);
+
+    return lhs->getattr(attr) < rhs->getattr(attr);
 }

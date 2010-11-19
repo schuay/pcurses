@@ -32,7 +32,7 @@ public:
     static void setattrs(string s);
     static void clearattrs();
 
-    static bool cmp(const Package *lhs, const Package *rhs);
+    static bool cmp(const Package *lhs, const Package *rhs, AttributeEnum attr);
     static bool matchesre(const Package *a, const sregex needle);
     static bool matches(const Package *a, const string needle);
 
