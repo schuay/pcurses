@@ -36,6 +36,9 @@ Package::Package(pmpkg_t* pkg) :
     _size = alpm_pkg_get_size(_pkg);
     _installsize = alpm_pkg_get_isize(_pkg);
 
+    _sizestr = size2str(_size);
+    _installsizestr = size2str(_installsize);
+
     _licenses = list2str(alpm_pkg_get_licenses(_pkg));
     _groups = list2str(alpm_pkg_get_groups(_pkg));
     _optdepends = list2str(alpm_pkg_get_optdepends(_pkg));
@@ -53,6 +56,25 @@ Package::Package(pmpkg_t* pkg) :
     _reason = ((_localpkg == NULL) ? IRE_NOTINSTALLED :
                (alpm_pkg_get_reason(_localpkg) == PM_PKG_REASON_DEPEND) ? IRE_ASDEPS :
                IRE_EXPLICIT);
+}
+
+string Package::size2str(unsigned long size) {
+    std::stringstream ss;
+
+    float fsize = size;
+
+    int currentunit = 0;
+    string units[] = {"B", "KB", "MB", "GB", "TB"};
+    int unitssize = sizeof(units)/sizeof(units[0]);
+
+    while (fsize > 1024.0 && currentunit < unitssize) {
+        fsize /= 1024.0;
+        currentunit++;
+    }
+
+    ss << std::fixed << std::setprecision(2) << fsize << " " << units[currentunit];
+
+    return ss.str();
 }
 
 string Package::trimstr(const char *c) const {
@@ -173,10 +195,10 @@ string Package::getreplaces() const {
     return _replaces;
 }
 string Package::getsize() const {
-    return "TODO";
+    return _sizestr;
 }
 string Package::getisize() const {
-    return "TODO";
+    return _installsizestr;
 }
 
 bool Package::needsupdate() const

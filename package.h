@@ -24,6 +24,7 @@
 #include <boost/xpressive/xpressive.hpp>
 #include <boost/algorithm/string.hpp>
 #include <vector>
+#include <sstream>
 
 #include "alpmexception.h"
 #include "attributeinfo.h"
@@ -93,6 +94,7 @@ private:
 
     string trimstr(const char *c) const;
     string list2str(alpm_list_t *l) const;
+    static string size2str(unsigned long size);
 
     pmpkg_t
             *_pkg,
@@ -112,7 +114,9 @@ private:
             _optdepends,
             _conflicts,
             _provides,
-            _replaces;
+            _replaces,
+            _sizestr,
+            _installsizestr;
 
     unsigned long
             _size,
