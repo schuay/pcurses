@@ -18,7 +18,7 @@
 #include "cursesframe.h"
 
 CursesFrame::CursesFrame(int w, int h, int x, int y, bool hasborder)
-    : w_main(NULL), w_border(NULL)
+    : overflowind("..."), w_main(NULL), w_border(NULL)
 {
     if (hasborder) {
         w_border = newwin(h, w, x, y);
@@ -90,9 +90,17 @@ int CursesFrame::UsableWidth() const {
 }
 
 void CursesFrame::SetFooter(string str) {
+    if (str.length() > (unsigned int)UsableWidth()) {
+        str = str.substr(0, UsableWidth() - overflowind.length() + 1) + overflowind;
+    }
+
     footer = str;
 }
 
 void CursesFrame::SetHeader(string str) {
+    if (str.length() > (unsigned int)UsableWidth()) {
+        str = str.substr(0, UsableWidth() - overflowind.length() + 1) + overflowind;
+    }
+
     header = str;
 }

@@ -43,6 +43,9 @@ protected:
 
     string FitStrToWin(string in, int x = -1) const;
 
+    const string
+            overflowind;
+
     WINDOW
             *w_main,
             *w_border;
