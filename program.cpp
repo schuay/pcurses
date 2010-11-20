@@ -241,6 +241,7 @@ void Program::init_curses() {
     init_pair(1, COLOR_BLACK, COLOR_WHITE);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
     init_pair(3, COLOR_CYAN, COLOR_BLACK);
+    init_pair(4, COLOR_BLUE, COLOR_WHITE);
 
     const int lwidth = 30;
     const int height = LINES - 1;
@@ -257,6 +258,8 @@ void Program::init_curses() {
     queue_pane->SetHeader("Queue");
     input_pane->SetHeader("Input");
     help_pane->SetHeader("Help");
+
+    status_pane->SetBackground(C_INV);
 }
 void Program::deinit_curses() {
     delete list_pane;
@@ -325,10 +328,10 @@ void Program::updatedisplay() {
         }
 
         /* status bar */
-        status_pane->MvPrintW(1, 0, "Sorted by: ", C_DEF_HL2);
-        status_pane->PrintW(AttributeInfo::attrname(sortedby));
-        status_pane->PrintW(" Filtered by: ", C_DEF_HL2);
-        status_pane->PrintW((searchphrases.length() == 0) ? "-" : searchphrases);
+        status_pane->MvPrintW(1, 0, "Sorted by: ", C_INV_HL1);
+        status_pane->PrintW(AttributeInfo::attrname(sortedby), C_INV);
+        status_pane->PrintW(" Filtered by: ", C_INV_HL1);
+        status_pane->PrintW(((searchphrases.length() == 0) ? "-" : searchphrases), C_INV);
 
         refresh();
         status_pane->Refresh();

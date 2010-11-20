@@ -35,6 +35,10 @@ CursesFrame::~CursesFrame()
     delwin(w_main);
 }
 
+void CursesFrame::SetBackground(chtype col) {
+    wbkgd(w_main, col | ' ');
+}
+
 string CursesFrame::FitStrToWin(string in, int x) const {
     int len = in.length();
 

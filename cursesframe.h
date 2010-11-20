@@ -27,6 +27,7 @@ using std::string;
 #define C_DEF_HL1 (COLOR_PAIR(2))
 #define C_DEF_HL2 (COLOR_PAIR(3))
 #define C_INV (COLOR_PAIR(1))
+#define C_INV_HL1 (COLOR_PAIR(4))
 
 class CursesFrame
 {
@@ -34,6 +35,7 @@ public:
     CursesFrame(int w, int h, int x, int y, bool hasborder);
     virtual ~CursesFrame();
 
+    void SetBackground(chtype col);
     void SetHeader(string str);
     void SetFooter(string str);
     virtual void Refresh();
