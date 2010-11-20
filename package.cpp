@@ -31,7 +31,7 @@ Package::Package(pmpkg_t* pkg) :
     _version = trimstr(alpm_pkg_get_version(_pkg));
     _dbname = trimstr(alpm_db_get_name(alpm_pkg_get_db(_pkg)));
     _builddate = alpm_pkg_get_builddate(_pkg);
-    _arch = alpm_pkg_get_arch(_pkg);
+    _arch = trimstr(alpm_pkg_get_arch(_pkg));
 
     _size = alpm_pkg_get_size(_pkg);
     _installsize = alpm_pkg_get_isize(_pkg);
