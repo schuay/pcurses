@@ -330,6 +330,8 @@ void Program::updatedisplay() {
         /* status bar */
         status_pane->MvPrintW(1, 0, "Sorted by: ", C_INV_HL1);
         status_pane->PrintW(AttributeInfo::attrname(sortedby), C_INV);
+        status_pane->PrintW(" Colored by: ", C_INV_HL1);
+        status_pane->PrintW(AttributeInfo::attrname(A_INSTALLSTATE), C_INV);
         status_pane->PrintW(" Filtered by: ", C_INV_HL1);
         status_pane->PrintW(((searchphrases.length() == 0) ? "-" : searchphrases), C_INV);
 
@@ -363,6 +365,9 @@ string Program::optostr(FilterOperationEnum o) const {
 
 void Program::clearfilter() {
     filteredpackages = packages;
+    std::sort(filteredpackages.begin(), filteredpackages.end(),
+              boost::bind(&Filter::cmp, _1, _2, sortedby));
+
     searchphrases = "";
     updatelistinfo();
 }
