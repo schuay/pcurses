@@ -58,7 +58,7 @@ void CursesFrame::Refresh() {
         mvwprintw(w_border, 0, 1, header.c_str());
         wattroff(w_border, A_BOLD);
 
-        mvwprintw(w_border, LINES - 1, 1, footer.c_str());
+        mvwprintw(w_border, w_border->_maxy, 1, footer.c_str());
 
         wrefresh(w_border);
     }
