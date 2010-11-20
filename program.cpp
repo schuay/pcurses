@@ -82,9 +82,11 @@ void Program::MainLoop() {
 
         if (mode == MODE_STANDARD) {
             switch (ch) {
+            case 'k':
             case KEY_UP:
                 focused_pane->Move(-1);
                 break;
+            case 'j':
             case KEY_DOWN:
                 focused_pane->Move(1);
                 break;
