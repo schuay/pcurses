@@ -100,9 +100,9 @@ void CursesListBox::Refresh() {
         else updateavailable = '-';
 
         int attr = 0;
-        if (installreason == IRE_EXPLICIT) attr = COLOR_PAIR(2);
-        else if (installreason == IRE_ASDEPS) attr = COLOR_PAIR(3);
-        if (i == cursorpos) attr = COLOR_PAIR(1);
+        if (installreason == IRE_EXPLICIT) attr = C_DEF_HL1;
+        else if (installreason == IRE_ASDEPS) attr = C_DEF_HL2;
+        if (i == cursorpos) attr = C_INV;
 
         MvPrintW(0, i, pkg->getname().substr(0, UsableWidth() + 1), attr);
     }

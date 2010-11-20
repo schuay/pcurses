@@ -23,6 +23,11 @@
 
 using std::string;
 
+#define C_DEF (COLOR_PAIR(0))
+#define C_DEF_HL1 (COLOR_PAIR(2))
+#define C_DEF_HL2 (COLOR_PAIR(3))
+#define C_INV (COLOR_PAIR(1))
+
 class CursesFrame
 {
 public:

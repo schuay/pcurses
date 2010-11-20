@@ -283,15 +283,15 @@ void Program::printinfosection(AttributeEnum attr, string text) {
 
     for (unsigned int i = 0; i < caption.size(); i++) {
         if (!hldone && (caption[i] == hllower || caption[i] == hlupper)) {
-            style = COLOR_PAIR(0);
+            style = C_DEF;
             hldone = true;
         }
-        else style = COLOR_PAIR(3);
+        else style = C_DEF_HL2;
 
 
         info_pane->PrintW(string(1, caption[i]), style);
     }
-    info_pane->PrintW(": ", COLOR_PAIR(3));
+    info_pane->PrintW(": ", C_DEF_HL2);
 
     string txt = text + "\n";
     info_pane->PrintW(txt);
@@ -325,9 +325,9 @@ void Program::updatedisplay() {
         }
 
         /* status bar */
-        status_pane->MvPrintW(1, 0, "Sort by: ", COLOR_PAIR(3));
+        status_pane->MvPrintW(1, 0, "Sorted by: ", C_DEF_HL2);
         status_pane->PrintW(AttributeInfo::attrname(sortedby));
-        status_pane->PrintW(" Filtered by: ", COLOR_PAIR(3));
+        status_pane->PrintW(" Filtered by: ", C_DEF_HL2);
         status_pane->PrintW((searchphrases.length() == 0) ? "-" : searchphrases);
 
         refresh();
