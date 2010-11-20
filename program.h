@@ -102,7 +102,8 @@ private:
     CursesFrame
             *info_pane,
             *input_pane,
-            *help_pane;
+            *help_pane,
+            *status_pane;
 
     std::vector<Package*>
             packages,
@@ -115,6 +116,9 @@ private:
     std::string
             inputbuf,
             searchphrases;
+
+    AttributeEnum
+            sortedby;
 
     FilterOperationEnum
             op;

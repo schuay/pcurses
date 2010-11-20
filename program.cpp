@@ -23,6 +23,7 @@ Program::Program()
     op = OP_NONE;
     rightpane = RPE_INFO;
     mode = MODE_STANDARD;
+    sortedby = A_NAME;
 }
 Program::~Program() {
     deinit_curses();
@@ -242,13 +243,16 @@ void Program::init_curses() {
     init_pair(3, COLOR_CYAN, COLOR_BLACK);
 
     const int lwidth = 30;
-    list_pane = new CursesListBox(lwidth, LINES, 0, 0, true);
-    info_pane = new CursesFrame(COLS - lwidth + 1, LINES, 0, lwidth - 1, true);
-    queue_pane = new CursesListBox(COLS - lwidth + 1, LINES, 0, lwidth - 1, true);
+    const int height = LINES - 1;
+    list_pane = new CursesListBox(lwidth, height, 0, 0, true);
+    info_pane = new CursesFrame(COLS - lwidth + 1, height, 0, lwidth - 1, true);
+    queue_pane = new CursesListBox(COLS - lwidth + 1, height, 0, lwidth - 1, true);
+    status_pane = new CursesFrame(COLS, 1, LINES - 1, 0, false);
     input_pane = new CursesFrame(COLS, 3, LINES - 2, 0, true);
     help_pane = new CursesFrame(COLS - 10, LINES - 10, 5, 5, true);
 
-    info_pane->SetHeader("Sort by: " + AttributeInfo::attrname(A_NAME));
+    list_pane->SetHeader("Packages");
+    info_pane->SetHeader("Info");
     info_pane->SetFooter("Press h for help");
     queue_pane->SetHeader("Queue");
     input_pane->SetHeader("Input");
@@ -258,6 +262,7 @@ void Program::deinit_curses() {
     delete list_pane;
     delete queue_pane;
     delete info_pane;
+    delete status_pane;
     delete input_pane;
     delete help_pane;
 
@@ -304,9 +309,11 @@ void Program::updatedisplay() {
         clear();
         list_pane->Clear();
         info_pane->Clear();
+        status_pane->Clear();
         input_pane->Clear();
         queue_pane->Clear();
 
+        /* info pane */
         if ((unsigned int)(list_pane->FocusedIndex()) < filteredpackages.size()) {
             pkg = filteredpackages[list_pane->FocusedIndex()];
             for (int i = 0; i < A_NONE; i++) {
@@ -317,7 +324,14 @@ void Program::updatedisplay() {
             }
         }
 
+        /* status bar */
+        status_pane->MvPrintW(1, 0, "Sort by: ", COLOR_PAIR(3));
+        status_pane->PrintW(AttributeInfo::attrname(sortedby));
+        status_pane->PrintW(" Filtered by: ", COLOR_PAIR(3));
+        status_pane->PrintW((searchphrases.length() == 0) ? "-" : searchphrases);
+
         refresh();
+        status_pane->Refresh();
         list_pane->Refresh();
         if (rightpane == RPE_INFO)
             info_pane->Refresh();
@@ -365,7 +379,7 @@ void Program::sortpackages(string str) {
     if (attr == A_NONE)
         return;
 
-    info_pane->SetHeader("Sort by: " + AttributeInfo::attrname(attr));
+    sortedby = attr;
 
     std::sort(filteredpackages.begin(), filteredpackages.end(),
               boost::bind(&Filter::cmp, _1, _2, attr));
@@ -426,6 +440,5 @@ void Program::filterpackages(string str) {
     updatelistinfo();
 }
 void Program::updatelistinfo() {
-    list_pane->SetHeader(searchphrases);
     list_pane->SetFooter(boost::str(boost::format("%d Package(s)") % filteredpackages.size()));
 }
