@@ -35,6 +35,8 @@ public:
     static bool cmp(const Package *lhs, const Package *rhs, AttributeEnum attr);
     static bool matchesre(const Package *a, const sregex needle);
     static bool matches(const Package *a, const string needle);
+    static bool notmatchesre(const Package *a, const sregex needle);
+    static bool notmatches(const Package *a, const string needle);
 
 private:
 

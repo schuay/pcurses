@@ -84,6 +84,7 @@ private:
     void clearfilter();
     void filterpackages(string str);
     void sortpackages(string str);
+    void searchpackages(string str);
     void updatelistinfo();
     void displayprocessingmsg();
     string optostr(FilterOperationEnum o) const;

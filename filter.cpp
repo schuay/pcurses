@@ -45,7 +45,14 @@ void Filter::setattrs(string s) {
     }
 }
 
+bool Filter::matches(const Package *a, const string needle) {
+    return !notmatches(a, needle);
+}
 bool Filter::matchesre(const Package *a, const sregex needle) {
+    return !notmatchesre(a, needle);
+}
+
+bool Filter::notmatchesre(const Package *a, const sregex needle) {
     bool found = false;
     smatch what;
 
@@ -54,7 +61,7 @@ bool Filter::matchesre(const Package *a, const sregex needle) {
 
     return !found;
 }
-bool Filter::matches(const Package *a, const string needle) {
+bool Filter::notmatches(const Package *a, const string needle) {
     bool found = false;
     string str;
 

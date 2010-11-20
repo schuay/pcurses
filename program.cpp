@@ -141,6 +141,11 @@ void Program::MainLoop() {
                 inputbuf = "";
                 op = OP_SORT;
                 break;
+            case ',':
+                mode = MODE_INPUT;
+                inputbuf = "";
+                op = OP_SEARCH;
+                break;
             default:
                 break;
             }
@@ -159,6 +164,8 @@ void Program::MainLoop() {
                     flushinp();
                 } else if (op == OP_SORT) {
                     sortpackages(inputbuf);
+                } else if (op == OP_SEARCH) {
+                    searchpackages(inputbuf);
                 }
                 op = OP_NONE;
                 break;
@@ -202,7 +209,8 @@ void Program::print_help() {
     PRINTH("", "   note that filters can be chained.\n")
     PRINTH("n: ", "filter packages by name (using regexp)\n");
     PRINTH("c: ", "clear all package filters\n");
-    PRINTH(".: ", "sort packages specified field\n");
+    PRINTH(".: ", "sort packages by specified field\n");
+    PRINTH(".: ", "search packages\n");
     PRINTH("arrows, pg up/down, home/end: ", "navigation\n");
     PRINTH("return: ", "exit help\n");
 }
@@ -358,6 +366,7 @@ string Program::optostr(FilterOperationEnum o) const {
     switch (o) {
     case OP_FILTER: return "/";
     case OP_SORT: return ".";
+    case OP_SEARCH: return ",";
     case OP_NONE: return "";
     default: assert(0);
     }
@@ -370,6 +379,50 @@ void Program::clearfilter() {
 
     searchphrases = "";
     updatelistinfo();
+}
+
+void Program::searchpackages(string str) {
+
+    string fieldlist, searchphrase;
+
+    /* first, split actual search phrase from field prefix */
+    sregex reprefix = sregex::compile("^([A-Za-z]*):(.*)");
+    smatch what;
+
+    Filter::clearattrs();
+    if (regex_search(str, what, reprefix)) {
+        fieldlist = what[1];
+        searchphrase = what[2];
+        Filter::setattrs(fieldlist);
+    } else {
+        searchphrase = str;
+    }
+
+    /* if search phrase is empty, nothing to do */
+    if (searchphrase.length() == 0) {
+        updatelistinfo();
+        return;
+    }
+
+    /* we start the search at the current package */
+    vector<Package*>::iterator begin = filteredpackages.begin() + list_pane->FocusedIndex() + 1;
+    vector<Package*>::iterator it;
+
+    it = std::find_if(begin, filteredpackages.end(),
+                      boost::bind(&Filter::matches, _1, searchphrase));
+
+    /* if not found (and original search didn't start at beginning) wrap around */
+    if (it == filteredpackages.end() && begin != filteredpackages.begin()) {
+        it = std::find_if(filteredpackages.begin(), filteredpackages.end(),
+                          boost::bind(&Filter::matches, _1, searchphrase));
+    }
+
+    /* not found, do nothing */
+    if (it == filteredpackages.end())
+        return;
+
+    /* move focus to found pkg */
+    list_pane->MoveAbs(it - filteredpackages.begin());
 }
 
 void Program::sortpackages(string str) {
@@ -427,21 +480,21 @@ void Program::filterpackages(string str) {
     if (regex_match(searchphrase, what, resimple)) {
         for (vector<Package*>::iterator it = std::find_if(filteredpackages.begin(),
                                                      filteredpackages.end(),
-                                                     boost::bind(&Filter::matches, _1, searchphrase));
+                                                     boost::bind(&Filter::notmatches, _1, searchphrase));
             it != filteredpackages.end();
             it = std::find_if(filteredpackages.begin(),
                               filteredpackages.end(),
-                              boost::bind(&Filter::matches, _1, searchphrase)))
+                              boost::bind(&Filter::notmatches, _1, searchphrase)))
             filteredpackages.erase(it);
     } else {
         sregex needle = sregex::compile(searchphrase, icase);
         for (vector<Package*>::iterator it = std::find_if(filteredpackages.begin(),
                                                      filteredpackages.end(),
-                                                     boost::bind(&Filter::matchesre, _1, needle));
+                                                     boost::bind(&Filter::notmatchesre, _1, needle));
             it != filteredpackages.end();
             it = std::find_if(filteredpackages.begin(),
                               filteredpackages.end(),
-                              boost::bind(&Filter::matchesre, _1, needle)))
+                              boost::bind(&Filter::notmatchesre, _1, needle)))
             filteredpackages.erase(it);
     }
 
