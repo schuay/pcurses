@@ -317,7 +317,7 @@ void Program::updatedisplay() {
     if (mode == MODE_INPUT || mode == MODE_STANDARD) {
         Package *pkg;
 
-        clear();
+        erase();
         list_pane->Clear();
         info_pane->Clear();
         status_pane->Clear();
@@ -343,7 +343,7 @@ void Program::updatedisplay() {
         status_pane->PrintW(" Filtered by: ", C_INV_HL1);
         status_pane->PrintW(((searchphrases.length() == 0) ? "-" : searchphrases), C_INV);
 
-        refresh();
+        wnoutrefresh(stdscr);
         status_pane->Refresh();
         list_pane->Refresh();
         if (rightpane == RPE_INFO)
@@ -360,6 +360,8 @@ void Program::updatedisplay() {
         print_help();
         help_pane->Refresh();
     }
+
+    CursesFrame::DoUpdate();
 }
 
 string Program::optostr(FilterOperationEnum o) const {

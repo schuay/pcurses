@@ -35,6 +35,10 @@ CursesFrame::~CursesFrame()
     delwin(w_main);
 }
 
+void CursesFrame::DoUpdate() {
+    doupdate();
+}
+
 void CursesFrame::SetBackground(chtype col) {
     wbkgd(w_main, col | ' ');
 }
@@ -64,9 +68,9 @@ void CursesFrame::Refresh() {
 
         mvwprintw(w_border, w_border->_maxy, 1, footer.c_str());
 
-        wrefresh(w_border);
+        wnoutrefresh(w_border);
     }
-    wrefresh(w_main);
+    wnoutrefresh(w_main);
 }
 
 void CursesFrame::PrintW(string str, int attr) {
@@ -82,7 +86,7 @@ void CursesFrame::MvPrintW(int x, int y, string str, int attr) {
 }
 
 void CursesFrame::Clear() {
-    wclear(w_main);
+    werase(w_main);
 }
 
 int CursesFrame::UsableHeight() const {

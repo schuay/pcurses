@@ -46,6 +46,8 @@ public:
     int UsableHeight() const;
     int UsableWidth() const;
 
+    static void DoUpdate();
+
 protected:
 
     string FitStrToWin(string in, int x = -1) const;
