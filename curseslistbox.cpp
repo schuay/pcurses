@@ -94,7 +94,7 @@ void CursesListBox::Refresh() {
         int attr = 0;
         if (installreason == IRE_EXPLICIT) attr = C_DEF_HL1;
         else if (installreason == IRE_ASDEPS) attr = C_DEF_HL2;
-        if (i == cursorpos) attr = C_INV;
+        if (i == cursorpos) attr |= A_REVERSE;
 
         MvPrintW(0, i, pkg->getname().substr(0, UsableWidth() + 1), attr);
     }
