@@ -248,10 +248,11 @@ void Program::init_curses() {
     curs_set(0);
     noecho();
 
-    init_pair(1, COLOR_BLACK, COLOR_WHITE);
-    init_pair(2, COLOR_GREEN, COLOR_BLACK);
-    init_pair(3, COLOR_CYAN, COLOR_BLACK);
-    init_pair(4, COLOR_BLUE, COLOR_WHITE);
+    init_pair(1, COLOR_BLACK, COLOR_WHITE); /* inverted (status bar BG) */
+    init_pair(2, COLOR_GREEN, COLOR_BLACK); /* default highlight 1 */
+    init_pair(3, COLOR_CYAN, COLOR_BLACK);  /* default highlight 2 */
+    init_pair(4, COLOR_BLUE, COLOR_WHITE);  /* inverted highlight 1 */
+    init_pair(5, COLOR_WHITE, COLOR_BLACK); /* default (pane BG) */
 
     const int lwidth = 30;
     const int height = LINES - 1;
@@ -269,7 +270,12 @@ void Program::init_curses() {
     input_pane->SetHeader("Input");
     help_pane->SetHeader("Help");
 
+    list_pane->SetBackground(C_DEF);
+    info_pane->SetBackground(C_DEF);
+    queue_pane->SetBackground(C_DEF);
     status_pane->SetBackground(C_INV);
+    input_pane->SetBackground(C_DEF);
+    help_pane->SetBackground(C_DEF);
 }
 void Program::deinit_curses() {
     delete list_pane;
