@@ -46,6 +46,8 @@ Package::Package(pmpkg_t* pkg) :
     _provides = list2str(alpm_pkg_get_provides(_pkg));
     _replaces = list2str(alpm_pkg_get_replaces(_pkg));
 
+    _updatestate = (needsupdate() ? "update available" : "");
+
     for (alpm_list_t *deps = alpm_pkg_get_depends(_pkg); deps != NULL;
          deps = alpm_list_next(deps)) {
         pmdepend_t *depend = (pmdepend_t*)alpm_list_getdata(deps);
@@ -112,6 +114,7 @@ string Package::getattr(AttributeEnum attr) const {
     case A_PACKAGER: return getpackager();
     case A_BUILDDATE: return getbuilddate();
     case A_INSTALLSTATE: return getreason();
+    case A_UPDATESTATE: return getupdatestate();
     case A_DESC: return getdesc();
     case A_ARCH: return getarch();
     case A_LICENSES: return getlicenses();
@@ -206,6 +209,9 @@ string Package::getsize() const {
 }
 string Package::getisize() const {
     return _installsizestr;
+}
+string Package::getupdatestate() const {
+    return _updatestate;
 }
 
 bool Package::needsupdate() const

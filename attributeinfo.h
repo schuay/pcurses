@@ -24,6 +24,8 @@
 
 using std::string;
 
+/* caution: the order of AttributeEnum members currently determines
+   the display order */
 enum AttributeEnum {
     A_NAME,
     A_VERSION,
@@ -32,6 +34,7 @@ enum AttributeEnum {
     A_PACKAGER,
     A_BUILDDATE,
     A_INSTALLSTATE,
+    A_UPDATESTATE,
     A_DESC,
     A_ARCH,
     A_LICENSES,

@@ -23,9 +23,10 @@ AttributeEnum AttributeInfo::chartoattr(char c) {
     switch (c) {
     case 'a': return A_PACKAGER;
     case 'b': return A_BUILDDATE;
-    case 'c': return A_CONFLICTS;
-    case 'd': return A_DESC;
+    case 'c': return A_DESC;
+    case 'd': return A_UPDATESTATE;
     case 'e': return A_DEPENDS;
+    case 'f': return A_CONFLICTS;
     case 'g': return A_GROUPS;
     case 'h': return A_ARCH;
     case 'i': return A_ISIZE;
@@ -51,24 +52,25 @@ char AttributeInfo::attrtochar(AttributeEnum attr) {
 
 string AttributeInfo::attrname(AttributeEnum attr) {
     switch(attr) {
-    case A_NAME: return "Name";
-    case A_VERSION: return "Version";
-    case A_URL: return "Url";
-    case A_REPO: return "Repo";
-    case A_PACKAGER: return "Packager";
-    case A_BUILDDATE: return "Build date";
-    case A_INSTALLSTATE: return "Install state";
-    case A_DESC: return "Desc";
     case A_ARCH: return "Arch";
-    case A_LICENSES: return "Licenses";
-    case A_GROUPS: return "Groups";
-    case A_DEPENDS: return "Depends";
-    case A_OPTDEPENDS: return "Optdepends";
+    case A_BUILDDATE: return "Build date";
     case A_CONFLICTS: return "Conflicts";
+    case A_DEPENDS: return "Depends";
+    case A_DESC: return "Desc";
+    case A_GROUPS: return "Groups";
+    case A_INSTALLSTATE: return "Install state";
+    case A_ISIZE: return "Install size";
+    case A_LICENSES: return "Licenses";
+    case A_NAME: return "Name";
+    case A_OPTDEPENDS: return "Optdepends";
+    case A_PACKAGER: return "Packager";
     case A_PROVIDES: return "Provides";
     case A_REPLACES: return "Replaces";
+    case A_REPO: return "Repo";
     case A_SIZE: return "Download size";
-    case A_ISIZE: return "Install size";
+    case A_UPDATESTATE: return "Update state";
+    case A_URL: return "Url";
+    case A_VERSION: return "Version";
     case A_NONE: return "";
     default: throw AlpmException("Invalid attribute passed.");
     }

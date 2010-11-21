@@ -63,30 +63,30 @@ class Package
 public:
     Package(pmpkg_t *pkg);
 
-    string getname() const;
-    string geturl() const;
-    string getpackager() const;
-    string getdesc() const;
-    string getversion() const;
-    string getrepo() const;
-    string getreason() const;
-    string getbuilddate() const;
     string getarch() const;
-    string getlicenses() const;
-    string getgroups() const;
-    string getdepends() const;
-    string getoptdepends() const;
+    string getbuilddate() const;
     string getconflicts() const;
-    string getprovides() const;
-    string getreplaces() const;
-    string getsize() const;
+    string getdepends() const;
+    string getdesc() const;
+    string getgroups() const;
     string getisize() const;
+    string getlicenses() const;
+    string getname() const;
+    string getoptdepends() const;
+    string getpackager() const;
+    string getprovides() const;
+    string getreason() const;
+    string getreplaces() const;
+    string getrepo() const;
+    string getsize() const;
+    string getupdatestate() const;
+    string geturl() const;
+    string getversion() const;
 
     string getattr(AttributeEnum attr) const;
     unsigned long getulongattr(AttributeEnum attr) const;
 
     InstallReasonEnum reason() const;
-    bool needsupdate() const;
 
     void setop(OperationEnum oe);
     OperationEnum getop() const;
@@ -96,6 +96,8 @@ private:
     string trimstr(const char *c) const;
     string list2str(alpm_list_t *l) const;
     static string size2str(unsigned long size);
+
+    bool needsupdate() const;
 
     pmpkg_t
             *_pkg,
@@ -117,7 +119,8 @@ private:
             _provides,
             _replaces,
             _sizestr,
-            _installsizestr;
+            _installsizestr,
+            _updatestate;
 
     unsigned long
             _size,

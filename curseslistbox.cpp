@@ -90,14 +90,6 @@ void CursesListBox::Refresh() {
         pkg = list->at(windowpos + i);
 
         InstallReasonEnum installreason = pkg->reason();
-        string installreasonstr;
-        if (installreason == IRE_NOTINSTALLED) installreasonstr = '-';
-        else if (installreason == IRE_EXPLICIT) installreasonstr = 'E';
-        else installreasonstr = 'D';
-
-        string updateavailable;
-        if (pkg->needsupdate()) updateavailable = 'U';
-        else updateavailable = '-';
 
         int attr = 0;
         if (installreason == IRE_EXPLICIT) attr = C_DEF_HL1;
