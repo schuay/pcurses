@@ -17,7 +17,8 @@ SOURCES += \
     program.cpp \
     config.cpp \
     filter.cpp \
-    attributeinfo.cpp
+    attributeinfo.cpp \
+    history.cpp
 
 HEADERS += \
     alpmexception.h \
@@ -27,7 +28,8 @@ HEADERS += \
     program.h \
     config.h \
     filter.h \
-    attributeinfo.h
+    attributeinfo.h \
+    history.h
 
 LIBS += -lalpm \
     -lncursesw

@@ -12,7 +12,8 @@ SOURCES = package.cpp \
 		  program.cpp \
 		  config.cpp \
 		  filter.cpp \
-		  attributeinfo.cpp
+		  attributeinfo.cpp \
+		  history.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 TARGET = pcurses
 bindir = /usr/bin

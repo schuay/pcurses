@@ -128,25 +128,17 @@ void Program::MainLoop() {
                 break;
             case 'n':
             case 'd':
-                mode = MODE_INPUT;
-                inputbuf = ch;
-                inputbuf += ":";
-                op = OP_FILTER;
+                prepinputmode(OP_FILTER);
+                inputbuf = string(1, ch) + ":";
                 break;
             case '/':
-                mode = MODE_INPUT;
-                inputbuf = "";
-                op = OP_FILTER;
+                prepinputmode(OP_FILTER);
                 break;
             case '.':
-                mode = MODE_INPUT;
-                inputbuf = "";
-                op = OP_SORT;
+                prepinputmode(OP_SORT);
                 break;
             case ',':
-                mode = MODE_INPUT;
-                inputbuf = "";
-                op = OP_SEARCH;
+                prepinputmode(OP_SEARCH);
                 break;
             default:
                 break;
@@ -176,6 +168,12 @@ void Program::MainLoop() {
                 if (inputbuf.length() > 0)
                     inputbuf = inputbuf.substr(0, inputbuf.length() - 1);
                 break;
+            case KEY_UP:
+                inputbuf = gethis(op)->moveback();
+                break;
+            case KEY_DOWN:
+                inputbuf = gethis(op)->moveforward();
+                break;
             default:
                 inputbuf += ch;
                 break;
@@ -194,6 +192,13 @@ void Program::MainLoop() {
 
         updatedisplay();
     }
+}
+
+void Program::prepinputmode(FilterOperationEnum o) {
+    mode = MODE_INPUT;
+    inputbuf = "";
+    gethis(o)->reset();
+    op = o;
 }
 
 void Program::displayprocessingmsg() {
@@ -396,9 +401,31 @@ void Program::clearfilter() {
     updatelistinfo();
 }
 
+History *Program::gethis(FilterOperationEnum o) {
+
+    History *v;
+    switch (o) {
+    case OP_FILTER:
+        v = &hisfilter;
+        break;
+    case OP_SORT:
+        v = &hissort;
+        break;
+    case OP_SEARCH:
+        v = &hissearch;
+        break;
+    default:
+        assert(0);
+    }
+
+    return v;
+}
+
 void Program::searchpackages(string str) {
 
     string fieldlist, searchphrase;
+
+    gethis(op)->add(str);
 
     /* first, split actual search phrase from field prefix */
     sregex reprefix = sregex::compile("^([A-Za-z]*):(.*)");
@@ -444,6 +471,8 @@ void Program::sortpackages(string str) {
     if (str.length() < 1)
         return;
 
+    gethis(op)->add(str);
+
     AttributeEnum attr = A_NONE;
     unsigned int i = 0;
 
@@ -464,6 +493,8 @@ void Program::sortpackages(string str) {
 void Program::filterpackages(string str) {
 
     string fieldlist, searchphrase;
+
+    gethis(op)->add(str);
 
     /* first, split actual search phrase from field prefix */
     sregex reprefix = sregex::compile("^([A-Za-z]*):(.*)");

@@ -32,6 +32,7 @@
 #include "curseslistbox.h"
 #include "config.h"
 #include "filter.h"
+#include "history.h"
 
 using std::string;
 using std::vector;
@@ -85,6 +86,8 @@ private:
     void filterpackages(string str);
     void sortpackages(string str);
     void searchpackages(string str);
+    void prepinputmode(FilterOperationEnum o);
+    History *gethis(FilterOperationEnum o);
     void updatelistinfo();
     void displayprocessingmsg();
     string optostr(FilterOperationEnum o) const;
@@ -106,7 +109,7 @@ private:
             *help_pane,
             *status_pane;
 
-    std::vector<Package*>
+    vector<Package*>
             packages,
             filteredpackages,
             opqueue;
@@ -114,9 +117,14 @@ private:
     pmdb_t
             *localdb;
 
-    std::string
+    string
             inputbuf,
             searchphrases;
+
+    History
+            hisfilter,
+            hissort,
+            hissearch;
 
     AttributeEnum
             sortedby;
