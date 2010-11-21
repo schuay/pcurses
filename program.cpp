@@ -24,6 +24,7 @@ Program::Program()
     rightpane = RPE_INFO;
     mode = MODE_STANDARD;
     sortedby = A_NAME;
+    coloredby = A_INSTALLSTATE;
 }
 Program::~Program() {
     deinit_curses();
@@ -64,6 +65,9 @@ void Program::Init() {
     alpm_list_free(dbs);
 
     filteredpackages = packages;
+
+    /* initial color coding */
+    colorcodepackages(string(1,AttributeInfo::attrtochar(coloredby)));
 
     /* initialize curses */
     system("clear");
@@ -140,6 +144,9 @@ void Program::MainLoop() {
             case ',':
                 prepinputmode(OP_SEARCH);
                 break;
+            case ';':
+                prepinputmode(OP_COLORCODE);
+                break;
             default:
                 break;
             }
@@ -160,6 +167,8 @@ void Program::MainLoop() {
                     sortpackages(inputbuf);
                 } else if (op == OP_SEARCH) {
                     searchpackages(inputbuf);
+                } else if (op == OP_COLORCODE) {
+                    colorcodepackages(inputbuf);
                 }
                 op = OP_NONE;
                 break;
@@ -216,9 +225,11 @@ void Program::print_help() {
     PRINTH("", "   note that filters can be chained.\n")
     PRINTH("n: ", "filter packages by name (using regexp)\n");
     PRINTH("c: ", "clear all package filters\n");
-    PRINTH(".: ", "sort packages by specified field\n");
     PRINTH(".: ", "search packages\n");
+    PRINTH(".: ", "sort packages by specified field\n");
+    PRINTH(";: ", "colorcode packages by specified field\n");
     PRINTH("arrows, pg up/down, home/end: ", "navigation\n");
+    PRINTH("arrows (in input mode): ", "browse history\n");
     PRINTH("return: ", "exit help\n");
 }
 #undef PRINTH
@@ -258,11 +269,15 @@ void Program::init_curses() {
        NCURSES_VERSION */
     use_default_colors();
 
-    init_pair(1, COLOR_BLACK, COLOR_WHITE); /* inverted (status bar BG) */
+    init_pair(5, -1, -1);                   /* default (pane BG) */
     init_pair(2, COLOR_GREEN, -1);          /* default highlight 1 */
     init_pair(3, COLOR_CYAN, -1);           /* default highlight 2 */
+    init_pair(6, COLOR_BLUE, -1);
+    init_pair(7, COLOR_MAGENTA, -1);
+    init_pair(8, COLOR_RED, -1);
+    init_pair(9, COLOR_YELLOW, -1);
+    init_pair(1, COLOR_BLACK, COLOR_WHITE); /* inverted (status bar BG) */
     init_pair(4, COLOR_BLUE, COLOR_WHITE);  /* inverted highlight 1 */
-    init_pair(5, -1, -1);                   /* default (pane BG) */
 
     const int lwidth = 30;
     const int height = LINES - 1;
@@ -357,7 +372,7 @@ void Program::updatedisplay() {
         status_pane->MvPrintW(1, 0, "Sorted by: ", C_INV_HL1);
         status_pane->PrintW(AttributeInfo::attrname(sortedby), C_INV);
         status_pane->PrintW(" Colored by: ", C_INV_HL1);
-        status_pane->PrintW(AttributeInfo::attrname(A_INSTALLSTATE), C_INV);
+        status_pane->PrintW(AttributeInfo::attrname(coloredby), C_INV);
         status_pane->PrintW(" Filtered by: ", C_INV_HL1);
         status_pane->PrintW(((searchphrases.length() == 0) ? "-" : searchphrases), C_INV);
 
@@ -387,6 +402,7 @@ string Program::optostr(FilterOperationEnum o) const {
     case OP_FILTER: return "/";
     case OP_SORT: return ".";
     case OP_SEARCH: return ",";
+    case OP_COLORCODE: return ";";
     case OP_NONE: return "";
     default: assert(0);
     }
@@ -414,6 +430,9 @@ History *Program::gethis(FilterOperationEnum o) {
     case OP_SEARCH:
         v = &hissearch;
         break;
+    case OP_COLORCODE:
+        v = &hiscolorcode;
+        break;
     default:
         assert(0);
     }
@@ -421,11 +440,35 @@ History *Program::gethis(FilterOperationEnum o) {
     return v;
 }
 
+void Program::colorcodepackages(string str) {
+    if (str.length() < 1)
+        return;
+
+    gethis(OP_COLORCODE)->add(str);
+
+    AttributeEnum attr = A_NONE;
+    unsigned int i = 0;
+
+    while (attr == A_NONE && i < str.length()) {
+        attr = AttributeInfo::chartoattr(str[i]);
+        i++;
+    }
+
+    if (attr == A_NONE)
+        return;
+
+    vector<Package*>::iterator it = filteredpackages.begin();
+    for (; it != filteredpackages.end(); it++)
+        Filter::assigncol(*it, attr);
+
+    coloredby = attr;
+}
+
 void Program::searchpackages(string str) {
 
     string fieldlist, searchphrase;
 
-    gethis(op)->add(str);
+    gethis(OP_SEARCH)->add(str);
 
     /* first, split actual search phrase from field prefix */
     sregex reprefix = sregex::compile("^([A-Za-z]*):(.*)");
@@ -471,7 +514,7 @@ void Program::sortpackages(string str) {
     if (str.length() < 1)
         return;
 
-    gethis(op)->add(str);
+    gethis(OP_SORT)->add(str);
 
     AttributeEnum attr = A_NONE;
     unsigned int i = 0;
@@ -494,7 +537,7 @@ void Program::filterpackages(string str) {
 
     string fieldlist, searchphrase;
 
-    gethis(op)->add(str);
+    gethis(OP_FILTER)->add(str);
 
     /* first, split actual search phrase from field prefix */
     sregex reprefix = sregex::compile("^([A-Za-z]*):(.*)");

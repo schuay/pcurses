@@ -86,6 +86,7 @@ private:
     void filterpackages(string str);
     void sortpackages(string str);
     void searchpackages(string str);
+    void colorcodepackages(string str);
     void prepinputmode(FilterOperationEnum o);
     History *gethis(FilterOperationEnum o);
     void updatelistinfo();
@@ -124,10 +125,12 @@ private:
     History
             hisfilter,
             hissort,
-            hissearch;
+            hissearch,
+            hiscolorcode;
 
     AttributeEnum
-            sortedby;
+            sortedby,
+            coloredby;
 
     FilterOperationEnum
             op;

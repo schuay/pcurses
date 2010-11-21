@@ -19,11 +19,13 @@
 #define FILTER_H
 
 #include <vector>
+#include <map>
 #include <algorithm>
 
 #include "package.h"
 
 using std::vector;
+using std::map;
 using std::string;
 
 class Filter
@@ -38,10 +40,15 @@ public:
     static bool notmatchesre(const Package *a, const sregex needle);
     static bool notmatches(const Package *a, const string needle);
 
+    static void assigncol(Package *a, AttributeEnum attr);
+
 private:
 
     static vector<AttributeEnum>
             attrlist;
+
+    static map<string, int>
+            groups;
 };
 
 #endif // FILTER_H

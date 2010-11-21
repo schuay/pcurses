@@ -76,6 +76,22 @@ void CursesListBox::UpdateFocus() {
     }
 }
 
+chtype CursesListBox::GetCol(int index) const {
+    const int colnum = 7; /* nr of defined col pairs */
+    int col = index % colnum;
+
+    switch (col) {
+    case 0: return C_DEF;
+    case 1: return C_DEF_HL1;
+    case 2: return C_DEF_HL2;
+    case 3: return C_DEF_HL3;
+    case 4: return C_DEF_HL4;
+    case 5: return C_DEF_HL5;
+    case 6: return C_DEF_HL6;
+    default: assert(0);
+    }
+}
+
 int CursesListBox::FocusedIndex() const {
     return windowpos + cursorpos;
 }
@@ -89,11 +105,7 @@ void CursesListBox::Refresh() {
 
         pkg = list->at(windowpos + i);
 
-        InstallReasonEnum installreason = pkg->reason();
-
-        int attr = 0;
-        if (installreason == IRE_EXPLICIT) attr = C_DEF_HL1;
-        else if (installreason == IRE_ASDEPS) attr = C_DEF_HL2;
+        int attr = GetCol(pkg->getcolindex());
         if (i == cursorpos) attr |= A_REVERSE;
 
         MvPrintW(0, i, pkg->getname().substr(0, UsableWidth() + 1), attr);

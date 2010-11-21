@@ -46,7 +46,7 @@ Package::Package(pmpkg_t* pkg) :
     _provides = list2str(alpm_pkg_get_provides(_pkg));
     _replaces = list2str(alpm_pkg_get_replaces(_pkg));
 
-    _updatestate = (needsupdate() ? "update available" : "");
+    _updatestate = (needsupdate() ? "update available" : "up to date");
 
     for (alpm_list_t *deps = alpm_pkg_get_depends(_pkg); deps != NULL;
          deps = alpm_list_next(deps)) {
@@ -138,6 +138,13 @@ unsigned long Package::getulongattr(AttributeEnum attr) const {
     }
 }
 
+void Package::setcolindex(int index) {
+    _colindex = index;
+}
+int Package::getcolindex() const {
+    return _colindex;
+}
+
 string Package::getname() const
 {
     return _name;
@@ -153,10 +160,6 @@ string Package::getversion() const
 string Package::getrepo() const
 {
     return _dbname;
-}
-InstallReasonEnum Package::reason() const
-{
-    return _reason;
 }
 string Package::getreason() const {
     switch (_reason) {

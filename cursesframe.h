@@ -26,6 +26,10 @@ using std::string;
 #define C_DEF (COLOR_PAIR(5))
 #define C_DEF_HL1 (COLOR_PAIR(2))
 #define C_DEF_HL2 (COLOR_PAIR(3))
+#define C_DEF_HL3 (COLOR_PAIR(6))
+#define C_DEF_HL4 (COLOR_PAIR(7))
+#define C_DEF_HL5 (COLOR_PAIR(8))
+#define C_DEF_HL6 (COLOR_PAIR(9))
 #define C_INV (COLOR_PAIR(1))
 #define C_INV_HL1 (COLOR_PAIR(4))
 

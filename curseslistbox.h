@@ -40,6 +40,7 @@ protected:
 
     bool IsInBounds(int pos) const;
     void UpdateFocus();
+    chtype GetCol(int index) const;
 
     std::vector<Package*>
             *list;

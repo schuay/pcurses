@@ -86,7 +86,8 @@ public:
     string getattr(AttributeEnum attr) const;
     unsigned long getulongattr(AttributeEnum attr) const;
 
-    InstallReasonEnum reason() const;
+    void setcolindex(int index);
+    int getcolindex() const;
 
     void setop(OperationEnum oe);
     OperationEnum getop() const;
@@ -121,6 +122,9 @@ private:
             _sizestr,
             _installsizestr,
             _updatestate;
+
+    int
+            _colindex;
 
     unsigned long
             _size,

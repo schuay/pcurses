@@ -21,6 +21,7 @@
    http://stackoverflow.com/questions/272900/c-undefined-reference-to-static-class-member
  */
 vector<AttributeEnum> Filter::attrlist;
+map<string, int> Filter::groups;
 
 void Filter::clearattrs() {
     Filter::attrlist.clear();
@@ -28,6 +29,8 @@ void Filter::clearattrs() {
     /* defaults */
     attrlist.push_back(A_NAME);
     attrlist.push_back(A_DESC);
+
+    Filter::groups.clear();
 }
 
 void Filter::setattrs(string s) {
@@ -43,6 +46,22 @@ void Filter::setattrs(string s) {
 
         Filter::attrlist.push_back(attr);
     }
+}
+
+void Filter::assigncol(Package *a, AttributeEnum attr) {
+    string s = a->getattr(attr);
+    int colindex;
+
+    map<string,int>::iterator it = groups.find(s);
+
+    if (it != groups.end())
+        colindex = it->second;
+    else {
+        colindex = groups.size();
+        groups[s] = colindex;
+    }
+
+    a->setcolindex(colindex);
 }
 
 bool Filter::matches(const Package *a, const string needle) {
