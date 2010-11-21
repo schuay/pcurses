@@ -248,11 +248,16 @@ void Program::init_curses() {
     curs_set(0);
     noecho();
 
+    /* target ist archlinux so we know a proper ncurses will be used.
+       otherwise we would need to conditionally include this using
+       NCURSES_VERSION */
+    use_default_colors();
+
     init_pair(1, COLOR_BLACK, COLOR_WHITE); /* inverted (status bar BG) */
-    init_pair(2, COLOR_GREEN, COLOR_BLACK); /* default highlight 1 */
-    init_pair(3, COLOR_CYAN, COLOR_BLACK);  /* default highlight 2 */
+    init_pair(2, COLOR_GREEN, -1);          /* default highlight 1 */
+    init_pair(3, COLOR_CYAN, -1);           /* default highlight 2 */
     init_pair(4, COLOR_BLUE, COLOR_WHITE);  /* inverted highlight 1 */
-    init_pair(5, COLOR_WHITE, COLOR_BLACK); /* default (pane BG) */
+    init_pair(5, -1, -1);                   /* default (pane BG) */
 
     const int lwidth = 30;
     const int height = LINES - 1;
