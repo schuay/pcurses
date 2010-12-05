@@ -132,6 +132,7 @@ string Package::getattr(AttributeEnum attr) const {
 }
 unsigned long Package::getulongattr(AttributeEnum attr) const {
     switch(attr) {
+    case A_BUILDDATE: return (unsigned long)_builddate;
     case A_SIZE: return _size;
     case A_ISIZE: return _installsize;
     default: throw AlpmException("Invalid attribute passed.");

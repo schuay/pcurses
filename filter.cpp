@@ -96,7 +96,7 @@ bool Filter::notmatches(const Package *a, const string needle) {
     return !found;
 }
 bool Filter::cmp(const Package *lhs, const Package *rhs, AttributeEnum attr) {
-    if (attr == A_SIZE || attr == A_ISIZE)
+    if (attr == A_SIZE || attr == A_ISIZE || attr == A_BUILDDATE)
         return lhs->getulongattr(attr) < rhs->getulongattr(attr);
 
     return lhs->getattr(attr) < rhs->getattr(attr);
