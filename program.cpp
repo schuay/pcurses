@@ -567,24 +567,24 @@ void Program::filterpackages(string str) {
     sregex resimple = sregex::compile("[:alnum:]+");
 
     if (regex_match(searchphrase, what, resimple)) {
-        for (vector<Package*>::iterator it = std::find_if(filteredpackages.begin(),
-                                                     filteredpackages.end(),
-                                                     boost::bind(&Filter::notmatches, _1, searchphrase));
-            it != filteredpackages.end();
-            it = std::find_if(filteredpackages.begin(),
-                              filteredpackages.end(),
-                              boost::bind(&Filter::notmatches, _1, searchphrase)))
+        vector<Package*>::iterator it =
+                std::find_if(filteredpackages.begin(), filteredpackages.end(),
+                             boost::bind(&Filter::notmatches, _1, searchphrase));
+        while (it != filteredpackages.end()) {
             filteredpackages.erase(it);
+            it = std::find_if(it, filteredpackages.end(),
+                              boost::bind(&Filter::notmatches, _1, searchphrase));
+        }
     } else {
         sregex needle = sregex::compile(searchphrase, icase);
-        for (vector<Package*>::iterator it = std::find_if(filteredpackages.begin(),
-                                                     filteredpackages.end(),
-                                                     boost::bind(&Filter::notmatchesre, _1, needle));
-            it != filteredpackages.end();
-            it = std::find_if(filteredpackages.begin(),
-                              filteredpackages.end(),
-                              boost::bind(&Filter::notmatchesre, _1, needle)))
+        vector<Package*>::iterator it =
+                std::find_if(filteredpackages.begin(), filteredpackages.end(),
+                             boost::bind(&Filter::notmatchesre, _1, needle));
+        while (it != filteredpackages.end()) {
             filteredpackages.erase(it);
+            it = std::find_if(it, filteredpackages.end(),
+                              boost::bind(&Filter::notmatchesre, _1, needle));
+        }
     }
 
     updatelistinfo();
