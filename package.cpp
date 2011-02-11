@@ -51,7 +51,7 @@ Package::Package(pmpkg_t* pkg) :
     for (alpm_list_t *deps = alpm_pkg_get_depends(_pkg); deps != NULL;
          deps = alpm_list_next(deps)) {
         pmdepend_t *depend = (pmdepend_t*)alpm_list_getdata(deps);
-        _depends += depend->name;
+        _depends += alpm_dep_compute_string(depend);
         if (deps->next != NULL)_depends += " ";
     }
 

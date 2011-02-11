@@ -29,12 +29,6 @@
 #include "alpmexception.h"
 #include "attributeinfo.h"
 
-struct __pmdepend_t {
-        pmdepmod_t mod;
-        char *name;
-        char *version;
-};
-
 typedef struct __pmpkg_t pmpkg_t;
 typedef struct __pmdepend_t pmdepend_t;
 
