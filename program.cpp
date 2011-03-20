@@ -48,7 +48,7 @@ void Program::Init() {
     dbs = alpm_list_add(dbs, localdb);
     for ( ; dbs; dbs = alpm_list_next(dbs)) {
         pmdb_t *db = (pmdb_t*)alpm_list_getdata(dbs);
-        for (alpm_list_t *pkgs = alpm_db_get_pkgcache_list(db); pkgs; pkgs = alpm_list_next(pkgs)) {
+        for (alpm_list_t *pkgs = alpm_db_get_pkgcache(db); pkgs; pkgs = alpm_list_next(pkgs)) {
             pmpkg_t *pkg = (pmpkg_t*)alpm_list_getdata(pkgs);
             Package *p = new Package(pkg);
             Package *parray[] = { p };
