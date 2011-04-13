@@ -107,11 +107,18 @@ void Program::MainLoop() {
                 focused_pane->Move(list_pane->UsableHeight());
                 break;
             case KEY_TAB:
-                focused_pane = (focused_pane == list_pane) ?
-                               queue_pane : list_pane;
+                if (rightpane == RPE_QUEUE) {
+                    focused_pane = (focused_pane == list_pane) ?
+                                   queue_pane : list_pane;
+                }
                 break;
             case KEY_SPACE:
-                rightpane = (rightpane == RPE_INFO) ? RPE_QUEUE : RPE_INFO;
+                if (rightpane == RPE_QUEUE) {
+                    rightpane = RPE_INFO;
+                    focused_pane = list_pane;
+                } else {
+                    rightpane = RPE_QUEUE;
+                }
                 break;
             case KEY_RIGHT:
                 if (focused_pane != list_pane) break;
