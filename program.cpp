@@ -141,7 +141,7 @@ void Program::MainLoop() {
             case '.':
                 prepinputmode(OP_SORT);
                 break;
-            case ',':
+            case '?':
                 prepinputmode(OP_SEARCH);
                 break;
             case ';':
@@ -225,7 +225,7 @@ void Program::print_help() {
     PRINTH("", "   note that filters can be chained.\n")
     PRINTH("n: ", "filter packages by name (using regexp)\n");
     PRINTH("c: ", "clear all package filters\n");
-    PRINTH(".: ", "search packages\n");
+    PRINTH("?: ", "search packages\n");
     PRINTH(".: ", "sort packages by specified field\n");
     PRINTH(";: ", "colorcode packages by specified field\n");
     PRINTH("arrows, pg up/down, home/end: ", "navigation\n");
@@ -400,7 +400,7 @@ string Program::optostr(FilterOperationEnum o) const {
     switch (o) {
     case OP_FILTER: return "/";
     case OP_SORT: return ".";
-    case OP_SEARCH: return ",";
+    case OP_SEARCH: return "?";
     case OP_COLORCODE: return ";";
     case OP_NONE: return "";
     default: assert(0);
