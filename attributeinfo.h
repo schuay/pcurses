@@ -20,7 +20,7 @@
 
 #include <string>
 
-#include "alpmexception.h"
+#include "pcursesexception.h"
 
 using std::string;
 

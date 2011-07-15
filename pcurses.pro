@@ -21,7 +21,6 @@ SOURCES += \
     history.cpp
 
 HEADERS += \
-    alpmexception.h \
     package.h \
     cursesframe.h \
     curseslistbox.h \
@@ -29,7 +28,8 @@ HEADERS += \
     config.h \
     filter.h \
     attributeinfo.h \
-    history.h
+    history.h \
+    pcursesexception.h
 
 LIBS += -lalpm \
     -lncursesw

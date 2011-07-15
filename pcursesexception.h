@@ -15,17 +15,17 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
  ************************************************************************* */
 
-#ifndef ALPMEXCEPTION_H
-#define ALPMEXCEPTION_H
+#ifndef PCURSESEXCEPTION_H
+#define PCURSESEXCEPTION_H
 
 #include <string>
 
 using std::string;
 
-class AlpmException
+class PcursesException
 {
 public:
-    AlpmException(string msg) { _msg = msg; }
+    PcursesException(string msg) { _msg = msg; }
 
     string GetMessage() const { return _msg; }
 
@@ -33,4 +33,4 @@ private:
     string _msg;
 };
 
-#endif // ALPMEXCEPTION_H
+#endif // PCURSESEXCEPTION_H

@@ -26,7 +26,7 @@
 #include <vector>
 #include <sstream>
 
-#include "alpmexception.h"
+#include "pcursesexception.h"
 #include "attributeinfo.h"
 
 typedef struct __alpm_pkg_t alpm_pkg_t;
