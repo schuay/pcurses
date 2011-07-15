@@ -47,6 +47,7 @@ public:
     void MvPrintW(int x, int y, string str, int attr = 0);
     void Move(int x, int y);
     void Clear();
+    void SetFocused(bool b) { focused = b; }
 
     int UsableHeight() const;
     int UsableWidth() const;
@@ -67,6 +68,9 @@ protected:
     string
             header,
             footer;
+
+    bool
+            focused;
 };
 
 #endif // CURSESFRAME_H

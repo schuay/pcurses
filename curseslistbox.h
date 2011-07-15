@@ -32,6 +32,7 @@ public:
 
     void SetList(vector<Package*> *l);
     void Move(int step);
+    void MoveEnd();
     void MoveAbs(int pos);
     int FocusedIndex() const;
     virtual void Refresh();

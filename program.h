@@ -83,6 +83,7 @@ public:
 
 private:
 
+    void setfocus(CursesListBox *frame);
     void run_cmd(string cmd) const;
     void init_alpm();
     void init_curses();

@@ -96,11 +96,19 @@ void Program::Init() {
     /* initialize curses */
     system("clear");
     init_curses();
-    focused_pane = list_pane;
+    setfocus(list_pane);
     list_pane->SetList(&filteredpackages);
     queue_pane->SetList(&opqueue);
     updatelistinfo();
     updatedisplay();
+}
+
+void Program::setfocus(CursesListBox *frame) {
+    list_pane->SetFocused(false);
+    queue_pane->SetFocused(false);
+
+    focused_pane = frame;
+    frame->SetFocused(true);
 }
 
 void Program::MainLoop() {
@@ -122,7 +130,7 @@ void Program::MainLoop() {
                 focused_pane->MoveAbs(0);
                 break;
             case KEY_END:
-                focused_pane->MoveAbs(filteredpackages.size() - 1);
+                focused_pane->MoveEnd();
                 break;
             case KEY_PPAGE:   /* page up */
                 focused_pane->Move(list_pane->UsableHeight() * -1);
@@ -132,14 +140,13 @@ void Program::MainLoop() {
                 break;
             case KEY_TAB:
                 if (rightpane == RPE_QUEUE) {
-                    focused_pane = (focused_pane == list_pane) ?
-                                   queue_pane : list_pane;
+                    setfocus((focused_pane == list_pane) ? queue_pane : list_pane);
                 }
                 break;
             case KEY_SPACE:
                 if (rightpane == RPE_QUEUE) {
                     rightpane = RPE_INFO;
-                    focused_pane = list_pane;
+                    setfocus(list_pane);
                 } else {
                     rightpane = RPE_QUEUE;
                 }
@@ -148,11 +155,13 @@ void Program::MainLoop() {
                 if (focused_pane != list_pane) break;
                 if (filteredpackages.size() == 0) break;
 
+                if (rightpane != RPE_QUEUE) rightpane = RPE_QUEUE;
                 if (std::find(opqueue.begin(), opqueue.end(), filteredpackages[list_pane->FocusedIndex()]) != opqueue.end()) {
                     break;
                 }
                 opqueue.push_back(filteredpackages[list_pane->FocusedIndex()]);
-
+                queue_pane->MoveEnd();
+                focused_pane->Move(1);
                 break;
             case KEY_LEFT:
                 if (focused_pane != queue_pane) break;
