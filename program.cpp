@@ -251,15 +251,8 @@ void Program::MainLoop() {
                 break;
             }
         } else if (mode == MODE_HELP) {
-            switch (ch) {
-            case KEY_ESC:
-            case KEY_RETURN:
-            case KEY_SPACE:
-                mode = MODE_STANDARD;
-                break;
-            default:
-                break;
-            }
+            /* exit help screen with any key */
+            mode = MODE_STANDARD;
         }
 
         updatedisplay();
@@ -293,7 +286,6 @@ void Program::print_help() {
     PRINTH(";: ", "colorcode packages by specified field\n");
     PRINTH("arrows, pg up/down, home/end: ", "navigation\n");
     PRINTH("arrows (in input mode): ", "browse history\n");
-    PRINTH("return: ", "exit help\n");
 }
 #undef PRINTH
 
