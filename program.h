@@ -36,6 +36,7 @@
 #include "config.h"
 #include "filter.h"
 #include "history.h"
+#include "inputbuffer.h"
 
 using std::string;
 using std::vector;
@@ -97,6 +98,7 @@ private:
     void searchpackages(string str);
     void execmd(string str);
     void colorcodepackages(string str);
+    void exitinputmode(FilterOperationEnum o);
     void prepinputmode(FilterOperationEnum o);
     History *gethis(FilterOperationEnum o);
     void updatelistinfo();
@@ -129,8 +131,10 @@ private:
             *localdb;
 
     string
-            inputbuf,
             searchphrases;
+
+    InputBuffer
+            inputbuf;
 
     History
             hisfilter,

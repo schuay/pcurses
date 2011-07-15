@@ -43,6 +43,10 @@ void CursesFrame::SetBackground(chtype col) {
     wbkgd(w_main, col | ' ');
 }
 
+void CursesFrame::Move(int x, int y) {
+    wmove(w_main, y, x);
+}
+
 string CursesFrame::FitStrToWin(string in, int x) const {
     in = EscapeString(in);
     int len = in.length();

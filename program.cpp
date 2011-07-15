@@ -173,7 +173,7 @@ void Program::MainLoop() {
             case 'n':
             case 'd':
                 prepinputmode(OP_FILTER);
-                inputbuf = string(1, ch) + ":";
+                inputbuf.set(string(1, ch) + ":");
                 break;
             case '/':
                 prepinputmode(OP_FILTER);
@@ -196,40 +196,32 @@ void Program::MainLoop() {
         } else if (mode == MODE_INPUT) {
             switch (ch) {
             case KEY_ESC:
-                mode = MODE_STANDARD;
-                op = OP_NONE;
+                exitinputmode(OP_NONE);
                 break;
             case KEY_RETURN:
-                mode = MODE_STANDARD;
-                if (op == OP_FILTER) {
-                    displayprocessingmsg();
-                    filterpackages(inputbuf);
-                    list_pane->SetList(&filteredpackages);
-                    flushinp();
-                } else if (op == OP_SORT) {
-                    sortpackages(inputbuf);
-                } else if (op == OP_SEARCH) {
-                    searchpackages(inputbuf);
-                } else if (op == OP_COLORCODE) {
-                    colorcodepackages(inputbuf);
-                } else if (op == OP_EXEC) {
-                    execmd(inputbuf);
-                }
-                op = OP_NONE;
+                exitinputmode(op);
+                break;
+            case KEY_DC:
+                inputbuf.del();
                 break;
             case KEY_BACKSPACE:
             case KEY_KONSOLEBACKSPACE:
-                if (inputbuf.length() > 0)
-                    inputbuf = inputbuf.substr(0, inputbuf.length() - 1);
+                inputbuf.backspace();
+                break;
+            case KEY_LEFT:
+                inputbuf.moveleft();
+                break;
+            case KEY_RIGHT:
+                inputbuf.moveright();
                 break;
             case KEY_UP:
-                inputbuf = gethis(op)->moveback();
+                inputbuf.set(gethis(op)->moveback());
                 break;
             case KEY_DOWN:
-                inputbuf = gethis(op)->moveforward();
+                inputbuf.set(gethis(op)->moveforward());
                 break;
             default:
-                inputbuf += ch;
+                inputbuf.insert(ch);
                 break;
             }
         } else if (mode == MODE_HELP) {
@@ -243,9 +235,39 @@ void Program::MainLoop() {
 
 void Program::prepinputmode(FilterOperationEnum o) {
     mode = MODE_INPUT;
-    inputbuf = "";
+    curs_set(1);
+    inputbuf.clear();
     gethis(o)->reset();
     op = o;
+}
+void Program::exitinputmode(FilterOperationEnum o) {
+    mode = MODE_STANDARD;
+    curs_set(0);
+
+    switch (o) {
+    case OP_FILTER:
+        displayprocessingmsg();
+        filterpackages(inputbuf.getcontents());
+        list_pane->SetList(&filteredpackages);
+        flushinp();
+        break;
+    case OP_SORT:
+        sortpackages(inputbuf.getcontents());
+        break;
+    case OP_SEARCH:
+        searchpackages(inputbuf.getcontents());
+        break;
+    case OP_COLORCODE:
+        colorcodepackages(inputbuf.getcontents());
+        break;
+    case OP_EXEC:
+        execmd(inputbuf.getcontents());
+        break;
+    default:
+        break;
+    }
+
+    op = OP_NONE;
 }
 
 void Program::displayprocessingmsg() {
@@ -422,7 +444,8 @@ void Program::updatedisplay() {
             queue_pane->Refresh();
 
         if (mode == MODE_INPUT) {
-            input_pane->PrintW(optostr(op) + inputbuf);
+            input_pane->PrintW(optostr(op) + inputbuf.getcontents());
+            input_pane->Move(inputbuf.getpos() + 1, 0);
             input_pane->Refresh();
         }
     } else if (mode == MODE_HELP) {

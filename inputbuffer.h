@@ -15,58 +15,34 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
  ************************************************************************* */
 
-#ifndef CURSESFRAME_H
-#define CURSESFRAME_H
+#ifndef INPUTBUFFER_H
+#define INPUTBUFFER_H
 
-#include <ncurses.h>
 #include <string>
 
 using std::string;
 
-#define C_DEF (COLOR_PAIR(5))
-#define C_DEF_HL1 (COLOR_PAIR(2))
-#define C_DEF_HL2 (COLOR_PAIR(3))
-#define C_DEF_HL3 (COLOR_PAIR(6))
-#define C_DEF_HL4 (COLOR_PAIR(7))
-#define C_DEF_HL5 (COLOR_PAIR(8))
-#define C_DEF_HL6 (COLOR_PAIR(9))
-#define C_INV (COLOR_PAIR(1))
-#define C_INV_HL1 (COLOR_PAIR(4))
-
-class CursesFrame
+class InputBuffer
 {
 public:
-    CursesFrame(int w, int h, int x, int y, bool hasborder);
-    virtual ~CursesFrame();
+    InputBuffer();
 
-    void SetBackground(chtype col);
-    void SetHeader(string str);
-    void SetFooter(string str);
-    virtual void Refresh();
-    void PrintW(string str, int attr = 0);
-    void MvPrintW(int x, int y, string str, int attr = 0);
-    void Move(int x, int y);
-    void Clear();
+    string getcontents() const { return contents; }
+    size_t getpos() const { return pos; }
 
-    int UsableHeight() const;
-    int UsableWidth() const;
+    void set(string str);
+    void insert(const char c);
 
-    static void DoUpdate();
+    void backspace();
+    void del();
+    void clear() { contents = ""; pos = 0; }
 
-protected:
+    void moveleft();
+    void moveright();
 
-    string FitStrToWin(string in, int x = -1) const;
-    string EscapeString(string str) const;
-
-    const string
-            overflowind;
-
-    WINDOW
-            *w_main,
-            *w_border;
-    string
-            header,
-            footer;
+private:
+    string contents;
+    size_t pos;
 };
 
-#endif // CURSESFRAME_H
+#endif // INPUTBUFFER_H
