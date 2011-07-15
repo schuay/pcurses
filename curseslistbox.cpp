@@ -24,16 +24,16 @@ CursesListBox::CursesListBox(int w, int h, int x, int y, bool hasborder)
 {
 }
 
-void CursesListBox::SetList(vector<Package*> *l) {
+void CursesListBox::setlist(vector<Package*> *l) {
     list = l;
-    UpdateFocus();
+    updatefocus();
 }
 
-void CursesListBox::Move(int step) {
-    MoveAbs(FocusedIndex() + step);
+void CursesListBox::move(int step) {
+    moveabs(focusedindex() + step);
 }
 
-void CursesListBox::MoveAbs(int pos) {
+void CursesListBox::moveabs(int pos) {
     if (list->size() == 0)
         return;
 
@@ -41,7 +41,7 @@ void CursesListBox::MoveAbs(int pos) {
     else if (pos >= (int)list->size()) pos = (int)list->size() - 1;
 
     /* target visible, do not scroll window */
-    if (pos >= windowpos && pos <= windowpos + UsableHeight()) {
+    if (pos >= windowpos && pos <= windowpos + usableheight()) {
         cursorpos = pos - windowpos;
     /* scrolling required (up) */
     } else if (pos < windowpos) {
@@ -49,17 +49,17 @@ void CursesListBox::MoveAbs(int pos) {
         cursorpos = 0;
     /* scrolling required (down) */
     } else {
-        windowpos = pos - UsableHeight();
+        windowpos = pos - usableheight();
         if (windowpos < 0) windowpos = 0;
         cursorpos = pos - windowpos;
     }
 }
 
-void CursesListBox::MoveEnd() {
-    MoveAbs(list->size() - 1);
+void CursesListBox::movetoend() {
+    moveabs(list->size() - 1);
 }
 
-bool CursesListBox::IsInBounds(int pos) const {
+bool CursesListBox::isinbounds(int pos) const {
     if (pos < 0)
         return false;
     if ((unsigned int)(pos) >= list->size())
@@ -67,20 +67,20 @@ bool CursesListBox::IsInBounds(int pos) const {
     return true;
 }
 
-void CursesListBox::UpdateFocus() {
+void CursesListBox::updatefocus() {
     int lsize = (int)list->size();
 
-    if (FocusedIndex() >= lsize) {
-        if (lsize - UsableHeight() < 0)
+    if (focusedindex() >= lsize) {
+        if (lsize - usableheight() < 0)
             windowpos = 0;
         else
-            windowpos = lsize - UsableHeight();
+            windowpos = lsize - usableheight();
 
         cursorpos = lsize - windowpos - 1;
     }
 }
 
-chtype CursesListBox::GetCol(int index) const {
+chtype CursesListBox::getcol(int index) const {
     const int colnum = 7; /* nr of defined col pairs */
     int col = index % colnum;
 
@@ -96,24 +96,24 @@ chtype CursesListBox::GetCol(int index) const {
     }
 }
 
-int CursesListBox::FocusedIndex() const {
+int CursesListBox::focusedindex() const {
     return windowpos + cursorpos;
 }
 
-void CursesListBox::Refresh() {
+void CursesListBox::refresh() {
     Package *pkg;
 
-    for (int i = 0; i <= UsableHeight(); i++) {
+    for (int i = 0; i <= usableheight(); i++) {
         if (windowpos + i > (int)list->size() - 1)
             break;
 
         pkg = list->at(windowpos + i);
 
-        int attr = GetCol(pkg->getcolindex());
+        int attr = getcol(pkg->getcolindex());
         if (i == cursorpos) attr |= A_REVERSE;
 
-        MvPrintW(0, i, pkg->getname().substr(0, UsableWidth() + 1), attr);
+        mvprintw(0, i, pkg->getname().substr(0, usablewidth() + 1), attr);
     }
 
-    CursesFrame::Refresh();
+    CursesFrame::refresh();
 }

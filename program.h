@@ -78,8 +78,8 @@ public:
     Program();
     ~Program();
 
-    void Init();
-    void MainLoop();
+    void init();
+    void mainloop();
 
 private:
 

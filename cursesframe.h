@@ -39,25 +39,25 @@ public:
     CursesFrame(int w, int h, int x, int y, bool hasborder);
     virtual ~CursesFrame();
 
-    void SetBackground(chtype col);
-    void SetHeader(string str);
-    void SetFooter(string str);
-    virtual void Refresh();
-    void PrintW(string str, int attr = 0);
-    void MvPrintW(int x, int y, string str, int attr = 0);
-    void Move(int x, int y);
-    void Clear();
-    void SetFocused(bool b) { focused = b; }
+    void setbackground(chtype col);
+    void setheader(string str);
+    void setfooter(string str);
+    virtual void refresh();
+    void printw(string str, int attr = 0);
+    void mvprintw(int x, int y, string str, int attr = 0);
+    void move(int x, int y);
+    void clear();
+    void setfocused(bool b) { focused = b; }
 
-    int UsableHeight() const;
-    int UsableWidth() const;
+    int usableheight() const;
+    int usablewidth() const;
 
     static void DoUpdate();
 
 protected:
 
-    string FitStrToWin(string in, int x = -1) const;
-    string EscapeString(string str) const;
+    string fitstrtowin(string in, int x = -1) const;
+    string escapestring(string str) const;
 
     const string
             overflowind;

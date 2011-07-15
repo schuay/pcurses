@@ -30,18 +30,18 @@ class CursesListBox : public CursesFrame
 public:
     CursesListBox(int w, int h, int x, int y, bool hasborder);
 
-    void SetList(vector<Package*> *l);
-    void Move(int step);
-    void MoveEnd();
-    void MoveAbs(int pos);
-    int FocusedIndex() const;
-    virtual void Refresh();
+    void setlist(vector<Package*> *l);
+    void move(int step);
+    void movetoend();
+    void moveabs(int pos);
+    int focusedindex() const;
+    virtual void refresh();
 
 protected:
 
-    bool IsInBounds(int pos) const;
-    void UpdateFocus();
-    chtype GetCol(int index) const;
+    bool isinbounds(int pos) const;
+    void updatefocus();
+    chtype getcol(int index) const;
 
     std::vector<Package*>
             *list;
