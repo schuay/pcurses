@@ -18,7 +18,8 @@ SOURCES += \
     config.cpp \
     filter.cpp \
     attributeinfo.cpp \
-    history.cpp
+    history.cpp \
+    inputbuffer.cpp
 
 HEADERS += \
     package.h \
@@ -29,7 +30,8 @@ HEADERS += \
     filter.h \
     attributeinfo.h \
     history.h \
-    pcursesexception.h
+    pcursesexception.h \
+    inputbuffer.h
 
 LIBS += -lalpm \
     -lncursesw

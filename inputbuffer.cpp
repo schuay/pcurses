@@ -15,58 +15,45 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
  ************************************************************************* */
 
-#ifndef CURSESFRAME_H
-#define CURSESFRAME_H
+#include "inputbuffer.h"
 
-#include <ncurses.h>
-#include <string>
-
-using std::string;
-
-#define C_DEF (COLOR_PAIR(5))
-#define C_DEF_HL1 (COLOR_PAIR(2))
-#define C_DEF_HL2 (COLOR_PAIR(3))
-#define C_DEF_HL3 (COLOR_PAIR(6))
-#define C_DEF_HL4 (COLOR_PAIR(7))
-#define C_DEF_HL5 (COLOR_PAIR(8))
-#define C_DEF_HL6 (COLOR_PAIR(9))
-#define C_INV (COLOR_PAIR(1))
-#define C_INV_HL1 (COLOR_PAIR(4))
-
-class CursesFrame
+InputBuffer::InputBuffer()
 {
-public:
-    CursesFrame(int w, int h, int x, int y, bool hasborder);
-    virtual ~CursesFrame();
+    pos = 0;
+    clear();
+}
 
-    void SetBackground(chtype col);
-    void SetHeader(string str);
-    void SetFooter(string str);
-    virtual void Refresh();
-    void PrintW(string str, int attr = 0);
-    void MvPrintW(int x, int y, string str, int attr = 0);
-    void Move(int x, int y);
-    void Clear();
+void InputBuffer::moveleft() {
+    if (pos > 0) {
+        pos--;
+    }
+}
 
-    int UsableHeight() const;
-    int UsableWidth() const;
+void InputBuffer::moveright() {
+    if (pos < contents.length()) {
+        pos++;
+    }
+}
 
-    static void DoUpdate();
+void InputBuffer::backspace() {
+    if (pos > 0) {
+        contents.erase(pos - 1, 1);
+        moveleft();
+    }
+}
 
-protected:
+void InputBuffer::del() {
+    if (pos < contents.length()) {
+        contents.erase(pos, 1);
+    }
+}
 
-    string FitStrToWin(string in, int x = -1) const;
-    string EscapeString(string str) const;
+void InputBuffer::insert(const char c) {
+    contents.insert(pos, 1, c);
+    pos++;
+}
 
-    const string
-            overflowind;
-
-    WINDOW
-            *w_main,
-            *w_border;
-    string
-            header,
-            footer;
-};
-
-#endif // CURSESFRAME_H
+void InputBuffer::set(string str) {
+    contents = str;
+    pos = contents.length();
+}
