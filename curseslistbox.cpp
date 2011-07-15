@@ -55,6 +55,10 @@ void CursesListBox::MoveAbs(int pos) {
     }
 }
 
+void CursesListBox::MoveEnd() {
+    MoveAbs(list->size() - 1);
+}
+
 bool CursesListBox::IsInBounds(int pos) const {
     if (pos < 0)
         return false;

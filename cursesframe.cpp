@@ -18,7 +18,7 @@
 #include "cursesframe.h"
 
 CursesFrame::CursesFrame(int w, int h, int x, int y, bool hasborder)
-    : overflowind("..."), w_main(NULL), w_border(NULL)
+    : overflowind("..."), w_main(NULL), w_border(NULL), focused(false)
 {
     if (hasborder) {
         w_border = newwin(h, w, x, y);
@@ -67,9 +67,10 @@ void CursesFrame::Refresh() {
     if (w_border != NULL) {
         box(w_border, ACS_VLINE, ACS_HLINE);
 
-        wattron(w_border, A_BOLD);
+        int headercol = focused ? C_DEF_HL4 : C_DEF;
+        wattron(w_border, A_BOLD | headercol);
         mvwprintw(w_border, 0, 1, header.c_str());
-        wattroff(w_border, A_BOLD);
+        wattroff(w_border, A_BOLD | headercol);
 
         mvwprintw(w_border, w_border->_maxy, 1, footer.c_str());
 
