@@ -44,6 +44,7 @@ void CursesFrame::SetBackground(chtype col) {
 }
 
 string CursesFrame::FitStrToWin(string in, int x) const {
+    in = EscapeString(in);
     int len = in.length();
 
     if (len == 0 || in[len-1] != '\n')
@@ -83,6 +84,17 @@ void CursesFrame::MvPrintW(int x, int y, string str, int attr) {
     if (attr != 0) wattron(w_main, attr);
     mvwprintw(w_main, y, x, FitStrToWin(str, x).c_str());
     if (attr != 0) wattroff(w_main, attr);
+}
+
+string CursesFrame::EscapeString(string str) const {
+    string ret = string(str);
+    size_t pos = 0;
+    while ((pos = ret.find("%", pos)) != string::npos) {
+        ret.replace(pos, 1, "%%");
+        pos++;
+        pos++;
+    }
+    return ret;
 }
 
 void CursesFrame::Clear() {

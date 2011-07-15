@@ -67,6 +67,7 @@ enum FilterOperationEnum {
     OP_FILTER,
     OP_SORT,
     OP_COLORCODE,
+    OP_EXEC,
     OP_NONE
 };
 
@@ -81,7 +82,7 @@ public:
 
 private:
 
-    void run_pacman(string pkgs) const;
+    void run_cmd(string cmd) const;
     void init_alpm();
     void init_curses();
     void print_help();
@@ -93,6 +94,7 @@ private:
     void filterpackages(string str);
     void sortpackages(string str);
     void searchpackages(string str);
+    void execmd(string str);
     void colorcodepackages(string str);
     void prepinputmode(FilterOperationEnum o);
     History *gethis(FilterOperationEnum o);
@@ -135,7 +137,8 @@ private:
             hisfilter,
             hissort,
             hissearch,
-            hiscolorcode;
+            hiscolorcode,
+            hisexec;
 
     AttributeEnum
             sortedby,
