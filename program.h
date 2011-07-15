@@ -25,9 +25,11 @@
 #include <iostream>
 #include <ncurses.h>
 #include <vector>
+#include <map>
 #include <stdarg.h>
 #include <boost/bind.hpp>
 #include <boost/format.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include "package.h"
 #include "pcursesexception.h"
@@ -40,6 +42,8 @@
 
 using std::string;
 using std::vector;
+using std::map;
+using boost::shared_ptr;
 
 typedef struct __alpm_list_t alpm_list_t;
 
@@ -69,6 +73,7 @@ enum FilterOperationEnum {
     OP_SORT,
     OP_COLORCODE,
     OP_EXEC,
+    OP_MACRO,
     OP_NONE
 };
 
@@ -96,6 +101,7 @@ private:
     void filterpackages(string str);
     void sortpackages(string str);
     void searchpackages(string str);
+    void execmacro(string str);
     void execmd(string str);
     void colorcodepackages(string str);
     void exitinputmode(FilterOperationEnum o);
@@ -104,6 +110,7 @@ private:
     void updatelistinfo();
     void displayprocessingmsg();
     string optostr(FilterOperationEnum o) const;
+    FilterOperationEnum strtoopt(string str) const;
 
 
     RightPaneEnum rightpane;
@@ -127,6 +134,9 @@ private:
             filteredpackages,
             opqueue;
 
+    shared_ptr<map<string, string> >
+            macros;
+
     alpm_handle_t
             *handle;
     alpm_db_t
@@ -143,7 +153,8 @@ private:
             hissort,
             hissearch,
             hiscolorcode,
-            hisexec;
+            hisexec,
+            hismacro;
 
     AttributeEnum
             sortedby,

@@ -19,10 +19,13 @@
 
 Config::Config()
 {
-    configfile = "/etc/pacman.conf";
+    pacmanconffile = "/etc/pacman.conf";
+    pcursesconffile = "/etc/pcurses.conf";
     rootdir = "/";
     dbpath = "/var/lib/pacman";
     logfile = "/var/log/pacman.log";
+
+    macros.reset(new map<string, string>());
 }
 Config::~Config() {
 }
@@ -35,7 +38,30 @@ string Config::getconfvalue(const string str) const {
         return what[1];
     } else return "";
 }
-void Config::parse() {
+void Config::parse_pcursesconf() {
+    std::ifstream conf;
+    sregex secrex = sregex::compile("^([^#]\\w+?)=(.+)$");
+    smatch what;
+
+    conf.open(pcursesconffile.c_str());
+    if (!conf.is_open()) {
+        /* ignore missing conf file */
+        return;
+    }
+
+    while (conf.good()) {
+        string line;
+        std::getline(conf, line);
+
+        if (line.length() == 0)
+            continue;
+
+        if (regex_match(line, what, secrex)) {
+            macros->insert(std::pair<string, string>(what[1], what[2]));
+        }
+    }
+}
+void Config::parse_pacmanconf() {
     const string s_rootdir = "RootDir",
                  s_dbpath = "DBPath",
                  s_logfile = "LogFile";
@@ -43,9 +69,9 @@ void Config::parse() {
     sregex secrex = sregex::compile("^\\[(\\w+)\\].*$");
     smatch what;
 
-    conf.open(configfile.c_str());
+    conf.open(pacmanconffile.c_str());
     if (!conf.is_open()) {
-        throw PcursesException("config file could not be read.");
+        throw PcursesException("pacman.conf could not be read.");
     }
 
     ConfSection section = CS_NONE;

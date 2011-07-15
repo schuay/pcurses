@@ -54,7 +54,7 @@ void Program::run_cmd(string cmd) const {
         execlp("bash", "bash", "-ic", cmd.c_str(), (char*)NULL);
     } else {
         /* parent (or error, which we blissfully ignore */
-        waitpid(-1, &status, 0);
+        waitpid(pid, &status, 0);
         std::cout << "press return to continue...";
         std::cin.get();
     }
@@ -185,19 +185,12 @@ void Program::mainloop() {
                 inputbuf.set(string(1, ch) + ":");
                 break;
             case '/':
-                prepinputmode(OP_FILTER);
-                break;
             case '.':
-                prepinputmode(OP_SORT);
-                break;
             case '?':
-                prepinputmode(OP_SEARCH);
-                break;
             case ';':
-                prepinputmode(OP_COLORCODE);
-                break;
             case '!':
-                prepinputmode(OP_EXEC);
+            case '@':
+                prepinputmode(strtoopt(string(1, ch)));
                 break;
             default:
                 break;
@@ -253,6 +246,12 @@ void Program::exitinputmode(FilterOperationEnum o) {
     mode = MODE_STANDARD;
     curs_set(0);
 
+    op = OP_NONE;
+
+    if (inputbuf.getcontents().length() == 0) {
+        return;
+    }
+
     switch (o) {
     case OP_FILTER:
         displayprocessingmsg();
@@ -272,11 +271,12 @@ void Program::exitinputmode(FilterOperationEnum o) {
     case OP_EXEC:
         execmd(inputbuf.getcontents());
         break;
+    case OP_MACRO:
+        execmacro(inputbuf.getcontents());
+        break;
     default:
         break;
     }
-
-    op = OP_NONE;
 }
 
 void Program::displayprocessingmsg() {
@@ -307,7 +307,9 @@ void Program::init_alpm() {
     _alpm_errno_t err;
 
     Config conf;
-    conf.parse();
+    conf.parse_pacmanconf();
+    conf.parse_pcursesconf();
+    macros = conf.getmacros();
 
     handle = alpm_initialize(conf.getrootdir().c_str(), conf.getdbpath().c_str(), &err);
     if (handle == NULL) {
@@ -477,9 +479,18 @@ string Program::optostr(FilterOperationEnum o) const {
     case OP_SEARCH: return "?";
     case OP_COLORCODE: return ";";
     case OP_EXEC: return "!";
+    case OP_MACRO: return "@";
     case OP_NONE: return "";
     default: assert(0);
     }
+}
+FilterOperationEnum Program::strtoopt(string str) const {
+    for (int i = 0; i < OP_NONE; i++) {
+        if (optostr((FilterOperationEnum)i) == str) {
+            return (FilterOperationEnum)i;
+        }
+    }
+    return OP_NONE;
 }
 
 void Program::clearfilter() {
@@ -510,11 +521,36 @@ History *Program::gethis(FilterOperationEnum o) {
     case OP_EXEC:
         v = &hisexec;
         break;
+    case OP_MACRO:
+        v = &hismacro;
+        break;
     default:
         assert(0);
     }
 
     return v;
+}
+
+void Program::execmacro(string str) {
+
+    gethis(OP_MACRO)->add(str);
+
+    map<string, string>::iterator it;
+    it = macros->find(str);
+
+    if (it == macros->end()) {
+        return;
+    }
+
+    string cmd = it->second;
+
+    FilterOperationEnum op = strtoopt(cmd.substr(0, 1));
+    if (op == OP_NONE) {
+        return;
+    }
+
+    inputbuf.set(cmd.substr(1));
+    exitinputmode(op);
 }
 
 void Program::execmd(string str) {

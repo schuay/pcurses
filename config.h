@@ -24,16 +24,20 @@
 #include <fstream>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/xpressive/xpressive.hpp>
+#include <boost/shared_ptr.hpp>
+#include <map>
 
 #include "pcursesexception.h"
 
 using std::string;
 using std::vector;
+using std::map;
 using std::cerr;
 using std::endl;
 using boost::xpressive::sregex;
 using boost::xpressive::smatch;
 using boost::xpressive::regex_constants::icase;
+using boost::shared_ptr;
 
 class Config
 {
@@ -41,26 +45,34 @@ public:
     Config();
     ~Config();
 
-    void parse();
+    void parse_pacmanconf();
+    void parse_pcursesconf();
 
-    string getconffile() const { return configfile; }
+    string getpacmanconffile() const { return pacmanconffile; }
+    string getpcursesconffile() const { return pcursesconffile; }
     string getrootdir() const { return rootdir; }
     string getdbpath() const { return dbpath; }
     string getlogfile() const { return logfile; }
 
     vector<string> getrepos() const { return repos; }
+    shared_ptr<map<string, string> > getmacros() const { return macros; }
 
 private:
 
     string getconfvalue(const string) const;
 
     string
-            configfile,
+            pacmanconffile,
+            pcursesconffile,
             rootdir,
             dbpath,
             logfile;
+
     vector<string>
             repos;
+
+    shared_ptr<map<string, string> >
+            macros;
 
     enum ConfSection {
         CS_NONE,
