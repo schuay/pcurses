@@ -41,7 +41,7 @@ void Program::deinit() {
     opqueue.clear();
 
     if (alpm_release() != 0)
-        throw AlpmException("failed to deinitialize alpm library");
+        throw PcursesException("failed to deinitialize alpm library");
 }
 
 void Program::run_pacman(string pkgs) const {
@@ -299,7 +299,7 @@ void Program::print_help() {
 
 void Program::init_alpm() {
     if (alpm_initialize() != 0)
-        throw AlpmException("failed to initialize alpm library");
+        throw PcursesException("failed to initialize alpm library");
 
     Config conf;
     conf.parse();

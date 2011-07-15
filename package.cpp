@@ -127,7 +127,7 @@ string Package::getattr(AttributeEnum attr) const {
     case A_SIZE: return getsize();
     case A_ISIZE: return getisize();
     case A_NONE: return "";
-    default: throw AlpmException("Invalid attribute passed.");
+    default: throw PcursesException("Invalid attribute passed.");
     }
 }
 unsigned long Package::getulongattr(AttributeEnum attr) const {
@@ -135,7 +135,7 @@ unsigned long Package::getulongattr(AttributeEnum attr) const {
     case A_BUILDDATE: return (unsigned long)_builddate;
     case A_SIZE: return _size;
     case A_ISIZE: return _installsize;
-    default: throw AlpmException("Invalid attribute passed.");
+    default: throw PcursesException("Invalid attribute passed.");
     }
 }
 
@@ -171,7 +171,7 @@ string Package::getreason() const {
     case IRE_ASDEPS:
         return "as dependency";
     default:
-        throw AlpmException("no package install reason.");
+        throw PcursesException("no package install reason.");
     }
 }
 string Package::getpackager() const {

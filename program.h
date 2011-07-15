@@ -30,7 +30,7 @@
 #include <boost/format.hpp>
 
 #include "package.h"
-#include "alpmexception.h"
+#include "pcursesexception.h"
 #include "cursesframe.h"
 #include "curseslistbox.h"
 #include "config.h"

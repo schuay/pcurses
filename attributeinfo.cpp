@@ -47,7 +47,7 @@ char AttributeInfo::attrtochar(AttributeEnum attr) {
     for (char i = 'a'; i <= 'z'; i++)
         if (chartoattr(i) == attr) return i;
 
-    throw AlpmException("Attribute has no assigned char.");
+    throw PcursesException("Attribute has no assigned char.");
 }
 
 string AttributeInfo::attrname(AttributeEnum attr) {
@@ -72,6 +72,6 @@ string AttributeInfo::attrname(AttributeEnum attr) {
     case A_URL: return "Url";
     case A_VERSION: return "Version";
     case A_NONE: return "";
-    default: throw AlpmException("Invalid attribute passed.");
+    default: throw PcursesException("Invalid attribute passed.");
     }
 }

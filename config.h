@@ -25,7 +25,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/xpressive/xpressive.hpp>
 
-#include "alpmexception.h"
+#include "pcursesexception.h"
 
 using std::string;
 using std::vector;

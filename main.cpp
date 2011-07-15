@@ -24,7 +24,7 @@ int main() {
     try {
         p->Init();
         p->MainLoop();
-    } catch (AlpmException e) {
+    } catch (PcursesException e) {
         std::cerr << e.GetMessage() << std::endl;
     } catch (...) {
         std::cerr << "guru meditation" << std::endl;

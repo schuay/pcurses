@@ -15,19 +15,19 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
  ************************************************************************* */
 
-#ifndef ALPMEXCEPTION_H
-#define ALPMEXCEPTION_H
+#ifndef PCURSESEXCEPTION_H
+#define PCURSESEXCEPTION_H
 
 #include <alpm.h>
 #include <string>
 
 using std::string;
 
-class AlpmException
+class PcursesException
 {
 public:
-    AlpmException() { _msg = "Unexpected error"; _alpmError = alpm_strerrorlast(); }
-    AlpmException(string msg) { _msg = msg; _alpmError = alpm_strerrorlast(); }
+    PcursesException() { _msg = "Unexpected error"; _alpmError = alpm_strerrorlast(); }
+    PcursesException(string msg) { _msg = msg; _alpmError = alpm_strerrorlast(); }
 
     string GetMessage() const { return _msg; }
     string GetAlpmError() const { return _alpmError; }
@@ -37,4 +37,4 @@ private:
     string _alpmError;
 };
 
-#endif // ALPMEXCEPTION_H
+#endif // PCURSESEXCEPTION_H

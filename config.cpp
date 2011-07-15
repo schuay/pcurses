@@ -45,7 +45,7 @@ void Config::parse() {
 
     conf.open(configfile.c_str());
     if (!conf.is_open()) {
-        throw AlpmException("config file could not be read.");
+        throw PcursesException("config file could not be read.");
     }
 
     ConfSection section = CS_NONE;
