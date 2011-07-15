@@ -29,7 +29,7 @@ public:
     PcursesException() { _msg = "Unexpected error"; _alpmError = alpm_strerrorlast(); }
     PcursesException(string msg) { _msg = msg; _alpmError = alpm_strerrorlast(); }
 
-    string GetMessage() const { return _msg; }
+    string getmessage() const { return _msg; }
     string GetAlpmError() const { return _alpmError; }
 
 private:

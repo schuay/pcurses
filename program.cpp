@@ -60,7 +60,7 @@ void Program::run_cmd(string cmd) const {
     }
 }
 
-void Program::Init() {
+void Program::init() {
 
     std::cout << "Reading package dbs, please wait..." << std::endl;
 
@@ -97,21 +97,21 @@ void Program::Init() {
     system("clear");
     init_curses();
     setfocus(list_pane);
-    list_pane->SetList(&filteredpackages);
-    queue_pane->SetList(&opqueue);
+    list_pane->setlist(&filteredpackages);
+    queue_pane->setlist(&opqueue);
     updatelistinfo();
     updatedisplay();
 }
 
 void Program::setfocus(CursesListBox *frame) {
-    list_pane->SetFocused(false);
-    queue_pane->SetFocused(false);
+    list_pane->setfocused(false);
+    queue_pane->setfocused(false);
 
     focused_pane = frame;
-    frame->SetFocused(true);
+    frame->setfocused(true);
 }
 
-void Program::MainLoop() {
+void Program::mainloop() {
     int ch;
     while (!quit) {
         ch = getch();
@@ -120,23 +120,23 @@ void Program::MainLoop() {
             switch (ch) {
             case 'k':
             case KEY_UP:
-                focused_pane->Move(-1);
+                focused_pane->move(-1);
                 break;
             case 'j':
             case KEY_DOWN:
-                focused_pane->Move(1);
+                focused_pane->move(1);
                 break;
             case KEY_HOME:
-                focused_pane->MoveAbs(0);
+                focused_pane->moveabs(0);
                 break;
             case KEY_END:
-                focused_pane->MoveEnd();
+                focused_pane->movetoend();
                 break;
             case KEY_PPAGE:   /* page up */
-                focused_pane->Move(list_pane->UsableHeight() * -1);
+                focused_pane->move(list_pane->usableheight() * -1);
                 break;
             case KEY_NPAGE:   /* page down */
-                focused_pane->Move(list_pane->UsableHeight());
+                focused_pane->move(list_pane->usableheight());
                 break;
             case KEY_TAB:
                 if (rightpane == RPE_QUEUE) {
@@ -156,18 +156,18 @@ void Program::MainLoop() {
                 if (filteredpackages.size() == 0) break;
 
                 if (rightpane != RPE_QUEUE) rightpane = RPE_QUEUE;
-                if (std::find(opqueue.begin(), opqueue.end(), filteredpackages[list_pane->FocusedIndex()]) != opqueue.end()) {
+                if (std::find(opqueue.begin(), opqueue.end(), filteredpackages[list_pane->focusedindex()]) != opqueue.end()) {
                     break;
                 }
-                opqueue.push_back(filteredpackages[list_pane->FocusedIndex()]);
-                queue_pane->MoveEnd();
-                focused_pane->Move(1);
+                opqueue.push_back(filteredpackages[list_pane->focusedindex()]);
+                queue_pane->movetoend();
+                focused_pane->move(1);
                 break;
             case KEY_LEFT:
                 if (focused_pane != queue_pane) break;
-                if (opqueue.size() == 0 || opqueue.size() <= (unsigned int)queue_pane->FocusedIndex()) break;
+                if (opqueue.size() == 0 || opqueue.size() <= (unsigned int)queue_pane->focusedindex()) break;
 
-                opqueue.erase(opqueue.begin() + queue_pane->FocusedIndex());
+                opqueue.erase(opqueue.begin() + queue_pane->focusedindex());
 
                 break;
             case 'h':
@@ -257,7 +257,7 @@ void Program::exitinputmode(FilterOperationEnum o) {
     case OP_FILTER:
         displayprocessingmsg();
         filterpackages(inputbuf.getcontents());
-        list_pane->SetList(&filteredpackages);
+        list_pane->setlist(&filteredpackages);
         flushinp();
         break;
     case OP_SORT:
@@ -280,14 +280,14 @@ void Program::exitinputmode(FilterOperationEnum o) {
 }
 
 void Program::displayprocessingmsg() {
-    list_pane->SetFooter("Processing...");
+    list_pane->setfooter("Processing...");
     updatedisplay();
 }
 
-#define PRINTH(a, b) help_pane->PrintW(a, A_BOLD); help_pane->PrintW(b);
+#define PRINTH(a, b) help_pane->printw(a, A_BOLD); help_pane->printw(b);
 void Program::print_help() {
-    help_pane->PrintW("COMMANDS\n", A_BOLD);
-    help_pane->PrintW("\n");
+    help_pane->printw("COMMANDS\n", A_BOLD);
+    help_pane->printw("\n");
     PRINTH("ESC: ", "cancel\n");
     PRINTH("q: ", "quit\n");
     PRINTH("!: ", "execute the given command, replacing %p with the package names\n");
@@ -310,11 +310,11 @@ void Program::init_alpm() {
     Config conf;
     conf.parse();
 
-    alpm_option_set_dbpath(conf.getDBPath().c_str());
-    alpm_option_set_logfile(conf.getLogFile().c_str());
-    alpm_option_set_root(conf.getRootDir().c_str());
+    alpm_option_set_dbpath(conf.getdbpath().c_str());
+    alpm_option_set_logfile(conf.getlogfile().c_str());
+    alpm_option_set_root(conf.getrootdir().c_str());
 
-    vector<string> repos = conf.getRepos();
+    vector<string> repos = conf.getrepos();
     for (unsigned int i = 0; i < repos.size(); i++)
         alpm_db_register_sync(repos[i].c_str());
 
@@ -356,19 +356,19 @@ void Program::init_curses() {
     input_pane = new CursesFrame(COLS, 3, LINES - 2, 0, true);
     help_pane = new CursesFrame(COLS - 10, LINES - 10, 5, 5, true);
 
-    list_pane->SetHeader("Packages");
-    info_pane->SetHeader("Info");
-    info_pane->SetFooter("Press h for help");
-    queue_pane->SetHeader("Queue");
-    input_pane->SetHeader("Input");
-    help_pane->SetHeader("Help");
+    list_pane->setheader("Packages");
+    info_pane->setheader("Info");
+    info_pane->setfooter("Press h for help");
+    queue_pane->setheader("Queue");
+    input_pane->setheader("Input");
+    help_pane->setheader("Help");
 
-    list_pane->SetBackground(C_DEF);
-    info_pane->SetBackground(C_DEF);
-    queue_pane->SetBackground(C_DEF);
-    status_pane->SetBackground(C_INV);
-    input_pane->SetBackground(C_DEF);
-    help_pane->SetBackground(C_DEF);
+    list_pane->setbackground(C_DEF);
+    info_pane->setbackground(C_DEF);
+    queue_pane->setbackground(C_DEF);
+    status_pane->setbackground(C_INV);
+    input_pane->setbackground(C_DEF);
+    help_pane->setbackground(C_DEF);
 }
 void Program::deinit_curses() {
     delete list_pane;
@@ -401,12 +401,12 @@ void Program::printinfosection(AttributeEnum attr, string text) {
         else style = C_DEF_HL2;
 
 
-        info_pane->PrintW(string(1, caption[i]), style);
+        info_pane->printw(string(1, caption[i]), style);
     }
-    info_pane->PrintW(": ", C_DEF_HL2);
+    info_pane->printw(": ", C_DEF_HL2);
 
     string txt = text + "\n";
-    info_pane->PrintW(txt);
+    info_pane->printw(txt);
 }
 void Program::updatedisplay() {
 
@@ -419,15 +419,15 @@ void Program::updatedisplay() {
         Package *pkg;
 
         erase();
-        list_pane->Clear();
-        info_pane->Clear();
-        status_pane->Clear();
-        input_pane->Clear();
-        queue_pane->Clear();
+        list_pane->clear();
+        info_pane->clear();
+        status_pane->clear();
+        input_pane->clear();
+        queue_pane->clear();
 
         /* info pane */
-        if ((unsigned int)(list_pane->FocusedIndex()) < filteredpackages.size()) {
-            pkg = filteredpackages[list_pane->FocusedIndex()];
+        if ((unsigned int)(list_pane->focusedindex()) < filteredpackages.size()) {
+            pkg = filteredpackages[list_pane->focusedindex()];
             for (int i = 0; i < A_NONE; i++) {
                 AttributeEnum attr = (AttributeEnum)i;
                 string txt = pkg->getattr(attr);
@@ -437,30 +437,30 @@ void Program::updatedisplay() {
         }
 
         /* status bar */
-        status_pane->MvPrintW(1, 0, "Sorted by: ", C_INV_HL1);
-        status_pane->PrintW(AttributeInfo::attrname(sortedby), C_INV);
-        status_pane->PrintW(" Colored by: ", C_INV_HL1);
-        status_pane->PrintW(AttributeInfo::attrname(coloredby), C_INV);
-        status_pane->PrintW(" Filtered by: ", C_INV_HL1);
-        status_pane->PrintW(((searchphrases.length() == 0) ? "-" : searchphrases), C_INV);
+        status_pane->mvprintw(1, 0, "Sorted by: ", C_INV_HL1);
+        status_pane->printw(AttributeInfo::attrname(sortedby), C_INV);
+        status_pane->printw(" Colored by: ", C_INV_HL1);
+        status_pane->printw(AttributeInfo::attrname(coloredby), C_INV);
+        status_pane->printw(" Filtered by: ", C_INV_HL1);
+        status_pane->printw(((searchphrases.length() == 0) ? "-" : searchphrases), C_INV);
 
         wnoutrefresh(stdscr);
-        status_pane->Refresh();
-        list_pane->Refresh();
+        status_pane->refresh();
+        list_pane->refresh();
         if (rightpane == RPE_INFO)
-            info_pane->Refresh();
+            info_pane->refresh();
         else
-            queue_pane->Refresh();
+            queue_pane->refresh();
 
         if (mode == MODE_INPUT) {
-            input_pane->PrintW(optostr(op) + inputbuf.getcontents());
-            input_pane->Move(inputbuf.getpos() + 1, 0);
-            input_pane->Refresh();
+            input_pane->printw(optostr(op) + inputbuf.getcontents());
+            input_pane->move(inputbuf.getpos() + 1, 0);
+            input_pane->refresh();
         }
     } else if (mode == MODE_HELP) {
-        help_pane->Clear();
+        help_pane->clear();
         print_help();
-        help_pane->Refresh();
+        help_pane->refresh();
     }
 
     CursesFrame::DoUpdate();
@@ -530,7 +530,7 @@ void Program::execmd(string str) {
 
     deinit();
     run_cmd(str);
-    Init();
+    init();
 }
 
 void Program::colorcodepackages(string str) {
@@ -583,7 +583,7 @@ void Program::searchpackages(string str) {
     }
 
     /* we start the search at the current package */
-    vector<Package*>::iterator begin = filteredpackages.begin() + list_pane->FocusedIndex() + 1;
+    vector<Package*>::iterator begin = filteredpackages.begin() + list_pane->focusedindex() + 1;
     vector<Package*>::iterator it;
 
     it = std::find_if(begin, filteredpackages.end(),
@@ -600,7 +600,7 @@ void Program::searchpackages(string str) {
         return;
 
     /* move focus to found pkg */
-    list_pane->MoveAbs(it - filteredpackages.begin());
+    list_pane->moveabs(it - filteredpackages.begin());
 }
 
 void Program::sortpackages(string str) {
@@ -683,5 +683,5 @@ void Program::filterpackages(string str) {
     updatelistinfo();
 }
 void Program::updatelistinfo() {
-    list_pane->SetFooter(boost::str(boost::format("%d Package(s)") % filteredpackages.size()));
+    list_pane->setfooter(boost::str(boost::format("%d Package(s)") % filteredpackages.size()));
 }

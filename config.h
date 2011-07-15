@@ -43,12 +43,12 @@ public:
 
     void parse();
 
-    string getConfigFile() const { return configfile; }
-    string getRootDir() const { return rootdir; }
-    string getDBPath() const { return dbpath; }
-    string getLogFile() const { return logfile; }
+    string getconffile() const { return configfile; }
+    string getrootdir() const { return rootdir; }
+    string getdbpath() const { return dbpath; }
+    string getlogfile() const { return logfile; }
 
-    vector<string> getRepos() const { return repos; }
+    vector<string> getrepos() const { return repos; }
 
 private:
 

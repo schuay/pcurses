@@ -22,10 +22,10 @@ int main() {
     Program *p = new Program();
 
     try {
-        p->Init();
-        p->MainLoop();
+        p->init();
+        p->mainloop();
     } catch (PcursesException e) {
-        std::cerr << e.GetMessage() << std::endl;
+        std::cerr << e.getmessage() << std::endl;
     } catch (...) {
         std::cerr << "guru meditation" << std::endl;
     }
