@@ -37,6 +37,27 @@ date in the year 2010.
 
 Previous filters are cleared by pressing the 'c' key.
 
+Pressing the up and down keys while in input mode will scroll through all previous history.
+
+
+Colorcoding and sorting use the same syntax as filtering, but only accept a single field specifier.
+
+
+Command execution can be entered by pressing the '!' key. The token '%p' will be replaced by the selected package list. For example, with a current package selection of pcurses and pacman,
+
+!echo '%p' | less
+
+will be expanded to 
+
+echo 'pcurses pacman' | less
+
+Useful commands could be 
+
+!pacman -Si %p
+!sudo pacman -S %p
+
+and so forth.
+
 FURTHER READING
 ---------------
 

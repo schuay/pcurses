@@ -55,6 +55,7 @@ public:
 protected:
 
     string FitStrToWin(string in, int x = -1) const;
+    string EscapeString(string str) const;
 
     const string
             overflowind;

@@ -44,24 +44,16 @@ void Program::deinit() {
         throw PcursesException("failed to deinitialize alpm library");
 }
 
-void Program::run_pacman(string pkgs) const {
+void Program::run_cmd(string cmd) const {
     pid_t pid;
     int status;
-    int p[2];
-
-    pipe(p);
 
     pid = fork();
     if (pid == 0) {
         /* child */
-        close(p[PIPE_WRITE]);
-        dup2(p[PIPE_READ], STDIN_FILENO);
-        execlp("sudo", "sudo", "pacman", "-S", "-", (char*)NULL);
+        execlp("bash", "bash", "-ic", cmd.c_str(), (char*)NULL);
     } else {
         /* parent (or error, which we blissfully ignore */
-        close(p[PIPE_READ]);
-        write(p[PIPE_WRITE], pkgs.c_str(), pkgs.length());
-        close(p[PIPE_WRITE]);
         waitpid(-1, &status, 0);
         std::cout << "press return to continue...";
         std::cin.get();
@@ -113,19 +105,11 @@ void Program::Init() {
 
 void Program::MainLoop() {
     int ch;
-    string pkgs;
     while (!quit) {
         ch = getch();
 
         if (mode == MODE_STANDARD) {
             switch (ch) {
-            case 'e':
-                for (unsigned int i = 0; i < opqueue.size(); i++) {
-                    pkgs += opqueue[i]->getname() + " ";
-                }
-                deinit();
-                run_pacman(pkgs);
-                Init();
             case 'k':
             case KEY_UP:
                 focused_pane->Move(-1);
@@ -177,13 +161,6 @@ void Program::MainLoop() {
                 opqueue.erase(opqueue.begin() + queue_pane->FocusedIndex());
 
                 break;
-            case 'i':
-
-                /* testing... */
-                for (unsigned int i = 0; i < opqueue.size(); i++) {
-                    std::cerr << opqueue[i]->getname() << " ";
-                }
-                break;
             case 'h':
                 mode = MODE_HELP;
                 break;
@@ -210,6 +187,9 @@ void Program::MainLoop() {
             case ';':
                 prepinputmode(OP_COLORCODE);
                 break;
+            case '!':
+                prepinputmode(OP_EXEC);
+                break;
             default:
                 break;
             }
@@ -232,6 +212,8 @@ void Program::MainLoop() {
                     searchpackages(inputbuf);
                 } else if (op == OP_COLORCODE) {
                     colorcodepackages(inputbuf);
+                } else if (op == OP_EXEC) {
+                    execmd(inputbuf);
                 }
                 op = OP_NONE;
                 break;
@@ -277,6 +259,7 @@ void Program::print_help() {
     help_pane->PrintW("\n");
     PRINTH("ESC: ", "cancel\n");
     PRINTH("q: ", "quit\n");
+    PRINTH("!: ", "execute the given command, replacing %p with the package names\n");
     PRINTH("/: ", "filter packages by specified fields (using regexp)\n");
     PRINTH("", "   note that filters can be chained.\n")
     PRINTH("n: ", "filter packages by name (using regexp)\n");
@@ -457,6 +440,7 @@ string Program::optostr(FilterOperationEnum o) const {
     case OP_SORT: return ".";
     case OP_SEARCH: return "?";
     case OP_COLORCODE: return ";";
+    case OP_EXEC: return "!";
     case OP_NONE: return "";
     default: assert(0);
     }
@@ -487,11 +471,34 @@ History *Program::gethis(FilterOperationEnum o) {
     case OP_COLORCODE:
         v = &hiscolorcode;
         break;
+    case OP_EXEC:
+        v = &hisexec;
+        break;
     default:
         assert(0);
     }
 
     return v;
+}
+
+void Program::execmd(string str) {
+
+    gethis(OP_EXEC)->add(str);
+
+    string pkgs = "";
+    for (unsigned int i = 0; i < opqueue.size(); i++) {
+        pkgs += opqueue[i]->getname() + " ";
+    }
+
+    const string needle = "%p";
+    size_t  pos;
+    while ((pos = str.find(needle)) != string::npos) {
+        str.replace(pos, needle.length(), pkgs);
+    }
+
+    deinit();
+    run_cmd(str);
+    Init();
 }
 
 void Program::colorcodepackages(string str) {
