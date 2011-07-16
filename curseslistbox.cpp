@@ -111,6 +111,11 @@ int CursesListBox::focusedindex() const {
     return windowpos + cursorpos;
 }
 
+Package* CursesListBox::focusedpackage() const {
+    if (list->size() == 0) return NULL;
+    return list->at(focusedindex());
+}
+
 void CursesListBox::refresh() {
     Package *pkg;
 

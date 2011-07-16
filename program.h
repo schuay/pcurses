@@ -59,11 +59,6 @@ typedef struct __alpm_list_t alpm_list_t;
 #define KEY_TAB (9)
 #define KEY_KONSOLEBACKSPACE (127)
 
-enum RightPaneEnum {
-    RPE_INFO,
-    RPE_QUEUE
-};
-
 enum ModeEnum {
     MODE_STANDARD,
     MODE_INPUT,
@@ -116,7 +111,6 @@ private:
     FilterOperationEnum strtoopt(string str) const;
 
 
-    RightPaneEnum rightpane;
     ModeEnum mode;
 
     bool
