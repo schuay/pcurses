@@ -1,4 +1,1 @@
-*.pro.user
-*.o
-pcurses
-Makefile
+CMakeLists.txt.user

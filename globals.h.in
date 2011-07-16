@@ -1,0 +1,2 @@
+#define VERSION_MAJOR @pcurses_VERSION_MAJOR@
+#define VERSION_MINOR @pcurses_VERSION_MINOR@
