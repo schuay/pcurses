@@ -32,6 +32,7 @@ Program::~Program() {
 
 void Program::deinit() {
     deinit_curses();
+    system("clear");
 
     for (unsigned int i = 0; i < packages.size(); i++)
         delete packages[i];
