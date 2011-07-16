@@ -55,6 +55,7 @@ void Program::run_cmd(string cmd) const {
     } else {
         /* parent (or error, which we blissfully ignore */
         waitpid(pid, &status, 0);
+        tcsetpgrp(STDIN_FILENO, getpgid(0));    /* regain control of the terminal */
         std::cout << "press return to continue...";
         std::cin.get();
     }
