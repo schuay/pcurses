@@ -33,6 +33,17 @@ void CursesListBox::move(int step) {
     moveabs(focusedindex() + step);
 }
 
+void CursesListBox::removeselected() {
+    size_t pos = focusedindex();
+
+    if (!isinbounds(pos)) return;
+
+    if (pos == list->size() - 1) {
+        move(-1);
+    }
+    list->erase(list->begin() + pos);
+}
+
 void CursesListBox::moveabs(int pos) {
     if (list->size() == 0)
         return;

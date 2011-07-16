@@ -35,6 +35,7 @@ public:
     void movetoend();
     void moveabs(int pos);
     int focusedindex() const;
+    void removeselected();
     virtual void refresh();
 
 protected:

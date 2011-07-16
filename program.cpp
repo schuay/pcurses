@@ -165,10 +165,7 @@ void Program::mainloop() {
                 break;
             case KEY_LEFT:
                 if (focused_pane != queue_pane) break;
-                if (opqueue.size() == 0 || opqueue.size() <= (unsigned int)queue_pane->focusedindex()) break;
-
-                opqueue.erase(opqueue.begin() + queue_pane->focusedindex());
-
+                queue_pane->removeselected();
                 break;
             case 'h':
                 mode = MODE_HELP;
