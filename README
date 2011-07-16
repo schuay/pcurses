@@ -22,9 +22,8 @@ Navigation and queue management
 -------------------------------
 
 The package list and queue can be navigated using the up/down arrows, page
-up/down, and the home and end keys. Spacebar toggles between displaying the
-info and queue panes. The tab key switches focus between the package and queue
-lists.
+up/down, and the home and end keys. The tab key switches focus between the
+package and queue lists.
 
 Adding packages to the queue is done by pressing the right arrow key while the
 package list is focused. Left arrow removes the selected package from the

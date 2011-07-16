@@ -21,7 +21,6 @@ Program::Program()
 {
     quit = false;
     op = OP_NONE;
-    rightpane = RPE_INFO;
     mode = MODE_STANDARD;
     sortedby = A_NAME;
     coloredby = A_INSTALLSTATE;
@@ -99,7 +98,6 @@ void Program::init() {
     system("clear");
     init_curses();
     setfocus(list_pane);
-    rightpane = RPE_INFO;
     list_pane->setlist(&filteredpackages);
     queue_pane->setlist(&opqueue);
 
@@ -146,23 +144,12 @@ void Program::mainloop() {
                 focused_pane->move(list_pane->usableheight());
                 break;
             case KEY_TAB:
-                if (rightpane == RPE_QUEUE) {
-                    setfocus((focused_pane == list_pane) ? queue_pane : list_pane);
-                }
-                break;
-            case KEY_SPACE:
-                if (rightpane == RPE_QUEUE) {
-                    rightpane = RPE_INFO;
-                    setfocus(list_pane);
-                } else {
-                    rightpane = RPE_QUEUE;
-                }
+                setfocus((focused_pane == list_pane) ? queue_pane : list_pane);
                 break;
             case KEY_RIGHT:
                 if (focused_pane != list_pane) break;
                 if (filteredpackages.size() == 0) break;
 
-                if (rightpane != RPE_QUEUE) rightpane = RPE_QUEUE;
                 if (std::find(opqueue.begin(), opqueue.end(), filteredpackages[list_pane->focusedindex()]) != opqueue.end()) {
                     break;
                 }
@@ -316,7 +303,6 @@ void Program::print_help() {
     PRINTH(".: ", "sort packages by specified field\n");
     PRINTH(";: ", "colorcode packages by specified field\n");
     PRINTH("tab: ", "switch focus between list and queue panes\n");
-    PRINTH("spacebar: ", "switch between displaying the queue and info panes\n");
     PRINTH("left/right arrows: ", "add/remove packages from the queue\n");
     PRINTH("up/down arrows, pg up/down, home/end: ", "navigation\n");
     PRINTH("up/down arrows (in input mode): ", "browse history\n");
@@ -375,12 +361,13 @@ void Program::init_curses() {
 
     const int lwidth = 30;
     const int height = LINES - 1;
-    list_pane = new CursesListBox(lwidth, height, 0, 0, true);
+    const int listheight = (3 * height) / 5;
+    list_pane = new CursesListBox(lwidth, listheight, 0, 0, true);
     info_pane = new CursesFrame(COLS - lwidth + 1, height, 0, lwidth - 1, true);
-    queue_pane = new CursesListBox(COLS - lwidth + 1, height, 0, lwidth - 1, true);
+    queue_pane = new CursesListBox(lwidth, height - listheight, listheight, 0, true);
     status_pane = new CursesFrame(COLS, 1, LINES - 1, 0, false);
     input_pane = new CursesFrame(COLS, 3, LINES - 2, 0, true);
-    help_pane = new CursesFrame(COLS - 10, 20, 1, 5, true);
+    help_pane = new CursesFrame(COLS - 10, 19, 1, 5, true);
 
     list_pane->setheader("Packages");
     info_pane->setheader("Info");
@@ -452,8 +439,8 @@ void Program::updatedisplay() {
         queue_pane->clear();
 
         /* info pane */
-        if ((unsigned int)(list_pane->focusedindex()) < filteredpackages.size()) {
-            pkg = filteredpackages[list_pane->focusedindex()];
+        pkg = focused_pane->focusedpackage();
+        if (pkg) {
             for (int i = 0; i < A_NONE; i++) {
                 AttributeEnum attr = (AttributeEnum)i;
                 string txt = pkg->getattr(attr);
@@ -473,10 +460,8 @@ void Program::updatedisplay() {
         wnoutrefresh(stdscr);
         status_pane->refresh();
         list_pane->refresh();
-        if (rightpane == RPE_INFO)
-            info_pane->refresh();
-        else
-            queue_pane->refresh();
+        queue_pane->refresh();
+        info_pane->refresh();
 
         if (mode == MODE_INPUT) {
             input_pane->printw(optostr(op) + inputbuf.getcontents());
