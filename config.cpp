@@ -20,7 +20,7 @@
 Config::Config()
 {
     pacmanconffile = "/etc/pacman.conf";
-    pcursesconffile = "/etc/pcurses.conf";
+    pcursesconffile = "/etc/" APPLICATION_NAME ".conf";
     rootdir = "/";
     dbpath = "/var/lib/pacman";
     logfile = "/var/log/pacman.log";

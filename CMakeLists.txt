@@ -7,6 +7,7 @@ endif ()
 
 set(pcurses_VERSION_MAJOR 1)
 set(pcurses_VERSION_MINOR 0)
+set(pcurses_APPLICATION_NAME pcurses)
 
 configure_file(
 	"${PROJECT_SOURCE_DIR}/globals.h.in"

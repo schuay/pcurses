@@ -28,6 +28,7 @@
 #include <map>
 
 #include "pcursesexception.h"
+#include "globals.h"
 
 using std::string;
 using std::vector;
