@@ -98,6 +98,7 @@ void Program::init() {
     system("clear");
     init_curses();
     setfocus(list_pane);
+    rightpane = RPE_INFO;
     list_pane->setlist(&filteredpackages);
     queue_pane->setlist(&opqueue);
     updatelistinfo();
