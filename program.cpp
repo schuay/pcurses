@@ -101,6 +101,10 @@ void Program::init() {
     rightpane = RPE_INFO;
     list_pane->setlist(&filteredpackages);
     queue_pane->setlist(&opqueue);
+
+    /* exec startup macro if it exists */
+    execmacro("startup");
+
     updatelistinfo();
     updatedisplay();
 }
