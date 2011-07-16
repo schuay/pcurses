@@ -40,6 +40,7 @@
 #include "filter.h"
 #include "history.h"
 #include "inputbuffer.h"
+#include "globals.h"
 
 using std::string;
 using std::vector;
