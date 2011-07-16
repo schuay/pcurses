@@ -304,9 +304,10 @@ void Program::displayprocessingmsg() {
 void Program::print_help() {
     help_pane->printw("COMMANDS\n", A_BOLD);
     help_pane->printw("\n");
-    PRINTH("ESC: ", "cancel\n");
+    PRINTH("esc: ", "cancel\n");
     PRINTH("q: ", "quit\n");
     PRINTH("!: ", "execute the given command, replacing %p with the package names\n");
+    PRINTH("@: ", "run the specified macro (as configured in " APPLICATION_NAME ".conf\n");
     PRINTH("/: ", "filter packages by specified fields (using regexp)\n");
     PRINTH("", "   note that filters can be chained.\n")
     PRINTH("n: ", "filter packages by name (using regexp)\n");
@@ -314,8 +315,11 @@ void Program::print_help() {
     PRINTH("?: ", "search packages\n");
     PRINTH(".: ", "sort packages by specified field\n");
     PRINTH(";: ", "colorcode packages by specified field\n");
-    PRINTH("arrows, pg up/down, home/end: ", "navigation\n");
-    PRINTH("arrows (in input mode): ", "browse history\n");
+    PRINTH("tab: ", "switch focus between list and queue panes\n");
+    PRINTH("spacebar: ", "switch between displaying the queue and info panes\n");
+    PRINTH("left/right arrows: ", "add/remove packages from the queue\n");
+    PRINTH("up/down arrows, pg up/down, home/end: ", "navigation\n");
+    PRINTH("up/down arrows (in input mode): ", "browse history\n");
 }
 #undef PRINTH
 
@@ -372,7 +376,7 @@ void Program::init_curses() {
     queue_pane = new CursesListBox(COLS - lwidth + 1, height, 0, lwidth - 1, true);
     status_pane = new CursesFrame(COLS, 1, LINES - 1, 0, false);
     input_pane = new CursesFrame(COLS, 3, LINES - 2, 0, true);
-    help_pane = new CursesFrame(COLS - 10, LINES - 10, 5, 5, true);
+    help_pane = new CursesFrame(COLS - 10, 20, 1, 5, true);
 
     list_pane->setheader("Packages");
     info_pane->setheader("Info");

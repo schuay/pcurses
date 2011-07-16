@@ -1,65 +1,129 @@
 PCURSES
 -------
 
-A curses frontend to libalpm, currently in development.
+A curses frontend to libalpm.
+
+
+FEATURES
+--------
+
+Package browsing in a curses frontend, including:
+ * regexp filtering and searching any package property
+ * customizable colorcoding
+ * customizable sorting
+ * external command execution with package list string replacements
+ * user defined macros and hotkeys
+
 
 QUICK TUTORIAL
 --------------
+
+Navigation and queue management
+-------------------------------
+
+The package list and queue can be navigated using the up/down arrows, page
+up/down, and the home and end keys. Spacebar toggles between displaying the
+info and queue panes. The tab key switches focus between the package and queue
+lists.
+
+Adding packages to the queue is done by pressing the right arrow key while the
+package list is focused. Left arrow removes the selected package from the
+queue.
+
+Filtering
+---------
 
 Keybindings are displayed by pressing the 'h' (Help) key in pcurses.
 
 Filtering takes the following syntax:
 
-nd:game
-1 23
+nd:game 1 23
 
-1
-is a list of field specifiers. These tell pcurses which fields to search. Field
-specifiers are the highlighted characters in the field names in the info pane.
-In this example, this means that the Name and Description are searched for the
-phrase 'game'.
+1 is a list of field specifiers. These tell pcurses which fields to search.
+Field specifiers are the highlighted characters in the field names in the info
+pane.  In this example, this means that the Name and Description are searched
+for the phrase 'game'.
 
-2 
-the character ':' separates the field specifier list from the search phrase. If
-this character is not present, the entire string is interpreted as the search
-phrase.
+2 the character ':' separates the field specifier list from the search phrase.
+If this character is not present, the entire string is interpreted as the
+search phrase.
 
-3
-is the actual search phrase. If it contains only alphanumeric characters, a
+3 is the actual search phrase. If it contains only alphanumeric characters, a
 simple and quick string search is used. Otherwise, it is treated as a regular
 expression (which is a bit slower). The search is case INSENSITIVE.
 
 1 and 2 are OPTIONAL.
 
 These searches can be chained. This means that a search for 'n:^a', followed by
-'b:2010' will show all packages beginning with the letter 'a' and having a build
-date in the year 2010.
+'b:2010' will show all packages beginning with the letter 'a' and having a
+build date in the year 2010.
 
 Previous filters are cleared by pressing the 'c' key.
 
-Pressing the up and down keys while in input mode will scroll through all previous history.
+Pressing the up and down keys while in input mode will scroll through all
+previous history.
 
+Sorting and colorcoding
+-----------------------
 
-Colorcoding and sorting use the same syntax as filtering, but only accept a single field specifier.
+Colorcoding and sorting use the same syntax as filtering, but only accept a
+single field specifier.
 
+Command execution
+-----------------
 
-Command execution can be entered by pressing the '!' key. The token '%p' will be replaced by the selected package list. For example, with a current package selection of pcurses and pacman,
+Command execution can be entered by pressing the '!' key. The token '%p' will
+be replaced by the current contents of the package queue. For example, with a
+current package selection of pcurses and pacman,
 
-!echo '%p' | less
+!sudo pacman -S '%p'
 
 will be expanded to 
 
-echo 'pcurses pacman' | less
+echo 'sudo pacman -S pcurses pacman'
 
-Useful commands could be 
+A few useful commands could be
 
-!pacman -Si %p
+!pacman -Sy
 !sudo pacman -S %p
+!sudo pacman -Rs %p
 
-and so forth.
+Macros
+------
+
+Macros are defined in /etc/pcurses.conf using the syntax 'macroname=command'.
+Macros can be chained by separating them with a comma. A few examples:
+
+sortbyname=.n
+colorbyrepo=;r
+filterupdates=/d:update available
+
+chainedmacro=@sortbyname,colorbyrepo,filterupdates
+
+If defined, the macro named 'startup' will be executed on each application
+start. Hotkeys can be defined by creating macros named '1', '2', [...], and are
+triggered by pressing the corresponding key in pcurses.
+
+All macros can be executed in pcurses by pressing the '@' key and entering the
+macro name.
+
 
 FURTHER READING
 ---------------
 
 For some of the things I've been thinking about or am planning on doing, read
 the CONCEPTS file.
+
+
+BUGS
+----
+
+Please report all bugs and feature requests to
+https://github.com/schuay/pcurses/issues
+
+
+CONTACT
+-------
+
+Visit the pcurses github page at https://github.com/schuay/pcurses or write me
+a mail at jakob.gruber@gmail.com
