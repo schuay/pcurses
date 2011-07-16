@@ -112,8 +112,13 @@ void Program::setfocus(CursesListBox *frame) {
     list_pane->setfocused(false);
     queue_pane->setfocused(false);
 
-    focused_pane = frame;
-    frame->setfocused(true);
+    if (opqueue.empty() && frame == queue_pane) {
+        focused_pane = list_pane;
+    } else {
+        focused_pane = frame;
+    }
+
+    focused_pane->setfocused(true);
 }
 
 void Program::mainloop() {
@@ -160,6 +165,7 @@ void Program::mainloop() {
             case KEY_LEFT:
                 if (focused_pane != queue_pane) break;
                 queue_pane->removeselected();
+                if (opqueue.empty()) setfocus(list_pane);
                 break;
             case 'h':
                 mode = MODE_HELP;
