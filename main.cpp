@@ -15,9 +15,31 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
  ************************************************************************* */
 
-#include "program.h"
+#include <unistd.h>
 
-int main() {
+#include "program.h"
+#include "globals.h"
+
+void parseargs(int argc, char *argv[]) {
+    int opt;
+
+    while ((opt = getopt(argc, argv, "hv")) != -1) {
+        switch (opt) {
+        case 'v':
+            fprintf(stdout, "%s %d.%d\n", APPLICATION_NAME, VERSION_MAJOR, VERSION_MINOR);
+            exit(EXIT_SUCCESS);
+            break;
+        case 'h':
+        default:
+            fprintf(stderr, "Usage: %s [-h] [-v]\n", APPLICATION_NAME);
+            exit(EXIT_FAILURE);
+        }
+    }
+}
+
+int main(int argc, char *argv[]) {
+
+    parseargs(argc, argv);
 
     Program *p = new Program();
 

@@ -1,2 +1,3 @@
 #define VERSION_MAJOR @pcurses_VERSION_MAJOR@
 #define VERSION_MINOR @pcurses_VERSION_MINOR@
+#define APPLICATION_NAME "@pcurses_APPLICATION_NAME@"
