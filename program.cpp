@@ -530,22 +530,31 @@ void Program::execmacro(string str) {
 
     gethis(OP_MACRO)->add(str);
 
-    map<string, string>::iterator it;
-    it = macros->find(str);
+    /* macro delimiter is ',' */
+    vector<string> strs;
+    boost::split(strs, str, boost::is_any_of(","));
 
-    if (it == macros->end()) {
-        return;
+    for (uint i = 0; i < strs.size(); i++) {
+        string macropart = strs[i];
+        boost::trim(macropart);
+
+        map<string, string>::iterator it;
+        it = macros->find(macropart);
+
+        if (it == macros->end()) {
+            return;
+        }
+
+        string cmd = it->second;
+
+        FilterOperationEnum op = strtoopt(cmd.substr(0, 1));
+        if (op == OP_NONE) {
+            return;
+        }
+
+        inputbuf.set(cmd.substr(1));
+        exitinputmode(op);
     }
-
-    string cmd = it->second;
-
-    FilterOperationEnum op = strtoopt(cmd.substr(0, 1));
-    if (op == OP_NONE) {
-        return;
-    }
-
-    inputbuf.set(cmd.substr(1));
-    exitinputmode(op);
 }
 
 void Program::execmd(string str) {
