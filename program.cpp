@@ -27,13 +27,45 @@ Program::Program()
     coloredby = A_INSTALLSTATE;
 }
 Program::~Program() {
+    deinit();
+}
+
+void Program::deinit() {
     deinit_curses();
 
-    for (unsigned int i = 0; i < filteredpackages.size(); i++)
-        delete filteredpackages[i];
+    for (unsigned int i = 0; i < packages.size(); i++)
+        delete packages[i];
+
+    filteredpackages.clear();
+    packages.clear();
+    opqueue.clear();
 
     if (alpm_release() != 0)
         throw AlpmException("failed to deinitialize alpm library");
+}
+
+void Program::run_pacman(string pkgs) const {
+    pid_t pid;
+    int status;
+    int p[2];
+
+    pipe(p);
+
+    pid = fork();
+    if (pid == 0) {
+        /* child */
+        close(p[PIPE_WRITE]);
+        dup2(p[PIPE_READ], STDIN_FILENO);
+        execlp("sudo", "sudo", "pacman", "-S", "-", (char*)NULL);
+    } else {
+        /* parent (or error, which we blissfully ignore */
+        close(p[PIPE_READ]);
+        write(p[PIPE_WRITE], pkgs.c_str(), pkgs.length());
+        close(p[PIPE_WRITE]);
+        waitpid(-1, &status, 0);
+        std::cout << "press return to continue...";
+        std::cin.get();
+    }
 }
 
 void Program::Init() {
@@ -81,11 +113,19 @@ void Program::Init() {
 
 void Program::MainLoop() {
     int ch;
+    string pkgs;
     while (!quit) {
         ch = getch();
 
         if (mode == MODE_STANDARD) {
             switch (ch) {
+            case 'e':
+                for (unsigned int i = 0; i < opqueue.size(); i++) {
+                    pkgs += opqueue[i]->getname() + " ";
+                }
+                deinit();
+                run_pacman(pkgs);
+                Init();
             case 'k':
             case KEY_UP:
                 focused_pane->Move(-1);
@@ -123,10 +163,26 @@ void Program::MainLoop() {
             case KEY_RIGHT:
                 if (focused_pane != list_pane) break;
                 if (filteredpackages.size() == 0) break;
+
+                if (std::find(opqueue.begin(), opqueue.end(), filteredpackages[list_pane->FocusedIndex()]) != opqueue.end()) {
+                    break;
+                }
                 opqueue.push_back(filteredpackages[list_pane->FocusedIndex()]);
+
                 break;
             case KEY_LEFT:
-                /* TODO */
+                if (focused_pane != queue_pane) break;
+                if (opqueue.size() == 0 || opqueue.size() <= (unsigned int)queue_pane->FocusedIndex()) break;
+
+                opqueue.erase(opqueue.begin() + queue_pane->FocusedIndex());
+
+                break;
+            case 'i':
+
+                /* testing... */
+                for (unsigned int i = 0; i < opqueue.size(); i++) {
+                    std::cerr << opqueue[i]->getname() << " ";
+                }
                 break;
             case 'h':
                 mode = MODE_HELP;

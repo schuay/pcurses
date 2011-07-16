@@ -18,6 +18,9 @@
 #ifndef PROGRAM_H
 #define PROGRAM_H
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <algorithm>
 #include <iostream>
 #include <ncurses.h>
@@ -39,6 +42,9 @@ using std::vector;
 
 typedef struct __pmdb_t pmdb_t;
 typedef struct __alpm_list_t alpm_list_t;
+
+#define PIPE_READ 0
+#define PIPE_WRITE 1
 
 #define KEY_ESC (27)
 #define KEY_RETURN (10)
@@ -76,9 +82,11 @@ public:
 
 private:
 
+    void run_pacman(string pkgs) const;
     void init_alpm();
     void init_curses();
     void print_help();
+    void deinit();
     void deinit_curses();
     void printinfosection(AttributeEnum attr, string text);
     void updatedisplay();
