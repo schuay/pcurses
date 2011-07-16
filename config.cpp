@@ -40,7 +40,7 @@ string Config::getconfvalue(const string str) const {
 }
 void Config::parse_pcursesconf() {
     std::ifstream conf;
-    sregex secrex = sregex::compile("^([^#]\\w+?)=(.+)$");
+    sregex secrex = sregex::compile("^([^#]\\w*?)=(.+)$");
     smatch what;
 
     conf.open(pcursesconffile.c_str());
