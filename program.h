@@ -40,7 +40,6 @@
 using std::string;
 using std::vector;
 
-typedef struct __pmdb_t pmdb_t;
 typedef struct __alpm_list_t alpm_list_t;
 
 #define PIPE_READ 0
@@ -123,7 +122,9 @@ private:
             filteredpackages,
             opqueue;
 
-    pmdb_t
+    alpm_handle_t
+            *handle;
+    alpm_db_t
             *localdb;
 
     string

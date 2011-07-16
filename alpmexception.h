@@ -18,7 +18,6 @@
 #ifndef ALPMEXCEPTION_H
 #define ALPMEXCEPTION_H
 
-#include <alpm.h>
 #include <string>
 
 using std::string;
@@ -26,15 +25,12 @@ using std::string;
 class AlpmException
 {
 public:
-    AlpmException() { _msg = "Unexpected error"; _alpmError = alpm_strerrorlast(); }
-    AlpmException(string msg) { _msg = msg; _alpmError = alpm_strerrorlast(); }
+    AlpmException(string msg) { _msg = msg; }
 
     string GetMessage() const { return _msg; }
-    string GetAlpmError() const { return _alpmError; }
 
 private:
     string _msg;
-    string _alpmError;
 };
 
 #endif // ALPMEXCEPTION_H

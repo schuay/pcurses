@@ -29,8 +29,7 @@
 #include "alpmexception.h"
 #include "attributeinfo.h"
 
-typedef struct __pmpkg_t pmpkg_t;
-typedef struct __pmdepend_t pmdepend_t;
+typedef struct __alpm_pkg_t alpm_pkg_t;
 
 using std::string;
 using std::vector;
@@ -55,7 +54,7 @@ enum OperationEnum {
 class Package
 {
 public:
-    Package(pmpkg_t *pkg);
+    Package(alpm_pkg_t *pkg, alpm_db_t *localdb);
 
     string getarch() const;
     string getbuilddate() const;
@@ -94,7 +93,7 @@ private:
 
     bool needsupdate() const;
 
-    pmpkg_t
+    alpm_pkg_t
             *_pkg,
             *_localpkg;
 

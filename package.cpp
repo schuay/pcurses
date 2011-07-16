@@ -17,12 +17,12 @@
 
 #include "package.h"
 
-Package::Package(pmpkg_t* pkg) :
+Package::Package(alpm_pkg_t* pkg, alpm_db_t *localdb) :
         _pkg(NULL),
         _localpkg(NULL)
 {
     _pkg = pkg;
-    _localpkg = alpm_db_get_pkg(alpm_option_get_localdb(), alpm_pkg_get_name(_pkg));
+    _localpkg = alpm_db_get_pkg(localdb, alpm_pkg_get_name(_pkg));
 
     _name = trimstr(alpm_pkg_get_name(_pkg));
     _url = trimstr(alpm_pkg_get_url(_pkg));
@@ -50,13 +50,13 @@ Package::Package(pmpkg_t* pkg) :
 
     for (alpm_list_t *deps = alpm_pkg_get_depends(_pkg); deps != NULL;
          deps = alpm_list_next(deps)) {
-        pmdepend_t *depend = (pmdepend_t*)alpm_list_getdata(deps);
+        alpm_depend_t *depend = (alpm_depend_t*)alpm_list_getdata(deps);
         _depends += alpm_dep_compute_string(depend);
         if (deps->next != NULL)_depends += " ";
     }
 
     _reason = ((_localpkg == NULL) ? IRE_NOTINSTALLED :
-               (alpm_pkg_get_reason(_localpkg) == PM_PKG_REASON_DEPEND) ? IRE_ASDEPS :
+               (alpm_pkg_get_reason(_localpkg) == ALPM_PKG_REASON_DEPEND) ? IRE_ASDEPS :
                IRE_EXPLICIT);
 }
 

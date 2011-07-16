@@ -40,7 +40,7 @@ void Program::deinit() {
     packages.clear();
     opqueue.clear();
 
-    if (alpm_release() != 0)
+    if (alpm_release(handle) != 0)
         throw AlpmException("failed to deinitialize alpm library");
 }
 
@@ -76,13 +76,13 @@ void Program::Init() {
     init_alpm();
 
     /* create our package list */
-    alpm_list_t *dbs = alpm_list_copy(alpm_option_get_syncdbs());
+    alpm_list_t *dbs = alpm_list_copy(alpm_option_get_syncdbs(handle));
     dbs = alpm_list_add(dbs, localdb);
     for ( ; dbs; dbs = alpm_list_next(dbs)) {
-        pmdb_t *db = (pmdb_t*)alpm_list_getdata(dbs);
+        alpm_db_t *db = (alpm_db_t*)alpm_list_getdata(dbs);
         for (alpm_list_t *pkgs = alpm_db_get_pkgcache(db); pkgs; pkgs = alpm_list_next(pkgs)) {
-            pmpkg_t *pkg = (pmpkg_t*)alpm_list_getdata(pkgs);
-            Package *p = new Package(pkg);
+            alpm_pkg_t *pkg = (alpm_pkg_t*)alpm_list_getdata(pkgs);
+            Package *p = new Package(pkg, localdb);
             Package *parray[] = { p };
             if (!std::includes(packages.begin(), packages.end(),
                               parray, parray + 1,
@@ -298,21 +298,25 @@ void Program::print_help() {
 #undef PRINTH
 
 void Program::init_alpm() {
-    if (alpm_initialize() != 0)
-        throw AlpmException("failed to initialize alpm library");
+    _alpm_errno_t err;
 
     Config conf;
     conf.parse();
 
-    alpm_option_set_dbpath(conf.getDBPath().c_str());
-    alpm_option_set_logfile(conf.getLogFile().c_str());
-    alpm_option_set_root(conf.getRootDir().c_str());
+    handle = alpm_initialize(conf.getRootDir().c_str(), conf.getDBPath().c_str(), &err);
+    if (handle == NULL) {
+        throw AlpmException(alpm_strerror(err));
+    }
+
+    alpm_option_set_logfile(handle, conf.getLogFile().c_str());
 
     vector<string> repos = conf.getRepos();
-    for (unsigned int i = 0; i < repos.size(); i++)
-        alpm_db_register_sync(repos[i].c_str());
+    for (unsigned int i = 0; i < repos.size(); i++) {
+        /* i'm going to be lazy here and remind myself to handle siglevel properly later on */
+        alpm_db_register_sync(handle, repos[i].c_str(), ALPM_SIG_USE_DEFAULT);
+    }
 
-    localdb = alpm_option_get_localdb();
+    localdb = alpm_option_get_localdb(handle);
 }
 
 void Program::init_curses() {
