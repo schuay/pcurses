@@ -25,6 +25,8 @@ Config::Config()
     dbpath = "/var/lib/pacman";
     logfile = "/var/log/pacman.log";
 
+    threepanelayout = false;
+
     macros.reset(new map<string, string>());
 }
 Config::~Config() {
@@ -40,7 +42,9 @@ string Config::getconfvalue(const string str) const {
 }
 void Config::parse_pcursesconf() {
     std::ifstream conf;
-    sregex secrex = sregex::compile("^([^#]\\w*?)=(.+)$");
+    sregex macro = sregex::compile("^([^#]\\w*?)=(.+)$");
+    sregex pane = sregex::compile("^3PaneLayout$");
+    sregex comment = sregex::compile("^#");
     smatch what;
 
     conf.open(pcursesconffile.c_str());
@@ -56,8 +60,12 @@ void Config::parse_pcursesconf() {
         if (line.length() == 0)
             continue;
 
-        if (regex_match(line, what, secrex)) {
+        if (regex_match(line, what, comment)) {
+            continue;
+        } else if (regex_match(line, what, macro)) {
             macros->insert(std::pair<string, string>(what[1], what[2]));
+        } else if (regex_match(line, what, pane)) {
+            threepanelayout = true;
         }
     }
 }

@@ -115,6 +115,9 @@ private:
 
     ModeEnum mode;
 
+    Config
+            conf;
+
     bool
             quit;
 

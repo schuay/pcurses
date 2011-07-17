@@ -37,7 +37,7 @@ class FrameInfo
 {
 public:
 
-    FrameInfo(FrameEnum t, uint termw, uint termh);
+    FrameInfo(FrameEnum t, uint termw, uint termh, bool threepanelayout);
     void recalcinfo(uint termw, uint termh);
 
     uint getx() const { return x; }
@@ -51,9 +51,18 @@ public:
 
 private:
 
-    uint w, h, x, y;
-    bool hasborder;
-    string title;
+    uint
+        w,
+        h,
+        x,
+        y;
+
+    bool
+        hasborder,
+        threepanelayout;
+
+    string
+        title;
 
     const FrameEnum type;
 };

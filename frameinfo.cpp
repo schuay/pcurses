@@ -17,7 +17,8 @@
 
 #include "frameinfo.h"
 
-FrameInfo::FrameInfo(FrameEnum t, uint termw, uint termh) : type(t) {
+FrameInfo::FrameInfo(FrameEnum t, uint termw, uint termh, bool threepanelayout) : type(t) {
+    this->threepanelayout = threepanelayout;
     recalcinfo(termw, termh);
 }
 
@@ -77,5 +78,25 @@ void FrameInfo::recalcinfo(uint termw, uint termh) {
         break;
     default:
         assert(0);
+    }
+
+    if (threepanelayout) {
+        /* three panes next to each other, adjust some values */
+        switch (type) {
+        case FE_LIST:
+            h = paneheight;
+            break;
+        case FE_INFO:
+            w = termw - leftpanewidth * 2 + 1;
+            x = leftpanewidth * 2 - 2;
+            break;
+        case FE_QUEUE:
+            h = paneheight;
+            x = leftpanewidth - 1;
+            y = 0;
+            break;
+        default:
+            break;
+        }
     }
 }
