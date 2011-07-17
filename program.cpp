@@ -329,6 +329,7 @@ void Program::exitinputmode(FilterOperationEnum o) {
         displayprocessingmsg();
         filterpackages(inputbuf.getcontents());
         list_pane->setlist(&filteredpackages);
+        list_pane->moveabs(0);
         flushinp();
         break;
     case OP_SORT:
