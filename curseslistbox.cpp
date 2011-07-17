@@ -113,6 +113,8 @@ int CursesListBox::focusedindex() const {
 
 Package* CursesListBox::focusedpackage() const {
     if (list->size() == 0) return NULL;
+    if (!isinbounds(focusedindex())) return NULL;
+
     return list->at(focusedindex());
 }
 
