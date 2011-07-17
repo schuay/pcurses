@@ -87,6 +87,7 @@ public:
 
 private:
 
+    void ensureminwsize(uint w, uint h) const;
     void do_resize();
     void setfocus(CursesListBox *frame);
     void run_cmd(string cmd) const;
