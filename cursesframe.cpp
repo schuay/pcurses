@@ -82,7 +82,7 @@ void CursesFrame::refresh() {
     if (w_border != NULL) {
         box(w_border, ACS_VLINE, ACS_HLINE);
 
-        int headercol = focused ? C_DEF_HL4 : C_DEF;
+        int headercol = focused ? C_INV : C_DEF;
         wattron(w_border, A_BOLD | headercol);
         mvwprintw(w_border, 0, 1, header.c_str());
         wattroff(w_border, A_BOLD | headercol);
