@@ -17,6 +17,11 @@
 
 #include "program.h"
 
+static volatile bool want_resize = false;
+void request_resize(int /* unused */) {
+    want_resize = true;
+}
+
 Program::Program()
 {
     quit = false;
@@ -24,9 +29,30 @@ Program::Program()
     mode = MODE_STANDARD;
     sortedby = A_NAME;
     coloredby = A_INSTALLSTATE;
+
+    signal(SIGWINCH, request_resize);
 }
 Program::~Program() {
     deinit();
+}
+
+void Program::do_resize() {
+    want_resize = false;
+
+    struct winsize w;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+
+    endwin();
+    refresh();
+
+    list_pane->reposition(w.ws_col, w.ws_row);
+    info_pane->reposition(w.ws_col, w.ws_row);
+    queue_pane->reposition(w.ws_col, w.ws_row);
+    status_pane->reposition(w.ws_col, w.ws_row);
+    input_pane->reposition(w.ws_col, w.ws_row);
+    help_pane->reposition(w.ws_col, w.ws_row);
+
+    updatedisplay();
 }
 
 void Program::deinit() {
@@ -127,6 +153,12 @@ void Program::mainloop() {
     int ch;
     while (!quit) {
         ch = getch();
+
+        if (want_resize) {
+            do_resize();
+        }
+
+        if (ch == ERR) continue;
 
         if (mode == MODE_STANDARD) {
             switch (ch) {
@@ -347,6 +379,13 @@ void Program::init_curses() {
     keypad(stdscr, TRUE);
     curs_set(0);
     noecho();
+
+    /* getch() is our loop speed limiter. we use the nonblocking version
+      to handle window resizes without waiting for the next key event, but
+      use a timeout of 50 ms to limit the cpu usage to acceptable levels.
+      50 ms is just an initial value and is subject to change depending on how
+      well it works */
+    timeout(50);
 
     /* target ist archlinux so we know a proper ncurses will be used.
        otherwise we would need to conditionally include this using
