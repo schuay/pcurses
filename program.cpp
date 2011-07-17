@@ -145,7 +145,6 @@ void Program::init() {
     /* exec startup macro if it exists */
     execmacro("startup");
 
-    updatelistinfo();
     updatedisplay();
 }
 
@@ -428,13 +427,6 @@ void Program::init_curses() {
     input_pane = new CursesFrame(new FrameInfo(FE_INPUT, COLS, LINES));
     help_pane = new CursesFrame(new FrameInfo(FE_HELP, COLS, LINES));
 
-    list_pane->setheader("Packages");
-    info_pane->setheader("Info");
-    info_pane->setfooter("Press h for help");
-    queue_pane->setheader("Queue");
-    input_pane->setheader("Input");
-    help_pane->setheader("Help");
-
     list_pane->setbackground(C_DEF);
     info_pane->setbackground(C_DEF);
     queue_pane->setbackground(C_DEF);
@@ -517,10 +509,10 @@ void Program::updatedisplay() {
         status_pane->printw(((searchphrases.length() == 0) ? "-" : searchphrases), C_INV);
 
         wnoutrefresh(stdscr);
-        status_pane->refresh();
         list_pane->refresh();
         queue_pane->refresh();
         info_pane->refresh();
+        status_pane->refresh();
 
         if (mode == MODE_INPUT) {
             input_pane->printw(optostr(op) + inputbuf.getcontents());
@@ -564,7 +556,6 @@ void Program::clearfilter() {
 
     searchphrases = "";
     list_pane->moveabs(0);
-    updatelistinfo();
 }
 
 History *Program::gethis(FilterOperationEnum o) {
@@ -692,7 +683,6 @@ void Program::searchpackages(string str) {
 
     /* if search phrase is empty, nothing to do */
     if (searchphrase.length() == 0) {
-        updatelistinfo();
         return;
     }
 
@@ -761,7 +751,6 @@ void Program::filterpackages(string str) {
 
     /* if search phrase is empty, nothing to do */
     if (searchphrase.length() == 0) {
-        updatelistinfo();
         return;
     }
 
@@ -793,9 +782,4 @@ void Program::filterpackages(string str) {
                               boost::bind(&Filter::notmatchesre, _1, needle));
         }
     }
-
-    updatelistinfo();
-}
-void Program::updatelistinfo() {
-    list_pane->setfooter(boost::str(boost::format("%d Package(s)") % filteredpackages.size()));
 }

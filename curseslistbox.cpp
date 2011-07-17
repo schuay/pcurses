@@ -121,6 +121,8 @@ Package* CursesListBox::focusedpackage() const {
 void CursesListBox::refresh() {
     Package *pkg;
 
+    setheader(boost::str(boost::format("(%d)") % list->size()));
+
     for (int i = 0; i <= usableheight(); i++) {
         if (windowpos + i > (int)list->size() - 1)
             break;

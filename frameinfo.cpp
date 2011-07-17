@@ -17,14 +17,14 @@
 
 #include "frameinfo.h"
 
-FrameInfo::FrameInfo(FrameEnum t, unsigned int termw, unsigned int termh) : type(t) {
+FrameInfo::FrameInfo(FrameEnum t, uint termw, uint termh) : type(t) {
     recalcinfo(termw, termh);
 }
 
-void FrameInfo::recalcinfo(unsigned int termw, unsigned int termh) {
+void FrameInfo::recalcinfo(uint termw, uint termh) {
 
     const int leftpanewidth = 30;
-    const int paneheight = termh - 1;
+    const int paneheight = termh;
     const int listpaneheight = (3 * paneheight) / 5;
 
     switch (type) {
@@ -34,6 +34,7 @@ void FrameInfo::recalcinfo(unsigned int termw, unsigned int termh) {
         x = 0;
         y = 0;
         hasborder = true;
+        title = "Packages";
         break;
     case FE_INFO:
         w = termw - leftpanewidth + 1;
@@ -41,13 +42,15 @@ void FrameInfo::recalcinfo(unsigned int termw, unsigned int termh) {
         x = leftpanewidth - 1;
         y = 0;
         hasborder = true;
+        title = "Info (press h for help)";
         break;
     case FE_QUEUE:
         w = leftpanewidth;
-        h = paneheight - listpaneheight;
+        h = paneheight - listpaneheight + 1;
         x = 0;
-        y = listpaneheight;
+        y = listpaneheight - 1;
         hasborder = true;
+        title = "Queue";
         break;
     case FE_STATUS:
         w = termw;
@@ -62,6 +65,7 @@ void FrameInfo::recalcinfo(unsigned int termw, unsigned int termh) {
         x = 0;
         y = termh - 2;
         hasborder = true;
+        title = "Input";
         break;
     case FE_HELP:
         w = termw - 10;
@@ -69,6 +73,7 @@ void FrameInfo::recalcinfo(unsigned int termw, unsigned int termh) {
         x = (termw - w) / 2;
         y = 1;
         hasborder = true;
+        title = "Help";
         break;
     default:
         assert(0);
