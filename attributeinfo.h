@@ -40,12 +40,12 @@ enum AttributeEnum {
     A_LICENSES,
     A_GROUPS,
     A_DEPENDS,
-    A_OPTDEPENDS,
     A_CONFLICTS,
     A_PROVIDES,
     A_REPLACES,
     A_SIZE,
     A_ISIZE,
+    A_OPTDEPENDS,
     A_NONE
 };
 
