@@ -218,6 +218,12 @@ void Program::mainloop() {
                 queue_pane->removeselected();
                 if (opqueue.empty()) setfocus(list_pane);
                 break;
+            case 'C':
+                while (!opqueue.empty()) {
+                    queue_pane->removeselected();
+                }
+                setfocus(list_pane);
+                break;
             case 'h':
                 mode = MODE_HELP;
                 break;
@@ -356,6 +362,7 @@ void Program::print_help() {
     PRINTH("", "   note that filters can be chained.\n")
     PRINTH("n: ", "filter packages by name (using regexp)\n");
     PRINTH("c: ", "clear all package filters\n");
+    PRINTH("C: ", "clear the package queue\n");
     PRINTH("?: ", "search packages\n");
     PRINTH(".: ", "sort packages by specified field\n");
     PRINTH(";: ", "colorcode packages by specified field\n");
