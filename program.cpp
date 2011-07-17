@@ -30,11 +30,7 @@ Program::Program()
     sortedby = A_NAME;
     coloredby = A_INSTALLSTATE;
 
-    /* handle SIGWINCH (terminal resize handling)
-      and ignore SIGTTOU (prevent getting sent to the background
-      after run_cmd) */
     signal(SIGWINCH, request_resize);
-    signal(SIGTTOU, SIG_IGN);
 }
 Program::~Program() {
     deinit();
@@ -87,16 +83,25 @@ void Program::run_cmd(string cmd) const {
     pid_t pid;
     int status;
 
+
     pid = fork();
     if (pid == 0) {
         /* child */
         execlp("bash", "bash", "-ic", cmd.c_str(), (char*)NULL);
     } else {
         /* parent (or error, which we blissfully ignore */
+
+        /* ignore SIGTTOU (prevent getting sent to the background
+          after run_cmd) */
+        __sighandler_t handler = signal(SIGTTOU, SIG_IGN);
+
         waitpid(pid, &status, 0);
         tcsetpgrp(STDIN_FILENO, getpgid(0));    /* regain control of the terminal */
         std::cout << "press return to continue...";
         std::cin.get();
+
+        /* and restore the original handler when done */
+        signal(SIGTTOU, handler);
     }
 }
 
