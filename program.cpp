@@ -539,6 +539,8 @@ string Program::optostr(FilterOperationEnum o) const {
     case OP_NONE: return "";
     default: assert(0);
     }
+
+    return "";
 }
 FilterOperationEnum Program::strtoopt(string str) const {
     for (int i = 0; i < OP_NONE; i++) {
@@ -560,7 +562,8 @@ void Program::clearfilter() {
 
 History *Program::gethis(FilterOperationEnum o) {
 
-    History *v;
+    History *v = NULL;
+
     switch (o) {
     case OP_FILTER:
         v = &hisfilter;
