@@ -30,7 +30,11 @@ Program::Program()
     sortedby = A_NAME;
     coloredby = A_INSTALLSTATE;
 
+    /* handle SIGWINCH (terminal resize handling)
+      and ignore SIGTTOU (prevent getting sent to the background
+      after run_cmd) */
     signal(SIGWINCH, request_resize);
+    signal(SIGTTOU, SIG_IGN);
 }
 Program::~Program() {
     deinit();
