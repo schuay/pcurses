@@ -30,7 +30,6 @@
 #include <map>
 #include <stdarg.h>
 #include <boost/bind.hpp>
-#include <boost/format.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -109,7 +108,6 @@ private:
     void exitinputmode(FilterOperationEnum o);
     void prepinputmode(FilterOperationEnum o);
     History *gethis(FilterOperationEnum o);
-    void updatelistinfo();
     void displayprocessingmsg();
     string optostr(FilterOperationEnum o) const;
     FilterOperationEnum strtoopt(string str) const;

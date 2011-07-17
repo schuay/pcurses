@@ -19,6 +19,7 @@
 #define CURSESLISTBOX_H
 
 #include <vector>
+#include <boost/format.hpp>
 
 #include "cursesframe.h"
 #include "package.h"

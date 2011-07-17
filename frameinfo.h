@@ -19,6 +19,10 @@
 #define FRAMEINFO_H
 
 #include <assert.h>
+#include <string>
+#include <sys/types.h>
+
+using std::string;
 
 enum FrameEnum {
     FE_LIST,
@@ -33,19 +37,23 @@ class FrameInfo
 {
 public:
 
-    FrameInfo(FrameEnum t, unsigned int termw, unsigned int termh);
-    void recalcinfo(unsigned int termw, unsigned int termh);
+    FrameInfo(FrameEnum t, uint termw, uint termh);
+    void recalcinfo(uint termw, uint termh);
 
-    unsigned int getx() const { return x; }
-    unsigned int gety() const { return y; }
-    unsigned int getw() const { return w; }
-    unsigned int geth() const { return h; }
+    uint getx() const { return x; }
+    uint gety() const { return y; }
+    uint getw() const { return w; }
+    uint geth() const { return h; }
+
     bool gethasborder() const { return hasborder; }
+
+    string gettitle() const { return title; }
 
 private:
 
-    unsigned int w, h, x, y;
+    uint w, h, x, y;
     bool hasborder;
+    string title;
 
     const FrameEnum type;
 };

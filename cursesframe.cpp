@@ -26,6 +26,7 @@ CursesFrame::CursesFrame(FrameInfo *frameinfo)
     } else {
         w_main = newwin(finfo->geth(), finfo->getw(), finfo->gety(), finfo->getx());
     }
+    header = finfo->gettitle();
 }
 
 CursesFrame::~CursesFrame()
@@ -130,7 +131,7 @@ int CursesFrame::usablewidth() const {
 }
 
 void CursesFrame::setfooter(string str) {
-    if (str.length() > (unsigned int)usablewidth()) {
+    if (str.length() > (uint)usablewidth()) {
         str = str.substr(0, usablewidth() - overflowind.length() + 1) + overflowind;
     }
 
@@ -138,9 +139,10 @@ void CursesFrame::setfooter(string str) {
 }
 
 void CursesFrame::setheader(string str) {
-    if (str.length() > (unsigned int)usablewidth()) {
-        str = str.substr(0, usablewidth() - overflowind.length() + 1) + overflowind;
+    if (str.length() + finfo->gettitle().length() > (uint)usablewidth()) {
+        int newlen = usablewidth() - finfo->gettitle().length() - overflowind.length();
+        str = str.substr(0, usablewidth() - newlen) + overflowind;
     }
 
-    header = str;
+    header = finfo->gettitle() + " " + str;
 }
