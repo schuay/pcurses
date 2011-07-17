@@ -21,10 +21,10 @@ CursesFrame::CursesFrame(int w, int h, int x, int y, bool hasborder)
     : overflowind("..."), w_main(NULL), w_border(NULL), focused(false)
 {
     if (hasborder) {
-        w_border = newwin(h, w, x, y);
-        w_main = newwin(h - 2, w - 2, x + 1, y + 1);
+        w_border = newwin(h, w, y, x);
+        w_main = newwin(h - 2, w - 2, y + 1, x + 1);
     } else {
-        w_main = newwin(h, w, x, y);
+        w_main = newwin(h, w, y, x);
     }
 }
 

@@ -365,11 +365,11 @@ void Program::init_curses() {
     const int height = LINES - 1;
     const int listheight = (3 * height) / 5;
     list_pane = new CursesListBox(lwidth, listheight, 0, 0, true);
-    info_pane = new CursesFrame(COLS - lwidth + 1, height, 0, lwidth - 1, true);
-    queue_pane = new CursesListBox(lwidth, height - listheight, listheight, 0, true);
-    status_pane = new CursesFrame(COLS, 1, LINES - 1, 0, false);
-    input_pane = new CursesFrame(COLS, 3, LINES - 2, 0, true);
-    help_pane = new CursesFrame(COLS - 10, 19, 1, 5, true);
+    info_pane = new CursesFrame(COLS - lwidth + 1, height, lwidth - 1, 0, true);
+    queue_pane = new CursesListBox(lwidth, height - listheight, 0, listheight, true);
+    status_pane = new CursesFrame(COLS, 1, 0, LINES - 1, false);
+    input_pane = new CursesFrame(COLS, 3, 0, LINES - 2, true);
+    help_pane = new CursesFrame(COLS - 10, 19, 5, 1, true);
 
     list_pane->setheader("Packages");
     info_pane->setheader("Info");
