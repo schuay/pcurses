@@ -69,7 +69,7 @@ void FrameInfo::recalcinfo(uint termw, uint termh) {
         break;
     case FE_HELP:
         w = termw - 10;
-        h = 20; /* number of help items */
+        h = 21; /* number of help items */
         x = (termw - w) / 2;
         y = 1;
         hasborder = true;

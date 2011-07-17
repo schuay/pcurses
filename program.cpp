@@ -57,7 +57,7 @@ void Program::do_resize() {
 
 void Program::ensureminwsize(uint w, uint h) const {
     const uint minw = 60;
-    const uint minh = 15;
+    const uint minh = 20;
 
     if (w < minw || h < minh) {
         throw PcursesException("Window size is below required minimum");
@@ -358,12 +358,11 @@ void Program::displayprocessingmsg() {
 
 #define PRINTH(a, b) help_pane->printw(a, A_BOLD); help_pane->printw(b);
 void Program::print_help() {
-    help_pane->printw("COMMANDS\n", A_BOLD);
-    help_pane->printw("\n");
     PRINTH("esc: ", "cancel\n");
     PRINTH("q: ", "quit\n");
-    PRINTH("!: ", "execute the given command, replacing %p with the package names\n");
-    PRINTH("@: ", "run the specified macro (as configured in " APPLICATION_NAME ".conf\n");
+    PRINTH("1 to 0: ", "hotkeys (as configured in " APPLICATION_NAME ".conf)\n");
+    PRINTH("!: ", "execute command, replacing %p with selected package names\n");
+    PRINTH("@: ", "run the specified macro (as configured in " APPLICATION_NAME ".conf)\n");
     PRINTH("/: ", "filter packages by specified fields (using regexp)\n");
     PRINTH("", "   note that filters can be chained.\n")
     PRINTH("n: ", "filter packages by name (using regexp)\n");
@@ -376,6 +375,8 @@ void Program::print_help() {
     PRINTH("left/right arrows: ", "add/remove packages from the queue\n");
     PRINTH("up/down arrows, pg up/down, home/end: ", "navigation\n");
     PRINTH("up/down arrows (in input mode): ", "browse history\n");
+    help_pane->printw("\n");
+    help_pane->printw("configure macros, hotkeys and hooks in " APPLICATION_NAME ".conf\n");
 }
 #undef PRINTH
 
