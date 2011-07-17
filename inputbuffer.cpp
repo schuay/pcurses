@@ -23,6 +23,14 @@ InputBuffer::InputBuffer()
     clear();
 }
 
+void InputBuffer::movestart() {
+    pos = 0;
+}
+
+void InputBuffer::moveend() {
+    pos = contents.length();
+}
+
 void InputBuffer::moveleft() {
     if (pos > 0) {
         pos--;
