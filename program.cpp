@@ -101,6 +101,8 @@ void Program::init() {
     list_pane->setlist(&filteredpackages);
     queue_pane->setlist(&opqueue);
 
+    searchphrases.clear();
+
     /* exec startup macro if it exists */
     execmacro("startup");
 
