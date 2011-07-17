@@ -42,6 +42,8 @@ void Program::do_resize() {
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 
+    ensureminwsize(w.ws_col, w.ws_row);
+
     endwin();
     refresh();
 
@@ -51,8 +53,15 @@ void Program::do_resize() {
     status_pane->reposition(w.ws_col, w.ws_row);
     input_pane->reposition(w.ws_col, w.ws_row);
     help_pane->reposition(w.ws_col, w.ws_row);
+}
 
-    updatedisplay();
+void Program::ensureminwsize(uint w, uint h) const {
+    const uint minw = 60;
+    const uint minh = 15;
+
+    if (w < minw || h < minh) {
+        throw PcursesException("Window size is below required minimum");
+    }
 }
 
 void Program::deinit() {
@@ -391,6 +400,8 @@ void Program::init_curses() {
        otherwise we would need to conditionally include this using
        NCURSES_VERSION */
     use_default_colors();
+
+    ensureminwsize(COLS, LINES);
 
     init_pair(5, -1, -1);                   /* default (pane BG) */
     init_pair(2, COLOR_GREEN, -1);          /* default highlight 1 */

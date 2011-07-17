@@ -39,6 +39,8 @@ void parseargs(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
 
+    std::string err;
+
     parseargs(argc, argv);
 
     Program *p = new Program();
@@ -47,12 +49,19 @@ int main(int argc, char *argv[]) {
         p->init();
         p->mainloop();
     } catch (PcursesException e) {
-        std::cerr << e.getmessage() << std::endl;
+        err = e.getmessage();
     } catch (...) {
-        std::cerr << "guru meditation" << std::endl;
+        err = "guru meditation";
     }
 
     delete p;
+
+    /* printing any errors at this point, because the Program destructor
+      clears the screen */
+    if (!err.empty()) {
+        std::cerr << err << std::endl;
+
+    }
 
     return 0;
 }
