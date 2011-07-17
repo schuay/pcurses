@@ -41,7 +41,7 @@ Package::Package(pmpkg_t* pkg) :
 
     _licenses = list2str(alpm_pkg_get_licenses(_pkg), " ");
     _groups = list2str(alpm_pkg_get_groups(_pkg), " ");
-    _optdepends = list2str(alpm_pkg_get_optdepends(_pkg), "\n");
+    _optdepends = list2str(alpm_pkg_get_optdepends(_pkg), "\n            "); /* line up correctly in info pane */
     _conflicts = list2str(alpm_pkg_get_conflicts(_pkg), " ");
     _provides = list2str(alpm_pkg_get_provides(_pkg), " ");
     _replaces = list2str(alpm_pkg_get_replaces(_pkg), " ");
