@@ -559,6 +559,7 @@ void Program::clearfilter() {
               boost::bind(&Filter::cmp, _1, _2, sortedby));
 
     searchphrases = "";
+    list_pane->moveabs(0);
     updatelistinfo();
 }
 
