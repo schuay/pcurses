@@ -21,6 +21,8 @@
 #include <ncurses.h>
 #include <string>
 
+#include "frameinfo.h"
+
 using std::string;
 
 #define C_DEF (COLOR_PAIR(5))
@@ -36,7 +38,7 @@ using std::string;
 class CursesFrame
 {
 public:
-    CursesFrame(int w, int h, int x, int y, bool hasborder);
+    CursesFrame(FrameInfo *frameinfo);
     virtual ~CursesFrame();
 
     void setbackground(chtype col);
@@ -71,6 +73,9 @@ protected:
 
     bool
             focused;
+
+    FrameInfo
+            *finfo;
 };
 
 #endif // CURSESFRAME_H

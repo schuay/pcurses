@@ -17,14 +17,14 @@
 
 #include "cursesframe.h"
 
-CursesFrame::CursesFrame(int w, int h, int x, int y, bool hasborder)
-    : overflowind("..."), w_main(NULL), w_border(NULL), focused(false)
+CursesFrame::CursesFrame(FrameInfo *frameinfo)
+    : overflowind("..."), w_main(NULL), w_border(NULL), focused(false), finfo(frameinfo)
 {
-    if (hasborder) {
-        w_border = newwin(h, w, y, x);
-        w_main = newwin(h - 2, w - 2, y + 1, x + 1);
+    if (finfo->gethasborder()) {
+        w_border = newwin(finfo->geth(), finfo->getw(), finfo->gety(), finfo->getx());
+        w_main = newwin(finfo->geth() - 2, finfo->getw() - 2, finfo->gety() + 1, finfo->getx() + 1);
     } else {
-        w_main = newwin(h, w, y, x);
+        w_main = newwin(finfo->geth(), finfo->getw(), finfo->gety(), finfo->getx());
     }
 }
 
@@ -33,6 +33,7 @@ CursesFrame::~CursesFrame()
     if (w_border != NULL)
         delwin(w_border);
     delwin(w_main);
+    delete finfo;
 }
 
 void CursesFrame::DoUpdate() {
