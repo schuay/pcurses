@@ -105,6 +105,8 @@ chtype CursesListBox::getcol(int index) const {
     case 6: return C_DEF_HL6;
     default: assert(0);
     }
+
+    return C_DEF;
 }
 
 int CursesListBox::focusedindex() const {
