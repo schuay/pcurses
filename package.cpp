@@ -39,12 +39,12 @@ Package::Package(alpm_pkg_t* pkg, alpm_db_t *localdb) :
     _sizestr = size2str(_size);
     _installsizestr = size2str(_installsize);
 
-    _licenses = list2str(alpm_pkg_get_licenses(_pkg));
-    _groups = list2str(alpm_pkg_get_groups(_pkg));
-    _optdepends = list2str(alpm_pkg_get_optdepends(_pkg));
-    _conflicts = list2str(alpm_pkg_get_conflicts(_pkg));
-    _provides = list2str(alpm_pkg_get_provides(_pkg));
-    _replaces = list2str(alpm_pkg_get_replaces(_pkg));
+    _licenses = list2str(alpm_pkg_get_licenses(_pkg), " ");
+    _groups = list2str(alpm_pkg_get_groups(_pkg), " ");
+    _optdepends = list2str(alpm_pkg_get_optdepends(_pkg), "\n");
+    _conflicts = list2str(alpm_pkg_get_conflicts(_pkg), " ");
+    _provides = list2str(alpm_pkg_get_provides(_pkg), " ");
+    _replaces = list2str(alpm_pkg_get_replaces(_pkg), " ");
 
     _updatestate = (needsupdate() ? "update available" : "up to date");
 
@@ -95,11 +95,11 @@ string Package::trimstr(const char *c) const {
         return str.substr( startpos, endpos-startpos+1 );
 }
 
-string Package::list2str(alpm_list_t *l) const {
+string Package::list2str(alpm_list_t *l, string delim) const {
     string s, res = "";
     for (alpm_list_t *i = l; i != NULL; i = alpm_list_next(i)) {
         s = (char*)alpm_list_getdata(i);
-        if (i != l) res += " ";
+        if (i != l) res += delim;
         res += s;
     }
     return res;
