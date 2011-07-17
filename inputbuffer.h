@@ -37,6 +37,8 @@ public:
     void del();
     void clear() { contents = ""; pos = 0; }
 
+    void movestart();
+    void moveend();
     void moveleft();
     void moveright();
 

@@ -282,6 +282,12 @@ void Program::mainloop() {
             case KEY_RIGHT:
                 inputbuf.moveright();
                 break;
+            case KEY_HOME:
+                inputbuf.movestart();
+                break;
+            case KEY_END:
+                inputbuf.moveend();
+                break;
             case KEY_UP:
                 inputbuf.set(gethis(op)->moveback());
                 break;
