@@ -37,10 +37,6 @@ CursesFrame::~CursesFrame()
     delete finfo;
 }
 
-void CursesFrame::DoUpdate() {
-    doupdate();
-}
-
 void CursesFrame::setbackground(chtype col) {
     wbkgd(w_main, col | ' ');
 }

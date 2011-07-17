@@ -38,7 +38,7 @@ void Filter::setattrs(string s) {
 
     Filter::attrlist.clear();
 
-    for (unsigned int i = 0; i < s.length(); i++) {
+    for (uint i = 0; i < s.length(); i++) {
         attr = AttributeInfo::chartoattr(s[i]);
 
         if (attr == A_NONE) continue;
@@ -75,7 +75,7 @@ bool Filter::notmatchesre(const Package *a, const sregex needle) {
     bool found = false;
     smatch what;
 
-    for (unsigned int i = 0; i < Filter::attrlist.size(); i++)
+    for (uint i = 0; i < Filter::attrlist.size(); i++)
         found = found || regex_search(a->getattr(Filter::attrlist[i]), what, needle);
 
     return !found;
@@ -87,7 +87,7 @@ bool Filter::notmatches(const Package *a, const string needle) {
     string lneedle = needle;
     boost::to_lower(lneedle);
 
-    for (unsigned int i = 0; i < Filter::attrlist.size(); i++) {
+    for (uint i = 0; i < Filter::attrlist.size(); i++) {
         str = a->getattr(Filter::attrlist[i]);
         boost::to_lower(str);
         found = found || str.find(lneedle) != std::string::npos;
