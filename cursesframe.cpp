@@ -48,6 +48,20 @@ void CursesFrame::move(int x, int y) {
     wmove(w_main, y, x);
 }
 
+void CursesFrame::reposition(int termw, int termh) {
+    finfo->recalcinfo(termw, termh);
+
+    if (finfo->gethasborder()) {
+        wresize(w_border, finfo->geth(), finfo->getw());
+        mvwin(w_border, finfo->gety(), finfo->getx());
+        wresize(w_main, finfo->geth() - 2, finfo->getw() - 2);
+        mvwin(w_main, finfo->gety() + 1, finfo->getx() + 1);
+    } else {
+        wresize(w_main, finfo->geth(), finfo->getw());
+        mvwin(w_main, finfo->gety(), finfo->getx());
+    }
+}
+
 string CursesFrame::fitstrtowin(string in, int x) const {
     in = escapestring(in);
     int len = in.length();

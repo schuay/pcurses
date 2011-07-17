@@ -41,6 +41,7 @@ public:
     CursesFrame(FrameInfo *frameinfo);
     virtual ~CursesFrame();
 
+    void reposition(int termw, int termh);
     void setbackground(chtype col);
     void setheader(string str);
     void setfooter(string str);

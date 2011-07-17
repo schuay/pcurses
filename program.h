@@ -19,6 +19,8 @@
 #define PROGRAM_H
 
 #include <unistd.h>
+#include <sys/ioctl.h>
+#include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <algorithm>
@@ -85,6 +87,7 @@ public:
 
 private:
 
+    void do_resize();
     void setfocus(CursesListBox *frame);
     void run_cmd(string cmd) const;
     void init_alpm();
