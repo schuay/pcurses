@@ -55,8 +55,6 @@ public:
     int usableheight() const;
     int usablewidth() const;
 
-    static void DoUpdate();
-
 protected:
 
     string fitstrtowin(string in, int x = -1) const;

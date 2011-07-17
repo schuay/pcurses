@@ -72,7 +72,7 @@ void Program::deinit() {
     deinit_curses();
     system("clear");
 
-    for (unsigned int i = 0; i < packages.size(); i++)
+    for (uint i = 0; i < packages.size(); i++)
         delete packages[i];
 
     filteredpackages.clear();
@@ -375,7 +375,7 @@ void Program::init_alpm() {
     alpm_option_set_root(conf.getrootdir().c_str());
 
     vector<string> repos = conf.getrepos();
-    for (unsigned int i = 0; i < repos.size(); i++)
+    for (uint i = 0; i < repos.size(); i++)
         alpm_db_register_sync(repos[i].c_str());
 
     localdb = alpm_option_get_localdb();
@@ -453,7 +453,7 @@ void Program::printinfosection(AttributeEnum attr, string text) {
     bool hldone = false;
     int style;
 
-    for (unsigned int i = 0; i < caption.size(); i++) {
+    for (uint i = 0; i < caption.size(); i++) {
         if (!hldone && (caption[i] == hllower || caption[i] == hlupper)) {
             style = C_DEF;
             hldone = true;
@@ -521,7 +521,7 @@ void Program::updatedisplay() {
         help_pane->refresh();
     }
 
-    CursesFrame::DoUpdate();
+    doupdate();
 }
 
 string Program::optostr(FilterOperationEnum o) const {
@@ -619,7 +619,7 @@ void Program::execmd(string str) {
     gethis(OP_EXEC)->add(str);
 
     string pkgs = "";
-    for (unsigned int i = 0; i < opqueue.size(); i++) {
+    for (uint i = 0; i < opqueue.size(); i++) {
         pkgs += opqueue[i]->getname() + " ";
     }
 
@@ -641,7 +641,7 @@ void Program::colorcodepackages(string str) {
     gethis(OP_COLORCODE)->add(str);
 
     AttributeEnum attr = A_NONE;
-    unsigned int i = 0;
+    uint i = 0;
 
     while (attr == A_NONE && i < str.length()) {
         attr = AttributeInfo::chartoattr(str[i]);
@@ -710,7 +710,7 @@ void Program::sortpackages(string str) {
     gethis(OP_SORT)->add(str);
 
     AttributeEnum attr = A_NONE;
-    unsigned int i = 0;
+    uint i = 0;
 
     while (attr == A_NONE && i < str.length()) {
         attr = AttributeInfo::chartoattr(str[i]);

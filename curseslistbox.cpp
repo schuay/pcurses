@@ -73,7 +73,7 @@ void CursesListBox::movetoend() {
 bool CursesListBox::isinbounds(int pos) const {
     if (pos < 0)
         return false;
-    if ((unsigned int)(pos) >= list->size())
+    if ((uint)(pos) >= list->size())
         return false;
     return true;
 }
