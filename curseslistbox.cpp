@@ -17,8 +17,8 @@
 
 #include "curseslistbox.h"
 
-CursesListBox::CursesListBox(int w, int h, int x, int y, bool hasborder)
-    : CursesFrame(w, h, x, y, hasborder),
+CursesListBox::CursesListBox(FrameInfo *frameinfo)
+    : CursesFrame(frameinfo),
       windowpos(0),
       cursorpos(0)
 {

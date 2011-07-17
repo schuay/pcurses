@@ -365,15 +365,12 @@ void Program::init_curses() {
     init_pair(1, COLOR_BLACK, COLOR_WHITE); /* inverted (status bar BG) */
     init_pair(4, COLOR_BLUE, COLOR_WHITE);  /* inverted highlight 1 */
 
-    const int lwidth = 30;
-    const int height = LINES - 1;
-    const int listheight = (3 * height) / 5;
-    list_pane = new CursesListBox(lwidth, listheight, 0, 0, true);
-    info_pane = new CursesFrame(COLS - lwidth + 1, height, lwidth - 1, 0, true);
-    queue_pane = new CursesListBox(lwidth, height - listheight, 0, listheight, true);
-    status_pane = new CursesFrame(COLS, 1, 0, LINES - 1, false);
-    input_pane = new CursesFrame(COLS, 3, 0, LINES - 2, true);
-    help_pane = new CursesFrame(COLS - 10, 19, 5, 1, true);
+    list_pane = new CursesListBox(new FrameInfo(FE_LIST, COLS, LINES));
+    info_pane = new CursesFrame(new FrameInfo(FE_INFO, COLS, LINES));
+    queue_pane = new CursesListBox(new FrameInfo(FE_QUEUE, COLS, LINES));
+    status_pane = new CursesFrame(new FrameInfo(FE_STATUS, COLS, LINES));
+    input_pane = new CursesFrame(new FrameInfo(FE_INPUT, COLS, LINES));
+    help_pane = new CursesFrame(new FrameInfo(FE_HELP, COLS, LINES));
 
     list_pane->setheader("Packages");
     info_pane->setheader("Info");

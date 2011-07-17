@@ -15,41 +15,39 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
  ************************************************************************* */
 
-#ifndef CURSESLISTBOX_H
-#define CURSESLISTBOX_H
+#ifndef FRAMEINFO_H
+#define FRAMEINFO_H
 
-#include <vector>
+#include <assert.h>
 
-#include "cursesframe.h"
-#include "package.h"
-
-using std::vector;
-
-class CursesListBox : public CursesFrame
-{
-public:
-    CursesListBox(FrameInfo *frameinfo);
-
-    void setlist(vector<Package*> *l);
-    void move(int step);
-    void movetoend();
-    void moveabs(int pos);
-    int focusedindex() const;
-    Package *focusedpackage() const;
-    void removeselected();
-    virtual void refresh();
-
-protected:
-
-    bool isinbounds(int pos) const;
-    void updatefocus();
-    chtype getcol(int index) const;
-
-    std::vector<Package*>
-            *list;
-    int
-            windowpos,
-            cursorpos;
+enum FrameEnum {
+    FE_LIST,
+    FE_INFO,
+    FE_QUEUE,
+    FE_STATUS,
+    FE_INPUT,
+    FE_HELP
 };
 
-#endif // CURSESLISTBOX_H
+class FrameInfo
+{
+public:
+
+    FrameInfo(FrameEnum t, unsigned int termw, unsigned int termh);
+    void recalcinfo(unsigned int termw, unsigned int termh);
+
+    unsigned int getx() const { return x; }
+    unsigned int gety() const { return y; }
+    unsigned int getw() const { return w; }
+    unsigned int geth() const { return h; }
+    bool gethasborder() const { return hasborder; }
+
+private:
+
+    unsigned int w, h, x, y;
+    bool hasborder;
+
+    const FrameEnum type;
+};
+
+#endif // FRAMEINFO_H
