@@ -92,6 +92,7 @@ private:
     void run_cmd(string cmd) const;
     void loadpkgs();
     void init_curses();
+    void init_misc();
     void print_help();
     void deinit();
     void deinit_curses();

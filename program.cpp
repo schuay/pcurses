@@ -66,7 +66,6 @@ void Program::ensureminwsize(uint w, uint h) const {
 
 void Program::deinit() {
     deinit_curses();
-    system("clear");
 
     for (uint i = 0; i < packages.size(); i++)
         delete packages[i];
@@ -102,17 +101,20 @@ void Program::run_cmd(string cmd) const {
     }
 }
 
-void Program::init() {
-
-    loadpkgs();
-
-    init_curses();
-
+void Program::init_misc() {
     colorcodepackages(string(1, AttributeInfo::attrtochar(coloredby)));
     searchphrases.clear();
 
     /* exec startup macro if it exists */
     execmacro("startup");
+}
+
+void Program::init() {
+
+    loadpkgs();
+
+    init_curses();
+    init_misc();
 
     updatedisplay();
 }
@@ -469,6 +471,8 @@ void Program::deinit_curses() {
     echo();
 
     endwin();
+
+    system("clear");
 }
 
 void Program::printinfosection(AttributeEnum attr, string text) {
@@ -658,9 +662,9 @@ void Program::execmd(string str) {
         str.replace(pos, needle.length(), pkgs);
     }
 
-    deinit();
+    deinit_curses();
     run_cmd(str);
-    init();
+    init_curses();
 }
 
 void Program::colorcodepackages(string str) {
