@@ -87,6 +87,9 @@ A few useful commands could be
 !sudo pacman -S %p
 !sudo pacman -Rs %p
 
+Caution: package infos are not reloaded automatically. After db changes,
+trigger a manual reload by pressing 'r'.
+
 Macros
 ------
 

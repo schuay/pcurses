@@ -208,6 +208,9 @@ void Program::mainloop() {
             case '0':
                 execmacro(string(1, ch));
                 break;
+            case 'r':
+                deinit();
+                init();
             case 'c':
                 clearfilter();
                 break;
@@ -330,6 +333,7 @@ void Program::print_help() {
     PRINTH("1 to 0: ", "hotkeys (as configured in " APPLICATION_NAME ".conf)\n");
     PRINTH("!: ", "execute command, replacing %p with selected package names\n");
     PRINTH("@: ", "run the specified macro (as configured in " APPLICATION_NAME ".conf)\n");
+    PRINTH("r: ", "reload package info\n");
     PRINTH("/: ", "filter packages by specified fields (using regexp)\n");
     PRINTH("", "   note that filters can be chained.\n")
     PRINTH("n: ", "filter packages by name (using regexp)\n");
