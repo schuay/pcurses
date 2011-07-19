@@ -74,9 +74,6 @@ void Program::deinit() {
     filteredpackages.clear();
     packages.clear();
     opqueue.clear();
-
-    if (alpm_release(handle) != 0)
-        throw PcursesException("failed to deinitialize alpm library");
 }
 
 void Program::run_cmd(string cmd) const {
@@ -107,44 +104,11 @@ void Program::run_cmd(string cmd) const {
 
 void Program::init() {
 
-    std::cout << "Reading package dbs, please wait..." << std::endl;
+    loadpkgs();
 
-    /* initialize libalpm */
-    init_alpm();
-
-    /* create our package list */
-    alpm_list_t *dbs = alpm_list_copy(alpm_option_get_syncdbs(handle));
-    dbs = alpm_list_add(dbs, localdb);
-    for ( ; dbs; dbs = alpm_list_next(dbs)) {
-        alpm_db_t *db = (alpm_db_t*)alpm_list_getdata(dbs);
-        for (alpm_list_t *pkgs = alpm_db_get_pkgcache(db); pkgs; pkgs = alpm_list_next(pkgs)) {
-            alpm_pkg_t *pkg = (alpm_pkg_t*)alpm_list_getdata(pkgs);
-            Package *p = new Package(pkg, localdb);
-            Package *parray[] = { p };
-            if (!std::includes(packages.begin(), packages.end(),
-                              parray, parray + 1,
-                              boost::bind(&Filter::cmp, _1, _2, A_NAME))) {
-                packages.push_back(p);
-            }
-            else
-                delete p;
-        }
-        std::sort(packages.begin(), packages.end(), boost::bind(&Filter::cmp, _1, _2, A_NAME));
-    }
-    alpm_list_free(dbs);
-
-    filteredpackages = packages;
-
-    /* initial color coding */
-    colorcodepackages(string(1,AttributeInfo::attrtochar(coloredby)));
-
-    /* initialize curses */
-    system("clear");
     init_curses();
-    setfocus(list_pane);
-    list_pane->setlist(&filteredpackages);
-    queue_pane->setlist(&opqueue);
 
+    colorcodepackages(string(1, AttributeInfo::attrtochar(coloredby)));
     searchphrases.clear();
 
     /* exec startup macro if it exists */
@@ -381,14 +345,19 @@ void Program::print_help() {
 }
 #undef PRINTH
 
-void Program::init_alpm() {
+void Program::loadpkgs() {
+
+    std::cout << "Reading package dbs, please wait..." << std::endl;
+
     _alpm_errno_t err;
 
     conf.parse_pacmanconf();
     conf.parse_pcursesconf();
     macros = conf.getmacros();
 
-    handle = alpm_initialize(conf.getrootdir().c_str(), conf.getdbpath().c_str(), &err);
+
+    alpm_handle_t *handle =
+            alpm_initialize(conf.getrootdir().c_str(), conf.getdbpath().c_str(), &err);
     if (handle == NULL) {
         throw PcursesException(alpm_strerror(err));
     }
@@ -401,10 +370,40 @@ void Program::init_alpm() {
         alpm_db_register_sync(handle, repos[i].c_str(), ALPM_SIG_USE_DEFAULT);
     }
 
-    localdb = alpm_option_get_localdb(handle);
+    alpm_db_t *localdb = alpm_option_get_localdb(handle);
+
+
+    /* create our package list */
+    alpm_list_t *dbs = alpm_list_copy(alpm_option_get_syncdbs(handle));
+    dbs = alpm_list_add(dbs, localdb);
+    for ( ; dbs; dbs = alpm_list_next(dbs)) {
+        alpm_db_t *db = (alpm_db_t*)alpm_list_getdata(dbs);
+        for (alpm_list_t *pkgs = alpm_db_get_pkgcache(db); pkgs; pkgs = alpm_list_next(pkgs)) {
+            alpm_pkg_t *pkg = (alpm_pkg_t*)alpm_list_getdata(pkgs);
+            Package *p = new Package(pkg, localdb);
+            Package *parray[] = { p };
+            if (!std::includes(packages.begin(), packages.end(),
+                              parray, parray + 1,
+                              boost::bind(&Filter::cmp, _1, _2, A_NAME))) {
+                packages.push_back(p);
+            }
+            else
+                delete p;
+        }
+        std::sort(packages.begin(), packages.end(), boost::bind(&Filter::cmp, _1, _2, A_NAME));
+    }
+    alpm_list_free(dbs);
+
+    if (alpm_release(handle) != 0)
+        throw PcursesException("failed to deinitialize alpm library");
+
+
+    filteredpackages = packages;
 }
 
 void Program::init_curses() {
+
+    system("clear");
 
     setlocale(LC_ALL, "");
 
@@ -452,6 +451,10 @@ void Program::init_curses() {
     status_pane->setbackground(C_INV);
     input_pane->setbackground(C_DEF);
     help_pane->setbackground(C_DEF);
+
+    setfocus(list_pane);
+    list_pane->setlist(&filteredpackages);
+    queue_pane->setlist(&opqueue);
 }
 void Program::deinit_curses() {
     delete list_pane;
