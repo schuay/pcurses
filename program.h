@@ -91,7 +91,7 @@ private:
     void do_resize();
     void setfocus(CursesListBox *frame);
     void run_cmd(string cmd) const;
-    void init_alpm();
+    void loadpkgs();
     void init_curses();
     void print_help();
     void deinit();
@@ -138,9 +138,6 @@ private:
 
     shared_ptr<map<string, string> >
             macros;
-
-    pmdb_t
-            *localdb;
 
     string
             searchphrases;
