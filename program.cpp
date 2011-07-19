@@ -673,8 +673,10 @@ void Program::colorcodepackages(string str) {
     if (attr == A_NONE)
         return;
 
-    vector<Package*>::iterator it = filteredpackages.begin();
-    for (; it != filteredpackages.end(); it++)
+    Filter::clearattrs();
+
+    vector<Package*>::iterator it = packages.begin();
+    for (; it != packages.end(); it++)
         Filter::assigncol(*it, attr);
 
     coloredby = attr;
