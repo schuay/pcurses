@@ -33,6 +33,7 @@ public:
     string moveforward();
     string moveback();
     void add(string s);
+    bool empty() const;
 
 private:
     list<string> history;
