@@ -51,3 +51,7 @@ void History::add(string s) {
     history.remove(s);
     history.push_front(s);
 }
+
+bool History::empty() const {
+    return history.empty();
+}

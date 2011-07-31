@@ -258,10 +258,14 @@ void Program::mainloop() {
                 inputbuf.moveend();
                 break;
             case KEY_UP:
-                inputbuf.set(gethis(op)->moveback());
+                if (!gethis(op)->empty()) {
+                    inputbuf.set(gethis(op)->moveback());
+                }
                 break;
             case KEY_DOWN:
-                inputbuf.set(gethis(op)->moveforward());
+                if (!gethis(op)->empty()) {
+                    inputbuf.set(gethis(op)->moveforward());
+                }
                 break;
             default:
                 inputbuf.insert(ch);
