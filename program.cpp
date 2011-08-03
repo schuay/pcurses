@@ -793,32 +793,38 @@ void Program::filterpackages(string str) {
         return;
     }
 
-    if (searchphrases.length() != 0) searchphrases += ", ";
-    searchphrases += str;
-
     /* if search phrase is alphanumeric only,
        perform a fast and simple search, else run slower regexp search */
 
     sregex resimple = sregex::compile("[:alnum:]+");
 
-    if (regex_match(searchphrase, what, resimple)) {
-        vector<Package*>::iterator it =
-                std::find_if(filteredpackages.begin(), filteredpackages.end(),
-                             boost::bind(&Filter::notmatches, _1, searchphrase));
-        while (it != filteredpackages.end()) {
-            filteredpackages.erase(it);
-            it = std::find_if(it, filteredpackages.end(),
-                              boost::bind(&Filter::notmatches, _1, searchphrase));
+    /* catch invalid regex input by user */
+    try {
+        if (regex_match(searchphrase, what, resimple)) {
+            vector<Package*>::iterator it =
+                    std::find_if(filteredpackages.begin(), filteredpackages.end(),
+                                 boost::bind(&Filter::notmatches, _1, searchphrase));
+            while (it != filteredpackages.end()) {
+                filteredpackages.erase(it);
+                it = std::find_if(it, filteredpackages.end(),
+                                  boost::bind(&Filter::notmatches, _1, searchphrase));
+            }
+        } else {
+            sregex needle = sregex::compile(searchphrase, icase);
+            vector<Package*>::iterator it =
+                    std::find_if(filteredpackages.begin(), filteredpackages.end(),
+                                 boost::bind(&Filter::notmatchesre, _1, needle));
+            while (it != filteredpackages.end()) {
+                filteredpackages.erase(it);
+                it = std::find_if(it, filteredpackages.end(),
+                                  boost::bind(&Filter::notmatchesre, _1, needle));
+            }
         }
-    } else {
-        sregex needle = sregex::compile(searchphrase, icase);
-        vector<Package*>::iterator it =
-                std::find_if(filteredpackages.begin(), filteredpackages.end(),
-                             boost::bind(&Filter::notmatchesre, _1, needle));
-        while (it != filteredpackages.end()) {
-            filteredpackages.erase(it);
-            it = std::find_if(it, filteredpackages.end(),
-                              boost::bind(&Filter::notmatchesre, _1, needle));
-        }
+
+        if (searchphrases.length() != 0) searchphrases += ", ";
+        searchphrases += str;
+
+    } catch (boost::xpressive::regex_error& e) {
+        /* we don't have any decent feedback mechanisms, so ignore faulty regexp */
     }
 }

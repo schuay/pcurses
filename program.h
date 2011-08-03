@@ -32,6 +32,7 @@
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/xpressive/regex_error.hpp>
 
 #include "package.h"
 #include "pcursesexception.h"
