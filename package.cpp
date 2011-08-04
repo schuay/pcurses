@@ -47,8 +47,9 @@ Package::Package(pmpkg_t* pkg)
     if (_localpkg == NULL) {
         _updatestate = "not installed";
     } else {
-        bool needsupdate = alpm_pkg_vercmp(alpm_pkg_get_version(_pkg), alpm_pkg_get_version(_localpkg)) > 0;
-        _updatestate = (needsupdate ? "update available" : "up to date");
+        _localversion = alpm_pkg_get_version(_localpkg);
+        _updatestate = (alpm_pkg_vercmp(_version, _localversion) > 0) ?
+                    "update available" : "up to date";
     }
 
     for (alpm_list_t *deps = alpm_pkg_get_depends(_pkg); deps != NULL;

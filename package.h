@@ -109,7 +109,8 @@ private:
             _replaces,
             _sizestr,
             _installsizestr,
-            _updatestate;
+            _updatestate,
+            _localversion;
 
     int
             _colindex;
