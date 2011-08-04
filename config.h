@@ -55,16 +55,12 @@ public:
     string getdbpath() const { return dbpath; }
     string getlogfile() const { return logfile; }
 
-    bool getthreepanelayout() const { return threepanelayout; }
-
     vector<string> getrepos() const { return repos; }
     shared_ptr<map<string, string> > getmacros() const { return macros; }
 
 private:
 
     string getconfvalue(const string) const;
-
-    bool threepanelayout;
 
     string
             pacmanconffile,

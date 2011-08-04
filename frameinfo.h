@@ -37,7 +37,7 @@ class FrameInfo
 {
 public:
 
-    FrameInfo(FrameEnum t, uint termw, uint termh, bool threepanelayout);
+    FrameInfo(FrameEnum t, uint termw, uint termh);
     void recalcinfo(uint termw, uint termh);
 
     uint getx() const { return x; }
@@ -58,8 +58,7 @@ private:
         y;
 
     bool
-        hasborder,
-        threepanelayout;
+        hasborder;
 
     string
         title;

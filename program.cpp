@@ -448,12 +448,12 @@ void Program::init_curses() {
     init_pair(1, COLOR_BLACK, COLOR_WHITE); /* inverted (status bar BG) */
     init_pair(4, COLOR_BLUE, COLOR_WHITE);  /* inverted highlight 1 */
 
-    list_pane = new CursesListBox(new FrameInfo(FE_LIST, COLS, LINES, conf.getthreepanelayout()));
-    info_pane = new CursesFrame(new FrameInfo(FE_INFO, COLS, LINES, conf.getthreepanelayout()));
-    queue_pane = new CursesListBox(new FrameInfo(FE_QUEUE, COLS, LINES, conf.getthreepanelayout()));
-    status_pane = new CursesFrame(new FrameInfo(FE_STATUS, COLS, LINES, conf.getthreepanelayout()));
-    input_pane = new CursesFrame(new FrameInfo(FE_INPUT, COLS, LINES, conf.getthreepanelayout()));
-    help_pane = new CursesFrame(new FrameInfo(FE_HELP, COLS, LINES, conf.getthreepanelayout()));
+    list_pane = new CursesListBox(new FrameInfo(FE_LIST, COLS, LINES));
+    info_pane = new CursesFrame(new FrameInfo(FE_INFO, COLS, LINES));
+    queue_pane = new CursesListBox(new FrameInfo(FE_QUEUE, COLS, LINES));
+    status_pane = new CursesFrame(new FrameInfo(FE_STATUS, COLS, LINES));
+    input_pane = new CursesFrame(new FrameInfo(FE_INPUT, COLS, LINES));
+    help_pane = new CursesFrame(new FrameInfo(FE_HELP, COLS, LINES));
 
     list_pane->setbackground(C_DEF);
     info_pane->setbackground(C_DEF);
