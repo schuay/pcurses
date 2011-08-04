@@ -92,12 +92,6 @@ private:
     string list2str(alpm_list_t *l, string delim) const;
     static string size2str(unsigned long size);
 
-    bool needsupdate() const;
-
-    pmpkg_t
-            *_pkg,
-            *_localpkg;
-
     string
             _name,
             _url,

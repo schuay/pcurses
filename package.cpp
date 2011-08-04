@@ -17,12 +17,10 @@
 
 #include "package.h"
 
-Package::Package(pmpkg_t* pkg) :
-        _pkg(NULL),
-        _localpkg(NULL)
+Package::Package(pmpkg_t* pkg)
 {
-    _pkg = pkg;
-    _localpkg = alpm_db_get_pkg(alpm_option_get_localdb(), alpm_pkg_get_name(_pkg));
+    pmpkg_t *_pkg = pkg;
+    pmpkg_t *_localpkg = alpm_db_get_pkg(alpm_option_get_localdb(), alpm_pkg_get_name(_pkg));
 
     _name = trimstr(alpm_pkg_get_name(_pkg));
     _url = trimstr(alpm_pkg_get_url(_pkg));
@@ -46,7 +44,12 @@ Package::Package(pmpkg_t* pkg) :
     _provides = list2str(alpm_pkg_get_provides(_pkg), " ");
     _replaces = list2str(alpm_pkg_get_replaces(_pkg), " ");
 
-    _updatestate = (needsupdate() ? "update available" : "up to date");
+    if (_localpkg == NULL) {
+        _updatestate = "not installed";
+    } else {
+        bool needsupdate = alpm_pkg_vercmp(alpm_pkg_get_version(_pkg), alpm_pkg_get_version(_localpkg)) > 0;
+        _updatestate = (needsupdate ? "update available" : "up to date");
+    }
 
     for (alpm_list_t *deps = alpm_pkg_get_depends(_pkg); deps != NULL;
          deps = alpm_list_next(deps)) {
@@ -216,12 +219,6 @@ string Package::getisize() const {
 }
 string Package::getupdatestate() const {
     return _updatestate;
-}
-
-bool Package::needsupdate() const
-{
-    if (_localpkg == NULL) return false;
-    return alpm_pkg_vercmp(alpm_pkg_get_version(_pkg), alpm_pkg_get_version(_localpkg)) > 0;
 }
 void Package::setop(OperationEnum oe) {
     op = oe;
