@@ -45,11 +45,11 @@ Package::Package(alpm_pkg_t* pkg, alpm_db_t *localdb)
     _replaces = list2str(alpm_pkg_get_replaces(_pkg), " ");
 
     if (_localpkg == NULL) {
-        _updatestate = "not installed";
+        _updatestate = USE_NOTINSTALLED;
     } else {
         _localversion = alpm_pkg_get_version(_localpkg);
-        _updatestate = (alpm_pkg_vercmp(_version, _localversion) > 0) ?
-                    "update available" : "up to date";
+        _updatestate = (alpm_pkg_vercmp(_version.c_str(), _localversion.c_str()) > 0) ?
+                  USE_UPDATEAVAILABLE : USE_UPTODATE;
     }
 
     for (alpm_list_t *deps = alpm_pkg_get_depends(_pkg); deps != NULL;
@@ -160,6 +160,9 @@ string Package::getdesc() const
 }
 string Package::getversion() const
 {
+    if (_updatestate == USE_UPDATEAVAILABLE) {
+        return _version + " (local: " + _localversion + ")";
+    }
     return _version;
 }
 string Package::getrepo() const
@@ -219,7 +222,16 @@ string Package::getisize() const {
     return _installsizestr;
 }
 string Package::getupdatestate() const {
-    return _updatestate;
+    switch (_updatestate) {
+    case USE_NOTINSTALLED:
+        return "not installed";
+    case USE_UPDATEAVAILABLE:
+        return "update available";
+    case USE_UPTODATE:
+        return "up to date";
+    default:
+        throw PcursesException("no package update state.");
+    }
 }
 void Package::setop(OperationEnum oe) {
     op = oe;
