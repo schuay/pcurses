@@ -44,6 +44,12 @@ enum InstallReasonEnum {
     IRE_NOTINSTALLED
 };
 
+enum UpdateStateEnum {
+    USE_NOTINSTALLED,
+    USE_UPTODATE,
+    USE_UPDATEAVAILABLE
+};
+
 enum OperationEnum {
     OE_INSTALL_EXPLICIT,
     OE_INSTALL_ASDEPS,
@@ -109,7 +115,6 @@ private:
             _replaces,
             _sizestr,
             _installsizestr,
-            _updatestate,
             _localversion;
 
     int
@@ -121,6 +126,9 @@ private:
 
     time_t
             _builddate;
+
+    UpdateStateEnum
+            _updatestate;
 
     InstallReasonEnum
             _reason;
