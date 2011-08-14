@@ -63,7 +63,7 @@ void FrameInfo::recalcinfo(uint termw, uint termh) {
         w = termw;
         h = 3;
         x = 0;
-        y = termh - 2;
+        y = termh - 3;
         hasborder = true;
         title = "Input";
         break;
