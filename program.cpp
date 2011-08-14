@@ -53,6 +53,8 @@ void Program::do_resize() {
     status_pane->reposition(w.ws_col, w.ws_row);
     input_pane->reposition(w.ws_col, w.ws_row);
     help_pane->reposition(w.ws_col, w.ws_row);
+
+    updatedisplay();
 }
 
 void Program::ensureminwsize(uint w, uint h) const {
@@ -141,7 +143,7 @@ void Program::mainloop() {
             do_resize();
         }
 
-        if (ch == ERR) continue;
+        if (ch == ERR || ch == KEY_RESIZE) continue;
 
         if (mode == MODE_STANDARD) {
             switch (ch) {
