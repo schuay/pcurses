@@ -407,7 +407,7 @@ void Program::loadpkgs() {
 
 void Program::init_curses() {
 
-    system("clear");
+    (void)system("clear");
 
     setlocale(LC_ALL, "");
 
@@ -474,7 +474,7 @@ void Program::deinit_curses() {
 
     endwin();
 
-    system("clear");
+    (void)system("clear");
 }
 
 void Program::printinfosection(AttributeEnum attr, string text) {
