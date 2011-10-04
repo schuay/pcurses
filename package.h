@@ -83,7 +83,7 @@ public:
     string getversion() const;
 
     string getattr(AttributeEnum attr) const;
-    unsigned long getulongattr(AttributeEnum attr) const;
+    off_t getoffattr(AttributeEnum attr) const;
 
     void setcolindex(int index);
     int getcolindex() const;
@@ -96,7 +96,7 @@ private:
     string trimstr(const char *c) const;
     string deplist2str(alpm_list_t *l, string delim) const;
     string list2str(alpm_list_t *l, string delim) const;
-    static string size2str(unsigned long size);
+    static string size2str(off_t size);
 
     string
             _name,
@@ -120,7 +120,7 @@ private:
     int
             _colindex;
 
-    unsigned long
+    off_t
             _size,
             _installsize;
 

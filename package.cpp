@@ -59,7 +59,7 @@ Package::Package(alpm_pkg_t* pkg, alpm_db_t *localdb)
                IRE_EXPLICIT);
 }
 
-string Package::size2str(unsigned long size) {
+string Package::size2str(off_t size) {
     std::stringstream ss;
 
     float fsize = size;
@@ -68,7 +68,7 @@ string Package::size2str(unsigned long size) {
     string units[] = {"B", "KB", "MB", "GB", "TB"};
     int unitssize = sizeof(units)/sizeof(units[0]);
 
-    while (fsize > 1024.0 && currentunit < unitssize) {
+    while (fsize > 1024.0 && currentunit < unitssize - 1) {
         fsize /= 1024.0;
         currentunit++;
     }
@@ -141,9 +141,9 @@ string Package::getattr(AttributeEnum attr) const {
     default: throw PcursesException("Invalid attribute passed.");
     }
 }
-unsigned long Package::getulongattr(AttributeEnum attr) const {
+off_t Package::getoffattr(AttributeEnum attr) const {
     switch(attr) {
-    case A_BUILDDATE: return (unsigned long)_builddate;
+    case A_BUILDDATE: return (off_t)_builddate;
     case A_SIZE: return _size;
     case A_ISIZE: return _installsize;
     default: throw PcursesException("Invalid attribute passed.");
