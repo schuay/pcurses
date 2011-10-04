@@ -40,9 +40,11 @@ Package::Package(alpm_pkg_t* pkg, alpm_db_t *localdb)
     _licenses = list2str(alpm_pkg_get_licenses(_pkg), " ");
     _groups = list2str(alpm_pkg_get_groups(_pkg), " ");
     _optdepends = list2str(alpm_pkg_get_optdepends(_pkg), "\n            "); /* line up correctly in info pane */
-    _conflicts = list2str(alpm_pkg_get_conflicts(_pkg), " ");
-    _provides = list2str(alpm_pkg_get_provides(_pkg), " ");
-    _replaces = list2str(alpm_pkg_get_replaces(_pkg), " ");
+
+    _conflicts = deplist2str(alpm_pkg_get_conflicts(_pkg), " ");
+    _provides = deplist2str(alpm_pkg_get_provides(_pkg), " ");
+    _replaces = deplist2str(alpm_pkg_get_replaces(_pkg), " ");
+    _depends = deplist2str(alpm_pkg_get_depends(_pkg), " ");
 
     if (_localpkg == NULL) {
         _updatestate = USE_NOTINSTALLED;
@@ -50,13 +52,6 @@ Package::Package(alpm_pkg_t* pkg, alpm_db_t *localdb)
         _localversion = alpm_pkg_get_version(_localpkg);
         _updatestate = (alpm_pkg_vercmp(_version.c_str(), _localversion.c_str()) > 0) ?
                   USE_UPDATEAVAILABLE : USE_UPTODATE;
-    }
-
-    for (alpm_list_t *deps = alpm_pkg_get_depends(_pkg); deps != NULL;
-         deps = alpm_list_next(deps)) {
-        alpm_depend_t *depend = (alpm_depend_t*)alpm_list_getdata(deps);
-        _depends += alpm_dep_compute_string(depend);
-        if (deps->next != NULL)_depends += " ";
     }
 
     _reason = ((_localpkg == NULL) ? IRE_NOTINSTALLED :
@@ -97,6 +92,18 @@ string Package::trimstr(const char *c) const {
         return "";
     else
         return str.substr( startpos, endpos-startpos+1 );
+}
+
+
+
+string Package::deplist2str(alpm_list_t *l, string delim) const {
+    string res = "";
+    for (alpm_list_t *deps = l; deps != NULL; deps = alpm_list_next(deps)) {
+        alpm_depend_t *depend = (alpm_depend_t*)alpm_list_getdata(deps);
+        res += alpm_dep_compute_string(depend);
+        if (deps->next != NULL) res += delim;
+    }
+    return res;
 }
 
 string Package::list2str(alpm_list_t *l, string delim) const {
