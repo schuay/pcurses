@@ -21,7 +21,7 @@ AttributeEnum AttributeInfo::chartoattr(char c) {
     c = tolower(c);
 
     switch (c) {
-    case 'a': return A_PACKAGER;
+    case 'a': return A_SIGNATURE;
     case 'b': return A_BUILDDATE;
     case 'c': return A_DESC;
     case 'd': return A_UPDATESTATE;
@@ -30,6 +30,7 @@ AttributeEnum AttributeInfo::chartoattr(char c) {
     case 'g': return A_GROUPS;
     case 'h': return A_ARCH;
     case 'i': return A_ISIZE;
+    case 'k': return A_PACKAGER;
     case 'l': return A_LICENSES;
     case 'n': return A_NAME;
     case 'o': return A_OPTDEPENDS;
@@ -67,6 +68,7 @@ string AttributeInfo::attrname(AttributeEnum attr) {
     case A_PROVIDES: return "Provides";
     case A_REPLACES: return "Replaces";
     case A_REPO: return "Repo";
+    case A_SIGNATURE: return "Signature";
     case A_SIZE: return "Download size";
     case A_UPDATESTATE: return "Update state";
     case A_URL: return "Url";

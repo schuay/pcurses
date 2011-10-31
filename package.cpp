@@ -46,6 +46,8 @@ Package::Package(alpm_pkg_t* pkg, alpm_db_t *localdb)
     _replaces = deplist2str(alpm_pkg_get_replaces(_pkg), " ");
     _depends = deplist2str(alpm_pkg_get_depends(_pkg), " ");
 
+    _signature = alpm_pkg_get_base64_sig(_pkg) ? "Yes" : "None";
+
     if (_localpkg == NULL) {
         _updatestate = USE_NOTINSTALLED;
     } else {
@@ -135,6 +137,7 @@ string Package::getattr(AttributeEnum attr) const {
     case A_CONFLICTS: return getconflicts();
     case A_PROVIDES: return getprovides();
     case A_REPLACES: return getreplaces();
+    case A_SIGNATURE: return getsignature();
     case A_SIZE: return getsize();
     case A_ISIZE: return getisize();
     case A_NONE: return "";
@@ -221,6 +224,9 @@ string Package::getprovides() const {
 }
 string Package::getreplaces() const {
     return _replaces;
+}
+string Package::getsignature() const {
+    return _signature;
 }
 string Package::getsize() const {
     return _sizestr;

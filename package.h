@@ -77,6 +77,7 @@ public:
     string getreason() const;
     string getreplaces() const;
     string getrepo() const;
+    string getsignature() const;
     string getsize() const;
     string getupdatestate() const;
     string geturl() const;
@@ -114,6 +115,7 @@ private:
             _provides,
             _replaces,
             _sizestr,
+            _signature,
             _installsizestr,
             _localversion;
 

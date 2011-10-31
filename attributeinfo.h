@@ -32,6 +32,7 @@ enum AttributeEnum {
     A_URL,
     A_REPO,
     A_PACKAGER,
+    A_SIGNATURE,
     A_BUILDDATE,
     A_INSTALLSTATE,
     A_UPDATESTATE,
