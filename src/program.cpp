@@ -121,7 +121,6 @@ void Program::init_misc()
 
 void Program::init()
 {
-
     loadpkgs();
 
     init_curses();
@@ -375,7 +374,6 @@ void Program::print_help()
 
 void Program::loadpkgs()
 {
-
     std::cout << "Reading package dbs, please wait..." << std::endl;
 
     _alpm_errno_t err;
@@ -431,7 +429,6 @@ void Program::loadpkgs()
 
 void Program::init_curses()
 {
-
     (void)system("clear");
 
     setlocale(LC_ALL, "");
@@ -506,7 +503,6 @@ void Program::deinit_curses()
 
 void Program::printinfosection(AttributeEnum attr, string text)
 {
-
     string caption = AttributeInfo::attrname(attr);
     char hllower = AttributeInfo::attrtochar(attr);
     char hlupper = toupper(hllower);
@@ -530,7 +526,6 @@ void Program::printinfosection(AttributeEnum attr, string text)
 
 void Program::updatedisplay()
 {
-
     /* this runs **at least** once per loop iteration
        for example it can run more than once if we need to display
        a 'processing' message during filtering
@@ -623,7 +618,6 @@ void Program::clearfilter()
 
 History *Program::gethis(FilterOperationEnum o)
 {
-
     History *v = NULL;
 
     switch (o) {
@@ -654,7 +648,6 @@ History *Program::gethis(FilterOperationEnum o)
 
 void Program::execmacro(string str)
 {
-
     gethis(OP_MACRO)->add(str);
 
     /* macro delimiter is ',' */
@@ -686,7 +679,6 @@ void Program::execmacro(string str)
 
 void Program::execmd(string str)
 {
-
     gethis(OP_EXEC)->add(str);
 
     string pkgs = "";
@@ -734,7 +726,6 @@ void Program::colorcodepackages(string str)
 
 void Program::searchpackages(string str)
 {
-
     string fieldlist, searchphrase;
 
     gethis(OP_SEARCH)->add(str);
@@ -804,7 +795,6 @@ void Program::sortpackages(string str)
 
 void Program::filterpackages(string str)
 {
-
     string fieldlist, searchphrase;
 
     gethis(OP_FILTER)->add(str);

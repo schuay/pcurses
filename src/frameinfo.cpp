@@ -24,7 +24,6 @@ FrameInfo::FrameInfo(FrameEnum t, uint termw, uint termh) : type(t)
 
 void FrameInfo::recalcinfo(uint termw, uint termh)
 {
-
     const int leftpanewidth = 30;
     const int paneheight = termh;
     const int listpaneheight = (3 * paneheight) / 5;

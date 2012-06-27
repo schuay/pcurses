@@ -48,7 +48,6 @@ string History::moveback()
 
 void History::add(string s)
 {
-
     if (s.length() == 0)
         return;
 
