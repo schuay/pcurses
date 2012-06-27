@@ -621,26 +621,13 @@ History *Program::gethis(FilterOperationEnum o)
     History *v = NULL;
 
     switch (o) {
-    case OP_FILTER:
-        v = &hisfilter;
-        break;
-    case OP_SORT:
-        v = &hissort;
-        break;
-    case OP_SEARCH:
-        v = &hissearch;
-        break;
-    case OP_COLORCODE:
-        v = &hiscolorcode;
-        break;
-    case OP_EXEC:
-        v = &hisexec;
-        break;
-    case OP_MACRO:
-        v = &hismacro;
-        break;
-    default:
-        assert(0);
+    case OP_FILTER: v = &hisfilter; break;
+    case OP_SORT: v = &hissort; break;
+    case OP_SEARCH: v = &hissearch; break;
+    case OP_COLORCODE: v = &hiscolorcode; break;
+    case OP_EXEC: v = &hisexec; break;
+    case OP_MACRO: v = &hismacro; break;
+    default: assert(0);
     }
 
     return v;
