@@ -10,8 +10,8 @@ set(pcurses_VERSION_MINOR 5)
 set(pcurses_APPLICATION_NAME pcurses)
 
 configure_file(
-    "${PROJECT_SOURCE_DIR}/globals.h.in"
-    "${PROJECT_BINARY_DIR}/globals.h"
+    "${PROJECT_SOURCE_DIR}/src/globals.h.in"
+    "${PROJECT_BINARY_DIR}/src/globals.h"
 )
 
 set(CURSES_NCURSES_REQUIRED TRUE)
@@ -30,9 +30,9 @@ include_directories(
     ${CMAKE_SOURCE_DIR}
     ${Boost_INCLUDE_DIRS}
     ${Curses_INCLUDE_DIRS}
-    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_BINARY_DIR}/src
 )
-aux_source_directory(. sources)
+aux_source_directory(src/ sources)
 
 add_executable(pcurses
     ${sources}
