@@ -17,7 +17,8 @@
 
 #include "attributeinfo.h"
 
-AttributeEnum AttributeInfo::chartoattr(char c) {
+AttributeEnum AttributeInfo::chartoattr(char c)
+{
     c = tolower(c);
 
     switch (c) {
@@ -44,14 +45,16 @@ AttributeEnum AttributeInfo::chartoattr(char c) {
     default: return A_NONE;
     }
 }
-char AttributeInfo::attrtochar(AttributeEnum attr) {
+char AttributeInfo::attrtochar(AttributeEnum attr)
+{
     for (char i = 'a'; i <= 'z'; i++)
         if (chartoattr(i) == attr) return i;
 
     throw PcursesException("Attribute has no assigned char.");
 }
 
-string AttributeInfo::attrname(AttributeEnum attr) {
+string AttributeInfo::attrname(AttributeEnum attr)
+{
     switch(attr) {
     case A_ARCH: return "Arch";
     case A_BUILDDATE: return "Build date";

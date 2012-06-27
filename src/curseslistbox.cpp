@@ -24,16 +24,19 @@ CursesListBox::CursesListBox(FrameInfo *frameinfo)
 {
 }
 
-void CursesListBox::setlist(vector<Package*> *l) {
+void CursesListBox::setlist(vector<Package *> *l)
+{
     list = l;
     updatefocus();
 }
 
-void CursesListBox::move(int step) {
+void CursesListBox::move(int step)
+{
     moveabs(focusedindex() + step);
 }
 
-void CursesListBox::removeselected() {
+void CursesListBox::removeselected()
+{
     size_t pos = focusedindex();
 
     if (!isinbounds(pos)) return;
@@ -44,7 +47,8 @@ void CursesListBox::removeselected() {
     list->erase(list->begin() + pos);
 }
 
-void CursesListBox::moveabs(int pos) {
+void CursesListBox::moveabs(int pos)
+{
     if (list->size() == 0)
         return;
 
@@ -66,11 +70,13 @@ void CursesListBox::moveabs(int pos) {
     }
 }
 
-void CursesListBox::movetoend() {
+void CursesListBox::movetoend()
+{
     moveabs(list->size() - 1);
 }
 
-bool CursesListBox::isinbounds(int pos) const {
+bool CursesListBox::isinbounds(int pos) const
+{
     if (pos < 0)
         return false;
     if ((uint)(pos) >= list->size())
@@ -78,7 +84,8 @@ bool CursesListBox::isinbounds(int pos) const {
     return true;
 }
 
-void CursesListBox::updatefocus() {
+void CursesListBox::updatefocus()
+{
     int lsize = (int)list->size();
 
     if (focusedindex() >= lsize) {
@@ -91,7 +98,8 @@ void CursesListBox::updatefocus() {
     }
 }
 
-chtype CursesListBox::getcol(int index) const {
+chtype CursesListBox::getcol(int index) const
+{
     const int colnum = 7; /* nr of defined col pairs */
     int col = index % colnum;
 
@@ -109,18 +117,21 @@ chtype CursesListBox::getcol(int index) const {
     return C_DEF;
 }
 
-int CursesListBox::focusedindex() const {
+int CursesListBox::focusedindex() const
+{
     return windowpos + cursorpos;
 }
 
-Package* CursesListBox::focusedpackage() const {
+Package *CursesListBox::focusedpackage() const
+{
     if (list->size() == 0) return NULL;
     if (!isinbounds(focusedindex())) return NULL;
 
     return list->at(focusedindex());
 }
 
-void CursesListBox::refresh() {
+void CursesListBox::refresh()
+{
     Package *pkg;
 
     setheader(boost::str(boost::format("(%d)") % list->size()));

@@ -23,7 +23,8 @@
 vector<AttributeEnum> Filter::attrlist;
 map<string, int> Filter::groups;
 
-void Filter::clearattrs() {
+void Filter::clearattrs()
+{
     Filter::attrlist.clear();
 
     /* defaults */
@@ -33,7 +34,8 @@ void Filter::clearattrs() {
     Filter::groups.clear();
 }
 
-void Filter::setattrs(string s) {
+void Filter::setattrs(string s)
+{
     AttributeEnum attr;
 
     Filter::attrlist.clear();
@@ -48,11 +50,12 @@ void Filter::setattrs(string s) {
     }
 }
 
-void Filter::assigncol(Package *a, AttributeEnum attr) {
+void Filter::assigncol(Package *a, AttributeEnum attr)
+{
     string s = a->getattr(attr);
     int colindex;
 
-    map<string,int>::iterator it = groups.find(s);
+    map<string, int>::iterator it = groups.find(s);
 
     if (it != groups.end())
         colindex = it->second;
@@ -64,14 +67,17 @@ void Filter::assigncol(Package *a, AttributeEnum attr) {
     a->setcolindex(colindex);
 }
 
-bool Filter::matches(const Package *a, const string needle) {
+bool Filter::matches(const Package *a, const string needle)
+{
     return !notmatches(a, needle);
 }
-bool Filter::matchesre(const Package *a, const sregex needle) {
+bool Filter::matchesre(const Package *a, const sregex needle)
+{
     return !notmatchesre(a, needle);
 }
 
-bool Filter::notmatchesre(const Package *a, const sregex needle) {
+bool Filter::notmatchesre(const Package *a, const sregex needle)
+{
     bool found = false;
     smatch what;
 
@@ -80,7 +86,8 @@ bool Filter::notmatchesre(const Package *a, const sregex needle) {
 
     return !found;
 }
-bool Filter::notmatches(const Package *a, const string needle) {
+bool Filter::notmatches(const Package *a, const string needle)
+{
     bool found = false;
     string str;
 
@@ -95,7 +102,8 @@ bool Filter::notmatches(const Package *a, const string needle) {
 
     return !found;
 }
-bool Filter::cmp(const Package *lhs, const Package *rhs, AttributeEnum attr) {
+bool Filter::cmp(const Package *lhs, const Package *rhs, AttributeEnum attr)
+{
     if (attr == A_SIZE || attr == A_ISIZE || attr == A_BUILDDATE)
         return lhs->getoffattr(attr) < rhs->getoffattr(attr);
 

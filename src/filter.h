@@ -44,11 +44,9 @@ public:
 
 private:
 
-    static vector<AttributeEnum>
-            attrlist;
+    static vector<AttributeEnum> attrlist;
 
-    static map<string, int>
-            groups;
+    static map<string, int> groups;
 };
 
 #endif // FILTER_H

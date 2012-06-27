@@ -62,18 +62,15 @@ private:
 
     string getconfvalue(const string) const;
 
-    string
-            pacmanconffile,
-            pcursesconffile,
-            rootdir,
-            dbpath,
-            logfile;
+    string pacmanconffile,
+           pcursesconffile,
+           rootdir,
+           dbpath,
+           logfile;
 
-    vector<string>
-            repos;
+    vector<string> repos;
 
-    shared_ptr<map<string, string> >
-            macros;
+    shared_ptr<map<string, string> > macros;
 
     enum ConfSection {
         CS_NONE,

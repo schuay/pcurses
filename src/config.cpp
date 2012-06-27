@@ -27,10 +27,12 @@ Config::Config()
 
     macros.reset(new map<string, string>());
 }
-Config::~Config() {
+Config::~Config()
+{
 }
 
-string Config::getconfvalue(const string str) const {
+string Config::getconfvalue(const string str) const
+{
     sregex rex = sregex::compile("\\w+.*?=\\s*(.+?)\\s*$");
     smatch what;
 
@@ -38,7 +40,8 @@ string Config::getconfvalue(const string str) const {
         return what[1];
     } else return "";
 }
-void Config::parse_pcursesconf() {
+void Config::parse_pcursesconf()
+{
     std::ifstream conf;
     sregex macro = sregex::compile("^([^#]\\w*?)=(.+)$");
     sregex comment = sregex::compile("^#");
@@ -64,7 +67,8 @@ void Config::parse_pcursesconf() {
         }
     }
 }
-void Config::parse_pacmanconf() {
+void Config::parse_pacmanconf()
+{
     const string s_rootdir = "RootDir",
                  s_dbpath = "DBPath",
                  s_logfile = "LogFile";

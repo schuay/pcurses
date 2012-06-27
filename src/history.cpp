@@ -22,17 +22,20 @@ History::History()
     reset();
 }
 
-void History::reset() {
+void History::reset()
+{
     pos = history.begin();
     inhis = false;
 }
 
-string History::moveforward() {
+string History::moveforward()
+{
     if (pos != history.begin()) pos--;
     return *pos;
 }
 
-string History::moveback() {
+string History::moveback()
+{
     if (!inhis) {
         inhis = true;
         return *pos;
@@ -43,7 +46,8 @@ string History::moveback() {
     return *pos;
 }
 
-void History::add(string s) {
+void History::add(string s)
+{
 
     if (s.length() == 0)
         return;
@@ -52,6 +56,7 @@ void History::add(string s) {
     history.push_front(s);
 }
 
-bool History::empty() const {
+bool History::empty() const
+{
     return history.empty();
 }

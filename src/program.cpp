@@ -18,7 +18,8 @@
 #include "program.h"
 
 static volatile bool want_resize = false;
-void request_resize(int /* unused */) {
+void request_resize(int /* unused */)
+{
     want_resize = true;
 }
 
@@ -32,11 +33,13 @@ Program::Program()
 
     signal(SIGWINCH, request_resize);
 }
-Program::~Program() {
+Program::~Program()
+{
     deinit();
 }
 
-void Program::do_resize() {
+void Program::do_resize()
+{
     want_resize = false;
 
     struct winsize w;
@@ -57,7 +60,8 @@ void Program::do_resize() {
     updatedisplay();
 }
 
-void Program::ensureminwsize(uint w, uint h) const {
+void Program::ensureminwsize(uint w, uint h) const
+{
     const uint minw = 60;
     const uint minh = 20;
 
@@ -66,7 +70,8 @@ void Program::ensureminwsize(uint w, uint h) const {
     }
 }
 
-void Program::deinit() {
+void Program::deinit()
+{
     deinit_curses();
 
     for (uint i = 0; i < packages.size(); i++)
@@ -77,7 +82,8 @@ void Program::deinit() {
     opqueue.clear();
 }
 
-void Program::run_cmd(string cmd) const {
+void Program::run_cmd(string cmd) const
+{
     pid_t pid;
     int status;
 
@@ -85,7 +91,7 @@ void Program::run_cmd(string cmd) const {
     pid = fork();
     if (pid == 0) {
         /* child */
-        execlp("bash", "bash", "-ic", cmd.c_str(), (char*)NULL);
+        execlp("bash", "bash", "-ic", cmd.c_str(), (char *)NULL);
     } else {
         /* parent (or error, which we blissfully ignore */
 
@@ -103,7 +109,8 @@ void Program::run_cmd(string cmd) const {
     }
 }
 
-void Program::init_misc() {
+void Program::init_misc()
+{
     colorcodepackages(string(1, AttributeInfo::attrtochar(coloredby)));
     searchphrases.clear();
 
@@ -111,7 +118,8 @@ void Program::init_misc() {
     execmacro("startup");
 }
 
-void Program::init() {
+void Program::init()
+{
 
     loadpkgs();
 
@@ -121,7 +129,8 @@ void Program::init() {
     updatedisplay();
 }
 
-void Program::setfocus(CursesListBox *frame) {
+void Program::setfocus(CursesListBox *frame)
+{
     list_pane->setfocused(false);
     queue_pane->setfocused(false);
 
@@ -134,7 +143,8 @@ void Program::setfocus(CursesListBox *frame) {
     focused_pane->setfocused(true);
 }
 
-void Program::mainloop() {
+void Program::mainloop()
+{
     int ch;
     while (!quit) {
         ch = getch();
@@ -282,14 +292,16 @@ void Program::mainloop() {
     }
 }
 
-void Program::prepinputmode(FilterOperationEnum o) {
+void Program::prepinputmode(FilterOperationEnum o)
+{
     mode = MODE_INPUT;
     curs_set(1);
     inputbuf.clear();
     gethis(o)->reset();
     op = o;
 }
-void Program::exitinputmode(FilterOperationEnum o) {
+void Program::exitinputmode(FilterOperationEnum o)
+{
     mode = MODE_STANDARD;
     curs_set(0);
 
@@ -327,13 +339,15 @@ void Program::exitinputmode(FilterOperationEnum o) {
     }
 }
 
-void Program::displayprocessingmsg() {
+void Program::displayprocessingmsg()
+{
     list_pane->setfooter("Processing...");
     updatedisplay();
 }
 
 #define PRINTH(a, b) help_pane->printw(a, A_BOLD); help_pane->printw(b);
-void Program::print_help() {
+void Program::print_help()
+{
     PRINTH("esc: ", "cancel\n");
     PRINTH("q: ", "quit\n");
     PRINTH("1 to 0: ", "hotkeys (as configured in " APPLICATION_NAME ".conf)\n");
@@ -357,7 +371,8 @@ void Program::print_help() {
 }
 #undef PRINTH
 
-void Program::loadpkgs() {
+void Program::loadpkgs()
+{
 
     std::cout << "Reading package dbs, please wait..." << std::endl;
 
@@ -369,7 +384,7 @@ void Program::loadpkgs() {
 
 
     alpm_handle_t *handle =
-            alpm_initialize(conf.getrootdir().c_str(), conf.getdbpath().c_str(), &err);
+        alpm_initialize(conf.getrootdir().c_str(), conf.getdbpath().c_str(), &err);
     if (handle == NULL) {
         throw PcursesException(alpm_strerror(err));
     }
@@ -388,18 +403,17 @@ void Program::loadpkgs() {
     /* create our package list */
     alpm_list_t *dbs = alpm_list_copy(alpm_option_get_syncdbs(handle));
     dbs = alpm_list_add(dbs, localdb);
-    for ( ; dbs; dbs = alpm_list_next(dbs)) {
-        alpm_db_t *db = (alpm_db_t*)alpm_list_getdata(dbs);
+    for (; dbs; dbs = alpm_list_next(dbs)) {
+        alpm_db_t *db = (alpm_db_t *)alpm_list_getdata(dbs);
         for (alpm_list_t *pkgs = alpm_db_get_pkgcache(db); pkgs; pkgs = alpm_list_next(pkgs)) {
-            alpm_pkg_t *pkg = (alpm_pkg_t*)alpm_list_getdata(pkgs);
+            alpm_pkg_t *pkg = (alpm_pkg_t *)alpm_list_getdata(pkgs);
             Package *p = new Package(pkg, localdb);
             Package *parray[] = { p };
             if (!std::includes(packages.begin(), packages.end(),
-                              parray, parray + 1,
-                              boost::bind(&Filter::cmp, _1, _2, A_NAME))) {
+                               parray, parray + 1,
+                               boost::bind(&Filter::cmp, _1, _2, A_NAME))) {
                 packages.push_back(p);
-            }
-            else
+            } else
                 delete p;
         }
         std::sort(packages.begin(), packages.end(), boost::bind(&Filter::cmp, _1, _2, A_NAME));
@@ -413,7 +427,8 @@ void Program::loadpkgs() {
     filteredpackages = packages;
 }
 
-void Program::init_curses() {
+void Program::init_curses()
+{
 
     (void)system("clear");
 
@@ -468,7 +483,8 @@ void Program::init_curses() {
     list_pane->setlist(&filteredpackages);
     queue_pane->setlist(&opqueue);
 }
-void Program::deinit_curses() {
+void Program::deinit_curses()
+{
     delete list_pane;
     delete queue_pane;
     delete info_pane;
@@ -485,7 +501,8 @@ void Program::deinit_curses() {
     (void)system("clear");
 }
 
-void Program::printinfosection(AttributeEnum attr, string text) {
+void Program::printinfosection(AttributeEnum attr, string text)
+{
 
     string caption = AttributeInfo::attrname(attr);
     char hllower = AttributeInfo::attrtochar(attr);
@@ -497,8 +514,7 @@ void Program::printinfosection(AttributeEnum attr, string text) {
         if (!hldone && (caption[i] == hllower || caption[i] == hlupper)) {
             style = C_DEF;
             hldone = true;
-        }
-        else style = C_DEF_HL2;
+        } else style = C_DEF_HL2;
 
 
         info_pane->printw(string(1, caption[i]), style);
@@ -508,7 +524,8 @@ void Program::printinfosection(AttributeEnum attr, string text) {
     string txt = text + "\n";
     info_pane->printw(txt);
 }
-void Program::updatedisplay() {
+void Program::updatedisplay()
+{
 
     /* this runs **at least** once per loop iteration
        for example it can run more than once if we need to display
@@ -564,7 +581,8 @@ void Program::updatedisplay() {
     doupdate();
 }
 
-string Program::optostr(FilterOperationEnum o) const {
+string Program::optostr(FilterOperationEnum o) const
+{
     switch (o) {
     case OP_FILTER: return "/";
     case OP_SORT: return ".";
@@ -578,7 +596,8 @@ string Program::optostr(FilterOperationEnum o) const {
 
     return "";
 }
-FilterOperationEnum Program::strtoopt(string str) const {
+FilterOperationEnum Program::strtoopt(string str) const
+{
     for (int i = 0; i < OP_NONE; i++) {
         if (optostr((FilterOperationEnum)i) == str) {
             return (FilterOperationEnum)i;
@@ -587,7 +606,8 @@ FilterOperationEnum Program::strtoopt(string str) const {
     return OP_NONE;
 }
 
-void Program::clearfilter() {
+void Program::clearfilter()
+{
     filteredpackages = packages;
     std::sort(filteredpackages.begin(), filteredpackages.end(),
               boost::bind(&Filter::cmp, _1, _2, sortedby));
@@ -596,7 +616,8 @@ void Program::clearfilter() {
     list_pane->moveabs(0);
 }
 
-History *Program::gethis(FilterOperationEnum o) {
+History *Program::gethis(FilterOperationEnum o)
+{
 
     History *v = NULL;
 
@@ -626,7 +647,8 @@ History *Program::gethis(FilterOperationEnum o) {
     return v;
 }
 
-void Program::execmacro(string str) {
+void Program::execmacro(string str)
+{
 
     gethis(OP_MACRO)->add(str);
 
@@ -657,7 +679,8 @@ void Program::execmacro(string str) {
     }
 }
 
-void Program::execmd(string str) {
+void Program::execmd(string str)
+{
 
     gethis(OP_EXEC)->add(str);
 
@@ -677,7 +700,8 @@ void Program::execmd(string str) {
     init_curses();
 }
 
-void Program::colorcodepackages(string str) {
+void Program::colorcodepackages(string str)
+{
     if (str.length() < 1)
         return;
 
@@ -696,14 +720,15 @@ void Program::colorcodepackages(string str) {
 
     Filter::clearattrs();
 
-    vector<Package*>::iterator it = packages.begin();
+    vector<Package *>::iterator it = packages.begin();
     for (; it != packages.end(); it++)
         Filter::assigncol(*it, attr);
 
     coloredby = attr;
 }
 
-void Program::searchpackages(string str) {
+void Program::searchpackages(string str)
+{
 
     string fieldlist, searchphrase;
 
@@ -728,8 +753,8 @@ void Program::searchpackages(string str) {
     }
 
     /* we start the search at the current package */
-    vector<Package*>::iterator begin = filteredpackages.begin() + list_pane->focusedindex() + 1;
-    vector<Package*>::iterator it;
+    vector<Package *>::iterator begin = filteredpackages.begin() + list_pane->focusedindex() + 1;
+    vector<Package *>::iterator it;
 
     it = std::find_if(begin, filteredpackages.end(),
                       boost::bind(&Filter::matches, _1, searchphrase));
@@ -748,7 +773,8 @@ void Program::searchpackages(string str) {
     list_pane->moveabs(it - filteredpackages.begin());
 }
 
-void Program::sortpackages(string str) {
+void Program::sortpackages(string str)
+{
     if (str.length() < 1)
         return;
 
@@ -771,7 +797,8 @@ void Program::sortpackages(string str) {
               boost::bind(&Filter::cmp, _1, _2, attr));
 }
 
-void Program::filterpackages(string str) {
+void Program::filterpackages(string str)
+{
 
     string fieldlist, searchphrase;
 
@@ -803,9 +830,9 @@ void Program::filterpackages(string str) {
     /* catch invalid regex input by user */
     try {
         if (regex_match(searchphrase, what, resimple)) {
-            vector<Package*>::iterator it =
-                    std::find_if(filteredpackages.begin(), filteredpackages.end(),
-                                 boost::bind(&Filter::notmatches, _1, searchphrase));
+            vector<Package *>::iterator it =
+                std::find_if(filteredpackages.begin(), filteredpackages.end(),
+                             boost::bind(&Filter::notmatches, _1, searchphrase));
             while (it != filteredpackages.end()) {
                 filteredpackages.erase(it);
                 it = std::find_if(it, filteredpackages.end(),
@@ -813,9 +840,9 @@ void Program::filterpackages(string str) {
             }
         } else {
             sregex needle = sregex::compile(searchphrase, icase);
-            vector<Package*>::iterator it =
-                    std::find_if(filteredpackages.begin(), filteredpackages.end(),
-                                 boost::bind(&Filter::notmatchesre, _1, needle));
+            vector<Package *>::iterator it =
+                std::find_if(filteredpackages.begin(), filteredpackages.end(),
+                             boost::bind(&Filter::notmatchesre, _1, needle));
             while (it != filteredpackages.end()) {
                 filteredpackages.erase(it);
                 it = std::find_if(it, filteredpackages.end(),
@@ -826,7 +853,7 @@ void Program::filterpackages(string str) {
         if (searchphrases.length() != 0) searchphrases += ", ";
         searchphrases += str;
 
-    } catch (boost::xpressive::regex_error& e) {
+    } catch (boost::xpressive::regex_error &e) {
         /* we don't have any decent feedback mechanisms, so ignore faulty regexp */
     }
 }

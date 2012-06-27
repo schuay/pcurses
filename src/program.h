@@ -116,50 +116,39 @@ private:
 
     ModeEnum mode;
 
-    Config
-            conf;
+    Config conf;
 
-    bool
-            quit;
+    bool quit;
 
-    CursesListBox
-            *list_pane,
-            *queue_pane,
-            *focused_pane;
-    CursesFrame
-            *info_pane,
-            *input_pane,
-            *help_pane,
-            *status_pane;
+    CursesListBox *list_pane,
+                  *queue_pane,
+                  *focused_pane;
+    CursesFrame *info_pane,
+                *input_pane,
+                *help_pane,
+                *status_pane;
 
-    vector<Package*>
-            packages,
-            filteredpackages,
-            opqueue;
+    vector<Package *> packages,
+           filteredpackages,
+           opqueue;
 
-    shared_ptr<map<string, string> >
-            macros;
+    shared_ptr<map<string, string> > macros;
 
-    string
-            searchphrases;
+    string searchphrases;
 
-    InputBuffer
-            inputbuf;
+    InputBuffer inputbuf;
 
-    History
-            hisfilter,
+    History hisfilter,
             hissort,
             hissearch,
             hiscolorcode,
             hisexec,
             hismacro;
 
-    AttributeEnum
-            sortedby,
-            coloredby;
+    AttributeEnum sortedby,
+                  coloredby;
 
-    FilterOperationEnum
-            op;
+    FilterOperationEnum op;
 };
 
 #endif // PROGRAM_H

@@ -20,7 +20,8 @@
 #include "program.h"
 #include "globals.h"
 
-void parseargs(int argc, char *argv[]) {
+void parseargs(int argc, char *argv[])
+{
     int opt;
 
     while ((opt = getopt(argc, argv, "hv")) != -1) {
@@ -37,7 +38,8 @@ void parseargs(int argc, char *argv[]) {
     }
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 
     std::string err;
 

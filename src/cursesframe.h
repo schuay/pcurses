@@ -60,21 +60,16 @@ protected:
     string fitstrtowin(string in, int x = -1) const;
     string escapestring(string str) const;
 
-    const string
-            overflowind;
+    const string overflowind;
 
-    WINDOW
-            *w_main,
-            *w_border;
-    string
-            header,
-            footer;
+    WINDOW *w_main,
+           *w_border;
+    string header,
+           footer;
 
-    bool
-            focused;
+    bool focused;
 
-    FrameInfo
-            *finfo;
+    FrameInfo *finfo;
 };
 
 #endif // CURSESFRAME_H

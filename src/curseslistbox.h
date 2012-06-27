@@ -31,7 +31,7 @@ class CursesListBox : public CursesFrame
 public:
     CursesListBox(FrameInfo *frameinfo);
 
-    void setlist(vector<Package*> *l);
+    void setlist(vector<Package *> *l);
     void move(int step);
     void movetoend();
     void moveabs(int pos);
@@ -46,11 +46,9 @@ protected:
     void updatefocus();
     chtype getcol(int index) const;
 
-    std::vector<Package*>
-            *list;
-    int
-            windowpos,
-            cursorpos;
+    std::vector<Package *> *list;
+    int windowpos,
+        cursorpos;
 };
 
 #endif // CURSESLISTBOX_H

@@ -99,44 +99,37 @@ private:
     string list2str(alpm_list_t *l, string delim) const;
     static string size2str(off_t size);
 
-    string
-            _name,
-            _url,
-            _packager,
-            _desc,
-            _version,
-            _dbname,
-            _arch,
-            _licenses,
-            _groups,
-            _depends,
-            _optdepends,
-            _conflicts,
-            _provides,
-            _replaces,
-            _sizestr,
-            _signature,
-            _installsizestr,
-            _localversion;
+    string _name,
+           _url,
+           _packager,
+           _desc,
+           _version,
+           _dbname,
+           _arch,
+           _licenses,
+           _groups,
+           _depends,
+           _optdepends,
+           _conflicts,
+           _provides,
+           _replaces,
+           _sizestr,
+           _signature,
+           _installsizestr,
+           _localversion;
 
-    int
-            _colindex;
+    int _colindex;
 
-    off_t
-            _size,
-            _installsize;
+    off_t _size,
+          _installsize;
 
-    time_t
-            _builddate;
+    time_t _builddate;
 
-    UpdateStateEnum
-            _updatestate;
+    UpdateStateEnum _updatestate;
 
-    InstallReasonEnum
-            _reason;
+    InstallReasonEnum _reason;
 
-    OperationEnum
-            op;
+    OperationEnum op;
 };
 
 #endif // PACKAGE_H

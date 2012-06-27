@@ -23,45 +23,53 @@ InputBuffer::InputBuffer()
     clear();
 }
 
-void InputBuffer::movestart() {
+void InputBuffer::movestart()
+{
     pos = 0;
 }
 
-void InputBuffer::moveend() {
+void InputBuffer::moveend()
+{
     pos = contents.length();
 }
 
-void InputBuffer::moveleft() {
+void InputBuffer::moveleft()
+{
     if (pos > 0) {
         pos--;
     }
 }
 
-void InputBuffer::moveright() {
+void InputBuffer::moveright()
+{
     if (pos < contents.length()) {
         pos++;
     }
 }
 
-void InputBuffer::backspace() {
+void InputBuffer::backspace()
+{
     if (pos > 0) {
         contents.erase(pos - 1, 1);
         moveleft();
     }
 }
 
-void InputBuffer::del() {
+void InputBuffer::del()
+{
     if (pos < contents.length()) {
         contents.erase(pos, 1);
     }
 }
 
-void InputBuffer::insert(const char c) {
+void InputBuffer::insert(const char c)
+{
     contents.insert(pos, 1, c);
     pos++;
 }
 
-void InputBuffer::set(string str) {
+void InputBuffer::set(string str)
+{
     contents = str;
     pos = contents.length();
 }

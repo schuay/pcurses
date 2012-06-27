@@ -37,15 +37,18 @@ CursesFrame::~CursesFrame()
     delete finfo;
 }
 
-void CursesFrame::setbackground(chtype col) {
+void CursesFrame::setbackground(chtype col)
+{
     wbkgd(w_main, col | ' ');
 }
 
-void CursesFrame::move(int x, int y) {
+void CursesFrame::move(int x, int y)
+{
     wmove(w_main, y, x);
 }
 
-void CursesFrame::reposition(int termw, int termh) {
+void CursesFrame::reposition(int termw, int termh)
+{
     finfo->recalcinfo(termw, termh);
 
     if (finfo->gethasborder()) {
@@ -59,11 +62,12 @@ void CursesFrame::reposition(int termw, int termh) {
     }
 }
 
-string CursesFrame::fitstrtowin(string in, int x) const {
+string CursesFrame::fitstrtowin(string in, int x) const
+{
     in = escapestring(in);
     int len = in.length();
 
-    if (len == 0 || in[len-1] != '\n')
+    if (len == 0 || in[len - 1] != '\n')
         return in;
 
     /* avoid situations which gives us double line breaks through wrapping */
@@ -73,9 +77,10 @@ string CursesFrame::fitstrtowin(string in, int x) const {
     if ((pos - 1 + len - 1) % usablewidth() != 0)
         return in;
 
-    return in.substr(0, len-1);
+    return in.substr(0, len - 1);
 }
-void CursesFrame::refresh() {
+void CursesFrame::refresh()
+{
     if (w_border != NULL) {
         box(w_border, ACS_VLINE, ACS_HLINE);
 
@@ -91,19 +96,22 @@ void CursesFrame::refresh() {
     wnoutrefresh(w_main);
 }
 
-void CursesFrame::printw(string str, int attr) {
+void CursesFrame::printw(string str, int attr)
+{
     if (attr != 0) wattron(w_main, attr);
     wprintw(w_main, fitstrtowin(str).c_str());
     if (attr != 0) wattroff(w_main, attr);
 }
 
-void CursesFrame::mvprintw(int x, int y, string str, int attr) {
+void CursesFrame::mvprintw(int x, int y, string str, int attr)
+{
     if (attr != 0) wattron(w_main, attr);
     mvwprintw(w_main, y, x, fitstrtowin(str, x).c_str());
     if (attr != 0) wattroff(w_main, attr);
 }
 
-string CursesFrame::escapestring(string str) const {
+string CursesFrame::escapestring(string str) const
+{
     string ret = string(str);
     size_t pos = 0;
     while ((pos = ret.find("%", pos)) != string::npos) {
@@ -114,19 +122,23 @@ string CursesFrame::escapestring(string str) const {
     return ret;
 }
 
-void CursesFrame::clear() {
+void CursesFrame::clear()
+{
     werase(w_main);
 }
 
-int CursesFrame::usableheight() const {
+int CursesFrame::usableheight() const
+{
     return w_main->_maxy;
 }
 
-int CursesFrame::usablewidth() const {
+int CursesFrame::usablewidth() const
+{
     return w_main->_maxx;
 }
 
-void CursesFrame::setfooter(string str) {
+void CursesFrame::setfooter(string str)
+{
     if (str.length() > (uint)usablewidth()) {
         str = str.substr(0, usablewidth() - overflowind.length() + 1) + overflowind;
     }
@@ -134,7 +146,8 @@ void CursesFrame::setfooter(string str) {
     footer = str;
 }
 
-void CursesFrame::setheader(string str) {
+void CursesFrame::setheader(string str)
+{
     if (str.length() + finfo->gettitle().length() > (uint)usablewidth()) {
         int newlen = usablewidth() - finfo->gettitle().length() - overflowind.length();
         str = str.substr(0, usablewidth() - newlen) + overflowind;

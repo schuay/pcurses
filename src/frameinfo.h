@@ -51,17 +51,11 @@ public:
 
 private:
 
-    uint
-        w,
-        h,
-        x,
-        y;
+    uint w, h, x, y;
 
-    bool
-        hasborder;
+    bool hasborder;
 
-    string
-        title;
+    string title;
 
     const FrameEnum type;
 };

@@ -17,7 +17,7 @@
 
 #include "package.h"
 
-Package::Package(alpm_pkg_t* pkg, alpm_db_t *localdb)
+Package::Package(alpm_pkg_t *pkg, alpm_db_t *localdb)
 {
     alpm_pkg_t *_pkg = pkg;
     alpm_pkg_t *_localpkg = alpm_db_get_pkg(localdb, alpm_pkg_get_name(_pkg));
@@ -53,7 +53,7 @@ Package::Package(alpm_pkg_t* pkg, alpm_db_t *localdb)
     } else {
         _localversion = alpm_pkg_get_version(_localpkg);
         _updatestate = (alpm_pkg_vercmp(_version.c_str(), _localversion.c_str()) > 0) ?
-                  USE_UPDATEAVAILABLE : USE_UPTODATE;
+                       USE_UPDATEAVAILABLE : USE_UPTODATE;
     }
 
     _reason = ((_localpkg == NULL) ? IRE_NOTINSTALLED :
@@ -61,14 +61,15 @@ Package::Package(alpm_pkg_t* pkg, alpm_db_t *localdb)
                IRE_EXPLICIT);
 }
 
-string Package::size2str(off_t size) {
+string Package::size2str(off_t size)
+{
     std::stringstream ss;
 
     float fsize = size;
 
     int currentunit = 0;
     string units[] = {"B", "KB", "MB", "GB", "TB"};
-    int unitssize = sizeof(units)/sizeof(units[0]);
+    int unitssize = sizeof(units) / sizeof(units[0]);
 
     while (fsize > 1024.0 && currentunit < unitssize - 1) {
         fsize /= 1024.0;
@@ -80,7 +81,8 @@ string Package::size2str(off_t size) {
     return ss.str();
 }
 
-string Package::trimstr(const char *c) const {
+string Package::trimstr(const char *c) const
+{
     if (c == NULL) return "";
 
     string str = c;
@@ -90,35 +92,38 @@ string Package::trimstr(const char *c) const {
     size_t startpos = str.find_first_not_of(" \t\n");
     size_t endpos = str.find_last_not_of(" \t\n");
 
-    if(( string::npos == startpos ) || ( string::npos == endpos))
+    if ((string::npos == startpos) || (string::npos == endpos))
         return "";
     else
-        return str.substr( startpos, endpos-startpos+1 );
+        return str.substr(startpos, endpos - startpos + 1);
 }
 
 
 
-string Package::deplist2str(alpm_list_t *l, string delim) const {
+string Package::deplist2str(alpm_list_t *l, string delim) const
+{
     string res = "";
     for (alpm_list_t *deps = l; deps != NULL; deps = alpm_list_next(deps)) {
-        alpm_depend_t *depend = (alpm_depend_t*)alpm_list_getdata(deps);
+        alpm_depend_t *depend = (alpm_depend_t *)alpm_list_getdata(deps);
         res += alpm_dep_compute_string(depend);
         if (deps->next != NULL) res += delim;
     }
     return res;
 }
 
-string Package::list2str(alpm_list_t *l, string delim) const {
+string Package::list2str(alpm_list_t *l, string delim) const
+{
     string s, res = "";
     for (alpm_list_t *i = l; i != NULL; i = alpm_list_next(i)) {
-        s = (char*)alpm_list_getdata(i);
+        s = (char *)alpm_list_getdata(i);
         if (i != l) res += delim;
         res += s;
     }
     return res;
 }
 
-string Package::getattr(AttributeEnum attr) const {
+string Package::getattr(AttributeEnum attr) const
+{
     switch(attr) {
     case A_NAME: return getname();
     case A_VERSION: return getversion();
@@ -144,7 +149,8 @@ string Package::getattr(AttributeEnum attr) const {
     default: throw PcursesException("Invalid attribute passed.");
     }
 }
-off_t Package::getoffattr(AttributeEnum attr) const {
+off_t Package::getoffattr(AttributeEnum attr) const
+{
     switch(attr) {
     case A_BUILDDATE: return (off_t)_builddate;
     case A_SIZE: return _size;
@@ -153,10 +159,12 @@ off_t Package::getoffattr(AttributeEnum attr) const {
     }
 }
 
-void Package::setcolindex(int index) {
+void Package::setcolindex(int index)
+{
     _colindex = index;
 }
-int Package::getcolindex() const {
+int Package::getcolindex() const
+{
     return _colindex;
 }
 
@@ -179,7 +187,8 @@ string Package::getrepo() const
 {
     return _dbname;
 }
-string Package::getreason() const {
+string Package::getreason() const
+{
     switch (_reason) {
     case IRE_NOTINSTALLED:
         return "not installed";
@@ -191,50 +200,65 @@ string Package::getreason() const {
         throw PcursesException("no package install reason.");
     }
 }
-string Package::getpackager() const {
+string Package::getpackager() const
+{
     return _packager;
 }
-string Package::geturl() const {
+string Package::geturl() const
+{
     return _url;
 }
-string Package::getbuilddate() const {
+string Package::getbuilddate() const
+{
     string timestr = std::ctime(&_builddate);
     return timestr.substr(0, timestr.length() - 1); //remove newline
 }
-string Package::getarch() const {
+string Package::getarch() const
+{
     return _arch;
 }
-string Package::getlicenses() const {
+string Package::getlicenses() const
+{
     return _licenses;
 }
-string Package::getgroups() const {
+string Package::getgroups() const
+{
     return _groups;
 }
-string Package::getdepends() const {
+string Package::getdepends() const
+{
     return _depends;
 }
-string Package::getoptdepends() const {
+string Package::getoptdepends() const
+{
     return _optdepends;
 }
-string Package::getconflicts() const {
+string Package::getconflicts() const
+{
     return _conflicts;
 }
-string Package::getprovides() const {
+string Package::getprovides() const
+{
     return _provides;
 }
-string Package::getreplaces() const {
+string Package::getreplaces() const
+{
     return _replaces;
 }
-string Package::getsignature() const {
+string Package::getsignature() const
+{
     return _signature;
 }
-string Package::getsize() const {
+string Package::getsize() const
+{
     return _sizestr;
 }
-string Package::getisize() const {
+string Package::getisize() const
+{
     return _installsizestr;
 }
-string Package::getupdatestate() const {
+string Package::getupdatestate() const
+{
     switch (_updatestate) {
     case USE_NOTINSTALLED:
         return "not installed";
@@ -246,9 +270,11 @@ string Package::getupdatestate() const {
         throw PcursesException("no package update state.");
     }
 }
-void Package::setop(OperationEnum oe) {
+void Package::setop(OperationEnum oe)
+{
     op = oe;
 }
-OperationEnum Package::getop() const {
+OperationEnum Package::getop() const
+{
     return op;
 }

@@ -17,11 +17,13 @@
 
 #include "frameinfo.h"
 
-FrameInfo::FrameInfo(FrameEnum t, uint termw, uint termh) : type(t) {
+FrameInfo::FrameInfo(FrameEnum t, uint termw, uint termh) : type(t)
+{
     recalcinfo(termw, termh);
 }
 
-void FrameInfo::recalcinfo(uint termw, uint termh) {
+void FrameInfo::recalcinfo(uint termw, uint termh)
+{
 
     const int leftpanewidth = 30;
     const int paneheight = termh;
