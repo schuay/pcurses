@@ -19,8 +19,12 @@ set(CURSES_NCURSES_REQUIRED TRUE)
 find_package(Boost REQUIRED)
 find_package(Curses REQUIRED)
 
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Wextra -O2 -pedantic -fPIC -std=c++0x -D_FILE_OFFSET_BITS=64")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -Werror -Wall -Wextra -pedantic -fPIC -std=c++0x -D_FILE_OFFSET_BITS=64")
+if(CMAKE_COMPILER_IS_GNUCXX)
+    add_definitions(
+        -Wall -Wextra -Werror -O2 -pedantic -fPIC -std=gnu++11
+        -D_FILE_OFFSET_BITS=64
+    )
+endif(CMAKE_COMPILER_IS_GNUCXX)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}
