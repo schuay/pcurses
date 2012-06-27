@@ -33,6 +33,7 @@ Program::Program()
 
     signal(SIGWINCH, request_resize);
 }
+
 Program::~Program()
 {
     deinit();
@@ -300,6 +301,7 @@ void Program::prepinputmode(FilterOperationEnum o)
     gethis(o)->reset();
     op = o;
 }
+
 void Program::exitinputmode(FilterOperationEnum o)
 {
     mode = MODE_STANDARD;
@@ -483,6 +485,7 @@ void Program::init_curses()
     list_pane->setlist(&filteredpackages);
     queue_pane->setlist(&opqueue);
 }
+
 void Program::deinit_curses()
 {
     delete list_pane;
@@ -524,6 +527,7 @@ void Program::printinfosection(AttributeEnum attr, string text)
     string txt = text + "\n";
     info_pane->printw(txt);
 }
+
 void Program::updatedisplay()
 {
 
@@ -596,6 +600,7 @@ string Program::optostr(FilterOperationEnum o) const
 
     return "";
 }
+
 FilterOperationEnum Program::strtoopt(string str) const
 {
     for (int i = 0; i < OP_NONE; i++) {

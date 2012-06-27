@@ -27,6 +27,7 @@ Config::Config()
 
     macros.reset(new map<string, string>());
 }
+
 Config::~Config()
 {
 }
@@ -40,6 +41,7 @@ string Config::getconfvalue(const string str) const
         return what[1];
     } else return "";
 }
+
 void Config::parse_pcursesconf()
 {
     std::ifstream conf;
@@ -67,6 +69,7 @@ void Config::parse_pcursesconf()
         }
     }
 }
+
 void Config::parse_pacmanconf()
 {
     const string s_rootdir = "RootDir",

@@ -149,6 +149,7 @@ string Package::getattr(AttributeEnum attr) const
     default: throw PcursesException("Invalid attribute passed.");
     }
 }
+
 off_t Package::getoffattr(AttributeEnum attr) const
 {
     switch(attr) {
@@ -163,6 +164,7 @@ void Package::setcolindex(int index)
 {
     _colindex = index;
 }
+
 int Package::getcolindex() const
 {
     return _colindex;
@@ -172,10 +174,12 @@ string Package::getname() const
 {
     return _name;
 }
+
 string Package::getdesc() const
 {
     return _desc;
 }
+
 string Package::getversion() const
 {
     if (_updatestate == USE_UPDATEAVAILABLE) {
@@ -183,10 +187,12 @@ string Package::getversion() const
     }
     return _version;
 }
+
 string Package::getrepo() const
 {
     return _dbname;
 }
+
 string Package::getreason() const
 {
     switch (_reason) {
@@ -200,63 +206,78 @@ string Package::getreason() const
         throw PcursesException("no package install reason.");
     }
 }
+
 string Package::getpackager() const
 {
     return _packager;
 }
+
 string Package::geturl() const
 {
     return _url;
 }
+
 string Package::getbuilddate() const
 {
     string timestr = std::ctime(&_builddate);
     return timestr.substr(0, timestr.length() - 1); //remove newline
 }
+
 string Package::getarch() const
 {
     return _arch;
 }
+
 string Package::getlicenses() const
 {
     return _licenses;
 }
+
 string Package::getgroups() const
 {
     return _groups;
 }
+
 string Package::getdepends() const
 {
     return _depends;
 }
+
 string Package::getoptdepends() const
 {
     return _optdepends;
 }
+
 string Package::getconflicts() const
 {
     return _conflicts;
 }
+
 string Package::getprovides() const
 {
     return _provides;
 }
+
 string Package::getreplaces() const
 {
     return _replaces;
 }
+
 string Package::getsignature() const
 {
     return _signature;
 }
+
 string Package::getsize() const
 {
     return _sizestr;
 }
+
 string Package::getisize() const
 {
     return _installsizestr;
 }
+
 string Package::getupdatestate() const
 {
     switch (_updatestate) {
@@ -270,10 +291,12 @@ string Package::getupdatestate() const
         throw PcursesException("no package update state.");
     }
 }
+
 void Package::setop(OperationEnum oe)
 {
     op = oe;
 }
+
 OperationEnum Package::getop() const
 {
     return op;

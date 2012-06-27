@@ -45,6 +45,7 @@ AttributeEnum AttributeInfo::chartoattr(char c)
     default: return A_NONE;
     }
 }
+
 char AttributeInfo::attrtochar(AttributeEnum attr)
 {
     for (char i = 'a'; i <= 'z'; i++)
