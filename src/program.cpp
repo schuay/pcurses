@@ -782,26 +782,30 @@ void Program::sortpackages(string str)
 
 void Program::filterpackages(string str)
 {
-    string fieldlist, searchphrase;
+    string fieldlist, searchphrase, negate;
 
     gethis(OP_FILTER)->add(str);
 
     /* first, split actual search phrase from field prefix */
-    sregex reprefix = sregex::compile("^([A-Za-z]*):(.*)");
+    sregex reprefix = sregex::compile("^(([A-Za-zq]*)([!]?):)?(.*)");
     smatch what;
 
     Filter::clearattrs();
     if (regex_search(str, what, reprefix)) {
-        fieldlist = what[1];
-        searchphrase = what[2];
-        Filter::setattrs(fieldlist);
+        fieldlist = what[2];
+        negate = what[3];
+        searchphrase = what[4];
     } else {
-        searchphrase = str;
+        throw PcursesException("Could not match filter regex.");
     }
 
     /* if search phrase is empty, nothing to do */
     if (searchphrase.length() == 0) {
         return;
+    }
+
+    if (!fieldlist.empty()) {
+        Filter::setattrs(fieldlist);
     }
 
     /* if search phrase is alphanumeric only,
@@ -812,23 +816,27 @@ void Program::filterpackages(string str)
     /* catch invalid regex input by user */
     try {
         if (regex_match(searchphrase, what, resimple)) {
+            bool (*fn)(const Package *, const string) = negate.empty()
+                    ? &Filter::notmatches : &Filter::matches;
             vector<Package *>::iterator it =
                 std::find_if(filteredpackages.begin(), filteredpackages.end(),
-                             boost::bind(&Filter::notmatches, _1, searchphrase));
+                             boost::bind(fn, _1, searchphrase));
             while (it != filteredpackages.end()) {
                 filteredpackages.erase(it);
                 it = std::find_if(it, filteredpackages.end(),
-                                  boost::bind(&Filter::notmatches, _1, searchphrase));
+                                  boost::bind(fn, _1, searchphrase));
             }
         } else {
+            bool (*fn)(const Package *, const sregex) = negate.empty()
+                    ? &Filter::notmatchesre : &Filter::matchesre;
             sregex needle = sregex::compile(searchphrase, icase);
             vector<Package *>::iterator it =
                 std::find_if(filteredpackages.begin(), filteredpackages.end(),
-                             boost::bind(&Filter::notmatchesre, _1, needle));
+                             boost::bind(fn, _1, needle));
             while (it != filteredpackages.end()) {
                 filteredpackages.erase(it);
                 it = std::find_if(it, filteredpackages.end(),
-                                  boost::bind(&Filter::notmatchesre, _1, needle));
+                                  boost::bind(fn, _1, needle));
             }
         }
 

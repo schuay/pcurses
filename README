@@ -41,7 +41,8 @@ nd:game 1 23
 1 is a list of field specifiers. These tell pcurses which fields to search.
 Field specifiers are the highlighted characters in the field names in the info
 pane.  In this example, this means that the Name and Description are searched
-for the phrase 'game'.
+for the phrase 'game'. To keep all _non_matching packages instead, append '!'
+to the field list..
 
 2 the character ':' separates the field specifier list from the search phrase.
 If this character is not present, the entire string is interpreted as the
