@@ -51,18 +51,11 @@ public:
     /* Paints the screen, called at least once every mainloop iteration. */
     void update_display(const State &state);
 
-    /* TODO: set these private. */
-    CursesListBox *list_pane,
-                  *queue_pane,
-                  *focused_pane;
-    CursesFrame *info_pane,
-                *input_pane,
-                *help_pane,
-                *status_pane;
+    inline CursesListBox *list() { return list_pane; }
+    inline CursesListBox *queue() { return queue_pane; }
+    inline CursesListBox *focused() { return focused_pane; }
 
 private:
-    static CursesUi instance;
-
     /* Adjusts all pane sizes and positions to the current terminal size. */
     void resize();
 
@@ -71,6 +64,18 @@ private:
 
     /* Throws exception if terminal size is below a fixed limit. */
     void ensure_min_term_size(uint w, uint h) const;
+
+
+    static CursesUi instance;
+
+    CursesListBox *list_pane,
+                  *queue_pane,
+                  *focused_pane;
+
+    CursesFrame *info_pane,
+                *input_pane,
+                *help_pane,
+                *status_pane;
 };
 
 #endif // CURSESUI_H

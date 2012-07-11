@@ -106,46 +106,46 @@ void Program::mainloop()
             switch (ch) {
             case 'k':
             case KEY_UP:
-                CursesUi::ui().focused_pane->move(-1);
+                CursesUi::ui().focused()->move(-1);
                 break;
             case 'j':
             case KEY_DOWN:
-                CursesUi::ui().focused_pane->move(1);
+                CursesUi::ui().focused()->move(1);
                 break;
             case KEY_HOME:
-                CursesUi::ui().focused_pane->moveabs(0);
+                CursesUi::ui().focused()->moveabs(0);
                 break;
             case KEY_END:
-                CursesUi::ui().focused_pane->movetoend();
+                CursesUi::ui().focused()->movetoend();
                 break;
             case KEY_PPAGE:   /* page up */
-                CursesUi::ui().focused_pane->move(CursesUi::ui().list_pane->usableheight() * -1);
+                CursesUi::ui().focused()->move(CursesUi::ui().list()->usableheight() * -1);
                 break;
             case KEY_NPAGE:   /* page down */
-                CursesUi::ui().focused_pane->move(CursesUi::ui().list_pane->usableheight());
+                CursesUi::ui().focused()->move(CursesUi::ui().list()->usableheight());
                 break;
             case KEY_TAB:
                 CursesUi::ui().switch_focus();
                 break;
             case KEY_RIGHT:
-                if (CursesUi::ui().focused_pane != CursesUi::ui().list_pane) break;
+                if (CursesUi::ui().focused() != CursesUi::ui().list()) break;
                 if (filteredpackages.size() == 0) break;
 
-                if (std::find(opqueue.begin(), opqueue.end(), filteredpackages[CursesUi::ui().list_pane->focusedindex()]) != opqueue.end()) {
+                if (std::find(opqueue.begin(), opqueue.end(), filteredpackages[CursesUi::ui().list()->focusedindex()]) != opqueue.end()) {
                     break;
                 }
-                opqueue.push_back(filteredpackages[CursesUi::ui().list_pane->focusedindex()]);
-                CursesUi::ui().queue_pane->movetoend();
-                CursesUi::ui().focused_pane->move(1);
+                opqueue.push_back(filteredpackages[CursesUi::ui().list()->focusedindex()]);
+                CursesUi::ui().queue()->movetoend();
+                CursesUi::ui().focused()->move(1);
                 break;
             case KEY_LEFT:
-                if (CursesUi::ui().focused_pane != CursesUi::ui().queue_pane) break;
-                CursesUi::ui().queue_pane->removeselected();
+                if (CursesUi::ui().focused() != CursesUi::ui().queue()) break;
+                CursesUi::ui().queue()->removeselected();
                 if (opqueue.empty()) CursesUi::ui().set_focus(PANE_LIST);
                 break;
             case 'C':
                 while (!opqueue.empty()) {
-                    CursesUi::ui().queue_pane->removeselected();
+                    CursesUi::ui().queue()->removeselected();
                 }
                 CursesUi::ui().set_focus(PANE_LIST);
                 break;
@@ -262,8 +262,6 @@ void Program::exitinputmode(FilterOperationEnum o)
     switch (o) {
     case OP_FILTER:
         filterpackages(state.inputbuf.getcontents());
-        CursesUi::ui().list_pane->setlist(&filteredpackages);
-        CursesUi::ui().list_pane->moveabs(0);
         flushinp();
         break;
     case OP_SORT:
@@ -348,7 +346,7 @@ void Program::clearfilter()
               boost::bind(&Filter::cmp, _1, _2, state.sortedby));
 
     state.searchphrases = "";
-    CursesUi::ui().list_pane->moveabs(0);
+    CursesUi::ui().list()->moveabs(0);
 }
 
 History *Program::gethis(FilterOperationEnum o)
@@ -471,7 +469,7 @@ void Program::searchpackages(string str)
     }
 
     /* we start the search at the current package */
-    vector<Package *>::iterator begin = filteredpackages.begin() + CursesUi::ui().list_pane->focusedindex() + 1;
+    vector<Package *>::iterator begin = filteredpackages.begin() + CursesUi::ui().list()->focusedindex() + 1;
     vector<Package *>::iterator it;
 
     it = std::find_if(begin, filteredpackages.end(),
@@ -488,7 +486,7 @@ void Program::searchpackages(string str)
         return;
 
     /* move focus to found pkg */
-    CursesUi::ui().list_pane->moveabs(it - filteredpackages.begin());
+    CursesUi::ui().list()->moveabs(it - filteredpackages.begin());
 }
 
 void Program::sortpackages(string str)
@@ -578,6 +576,8 @@ void Program::filterpackages(string str)
         if (state.searchphrases.length() != 0) state.searchphrases += ", ";
         state.searchphrases += str;
 
+        /* List contents have changed, move to beginning. */
+        CursesUi::ui().list()->moveabs(0);
     } catch (boost::xpressive::regex_error &e) {
         /* we don't have any decent feedback mechanisms, so ignore faulty regexp */
     }
