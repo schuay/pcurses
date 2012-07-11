@@ -17,12 +17,6 @@
 
 #include "program.h"
 
-static volatile bool want_resize = false;
-void request_resize(int /* unused */)
-{
-    want_resize = true;
-}
-
 Program::Program()
 {
     quit = false;
@@ -30,46 +24,11 @@ Program::Program()
     mode = MODE_STANDARD;
     sortedby = A_NAME;
     coloredby = A_INSTALLSTATE;
-
-    signal(SIGWINCH, request_resize);
 }
 
 Program::~Program()
 {
     deinit();
-}
-
-void Program::do_resize()
-{
-    want_resize = false;
-
-    struct winsize w;
-    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-
-    ensureminwsize(w.ws_col, w.ws_row);
-
-    endwin();
-    refresh();
-
-    CursesUi::ui().list_pane->reposition(w.ws_col, w.ws_row);
-    CursesUi::ui().info_pane->reposition(w.ws_col, w.ws_row);
-    CursesUi::ui().queue_pane->reposition(w.ws_col, w.ws_row);
-    CursesUi::ui().status_pane->reposition(w.ws_col, w.ws_row);
-    CursesUi::ui().input_pane->reposition(w.ws_col, w.ws_row);
-    CursesUi::ui().help_pane->reposition(w.ws_col, w.ws_row);
-
-    updatedisplay();
-}
-
-/* REMOVEME */
-void Program::ensureminwsize(uint w, uint h) const
-{
-    const uint minw = 60;
-    const uint minh = 20;
-
-    if (w < minw || h < minh) {
-        throw PcursesException("Window size is below required minimum");
-    }
 }
 
 void Program::deinit()
@@ -136,10 +95,6 @@ void Program::mainloop()
     int ch;
     while (!quit) {
         ch = getch();
-
-        if (want_resize) {
-            do_resize();
-        }
 
         if (ch == ERR || ch == KEY_RESIZE) continue;
 
@@ -440,6 +395,8 @@ void Program::printinfosection(AttributeEnum attr, string text)
 
 void Program::updatedisplay()
 {
+    /* TODO: resize() if want_resize == true */
+
     /* this runs **at least** once per loop iteration
        for example it can run more than once if we need to display
        a 'processing' message during filtering

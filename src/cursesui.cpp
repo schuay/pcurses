@@ -20,6 +20,13 @@
 /* Static instance. */
 CursesUi CursesUi::instance;
 
+/* Resize signal handler. */
+static volatile bool want_resize = false;
+static void request_resize(int /* unused */)
+{
+    want_resize = true;
+}
+
 CursesUi &CursesUi::ui()
 {
     return instance;
@@ -60,11 +67,35 @@ void CursesUi::set_focus(enum PaneEnum pane)
     queue_pane->setfocused(p == PANE_QUEUE);
 }
 
+void CursesUi::resize()
+{
+    want_resize = false;
+
+    struct winsize w;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+
+    ensure_min_term_size(w.ws_col, w.ws_row);
+
+    endwin();
+    refresh();
+
+    CursesUi::ui().list_pane->reposition(w.ws_col, w.ws_row);
+    CursesUi::ui().info_pane->reposition(w.ws_col, w.ws_row);
+    CursesUi::ui().queue_pane->reposition(w.ws_col, w.ws_row);
+    CursesUi::ui().status_pane->reposition(w.ws_col, w.ws_row);
+    CursesUi::ui().input_pane->reposition(w.ws_col, w.ws_row);
+    CursesUi::ui().help_pane->reposition(w.ws_col, w.ws_row);
+
+    /* TODO: updatedisplay(); */
+}
+
 void CursesUi::enable_curses(vector<Package *> *pkgs, vector<Package *> *queue)
 {
     if (system("clear") == -1) {
         throw PcursesException("system() failed");
     }
+
+    signal(SIGWINCH, request_resize);
 
     setlocale(LC_ALL, "");
 

@@ -19,6 +19,8 @@
 #define CURSESUI_H
 
 #include <ncurses.h>
+#include <signal.h>
+#include <sys/ioctl.h>
 #include <vector>
 
 #include "cursesframe.h"
@@ -50,6 +52,9 @@ public:
 
     /* Sets focus to the specified pane (if possible). */
     void set_focus(enum PaneEnum pane);
+
+    /* Adjusts all pane sizes and positions to the current terminal size. */
+    void resize();
 
     /* TODO: set these private. */
     CursesListBox *list_pane,
