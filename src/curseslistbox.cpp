@@ -19,6 +19,7 @@
 
 CursesListBox::CursesListBox(FrameInfo *frameinfo)
     : CursesFrame(frameinfo),
+      list(NULL),
       windowpos(0),
       cursorpos(0)
 {

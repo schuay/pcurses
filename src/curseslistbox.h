@@ -32,6 +32,7 @@ public:
     CursesListBox(FrameInfo *frameinfo);
 
     void setlist(vector<Package *> *l);
+    bool empty() const { return (list == NULL) || list->empty(); }
     void move(int step);
     void movetoend();
     void moveabs(int pos);

@@ -35,17 +35,29 @@ void CursesUi::ensure_min_term_size(uint w, uint h) const
     }
 }
 
+void CursesUi::switch_focus()
+{
+    set_focus((focused_pane == list_pane) ? PANE_QUEUE : PANE_LIST);
+}
+
 void CursesUi::set_focus(enum PaneEnum pane)
 {
-    switch (pane)
+    enum PaneEnum p = pane;
+
+    /* If the queue pane is empty it must not be focused. */
+    if (queue_pane->empty()) {
+        p = PANE_LIST;
+    }
+
+    switch (p)
     {
     case PANE_LIST: focused_pane = list_pane; break;
     case PANE_QUEUE: focused_pane = queue_pane; break;
     default: assert(0);
     }
 
-    list_pane->setfocused(pane == PANE_LIST);
-    queue_pane->setfocused(pane == PANE_QUEUE);
+    list_pane->setfocused(p == PANE_LIST);
+    queue_pane->setfocused(p == PANE_QUEUE);
 }
 
 void CursesUi::enable_curses()

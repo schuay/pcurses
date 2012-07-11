@@ -45,7 +45,10 @@ public:
     /* Throws exception if terminal size is below a fixed limit. */
     void ensure_min_term_size(uint w, uint h) const;
 
-    /* Sets focus to the specified pane. */
+    /* Switches focus (if possible). */
+    void switch_focus();
+
+    /* Sets focus to the specified pane (if possible). */
     void set_focus(enum PaneEnum pane);
 
     void set_package_list(vector<Package *> *list);

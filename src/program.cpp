@@ -133,21 +133,6 @@ void Program::init()
     updatedisplay();
 }
 
-/* REMOVEME */
-void Program::setfocus(CursesListBox *frame)
-{
-    CursesUi::ui().list_pane->setfocused(false);
-    CursesUi::ui().queue_pane->setfocused(false);
-
-    if (opqueue.empty() && frame == CursesUi::ui().queue_pane) {
-        CursesUi::ui().focused_pane = CursesUi::ui().list_pane;
-    } else {
-        CursesUi::ui().focused_pane = frame;
-    }
-
-    CursesUi::ui().focused_pane->setfocused(true);
-}
-
 void Program::mainloop()
 {
     int ch;
@@ -183,7 +168,7 @@ void Program::mainloop()
                 CursesUi::ui().focused_pane->move(CursesUi::ui().list_pane->usableheight());
                 break;
             case KEY_TAB:
-                setfocus((CursesUi::ui().focused_pane == CursesUi::ui().list_pane) ? CursesUi::ui().queue_pane : CursesUi::ui().list_pane);
+                CursesUi::ui().switch_focus();
                 break;
             case KEY_RIGHT:
                 if (CursesUi::ui().focused_pane != CursesUi::ui().list_pane) break;
@@ -199,13 +184,13 @@ void Program::mainloop()
             case KEY_LEFT:
                 if (CursesUi::ui().focused_pane != CursesUi::ui().queue_pane) break;
                 CursesUi::ui().queue_pane->removeselected();
-                if (opqueue.empty()) setfocus(CursesUi::ui().list_pane);
+                if (opqueue.empty()) CursesUi::ui().set_focus(PANE_LIST);
                 break;
             case 'C':
                 while (!opqueue.empty()) {
                     CursesUi::ui().queue_pane->removeselected();
                 }
-                setfocus(CursesUi::ui().list_pane);
+                CursesUi::ui().set_focus(PANE_LIST);
                 break;
             case 'h':
                 mode = MODE_HELP;
