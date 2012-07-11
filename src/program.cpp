@@ -124,9 +124,7 @@ void Program::init()
 {
     loadpkgs();
 
-    CursesUi::ui().enable_curses();
-    CursesUi::ui().set_package_list(&filteredpackages);
-    CursesUi::ui().set_queue_list(&opqueue);
+    CursesUi::ui().enable_curses(&filteredpackages, &opqueue);
 
     init_misc();
 
@@ -597,7 +595,7 @@ void Program::execmd(string str)
 
     CursesUi::ui().disable_curses();
     run_cmd(str);
-    CursesUi::ui().enable_curses();
+    CursesUi::ui().enable_curses(&filteredpackages, &opqueue);
 }
 
 void Program::colorcodepackages(string str)

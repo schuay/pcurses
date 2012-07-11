@@ -60,7 +60,7 @@ void CursesUi::set_focus(enum PaneEnum pane)
     queue_pane->setfocused(p == PANE_QUEUE);
 }
 
-void CursesUi::enable_curses()
+void CursesUi::enable_curses(vector<Package *> *pkgs, vector<Package *> *queue)
 {
     if (system("clear") == -1) {
         throw PcursesException("system() failed");
@@ -114,18 +114,8 @@ void CursesUi::enable_curses()
     help_pane->setbackground(C_DEF);
 
     set_focus(PANE_LIST);
-//    list_pane->setlist(&filteredpackages);
-//    queue_pane->setlist(&opqueue);
-}
-
-void CursesUi::set_package_list(vector<Package *> *list)
-{
-    list_pane->setlist(list);
-}
-
-void CursesUi::set_queue_list(vector<Package *> *list)
-{
-    queue_pane->setlist(list);
+    list_pane->setlist(pkgs);
+    queue_pane->setlist(queue);
 }
 
 void CursesUi::disable_curses()

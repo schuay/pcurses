@@ -37,7 +37,7 @@ public:
     static CursesUi &ui();
 
     /* Enable ncurses handling of the console. */
-    void enable_curses();
+    void enable_curses(vector<Package *> *pkgs, vector<Package *> *queue);
 
     /* Disable ncurses handling of the console. */
     void disable_curses();
@@ -50,9 +50,6 @@ public:
 
     /* Sets focus to the specified pane (if possible). */
     void set_focus(enum PaneEnum pane);
-
-    void set_package_list(vector<Package *> *list);
-    void set_queue_list(vector<Package *> *list);
 
     /* TODO: set these private. */
     CursesListBox *list_pane,
