@@ -17,6 +17,12 @@
 
 #include "cursesui.h"
 
+#include <ncurses.h>
+#include <signal.h>
+#include <sys/ioctl.h>
+
+#include "globals.h"
+
 /* Static instance. */
 CursesUi CursesUi::instance;
 
@@ -168,3 +174,114 @@ void CursesUi::disable_curses()
         throw PcursesException("system() failed");
     }
 }
+
+void CursesUi::printinfosection(AttributeEnum attr, string text)
+{
+    string caption = AttributeInfo::attrname(attr);
+    char hllower = AttributeInfo::attrtochar(attr);
+    char hlupper = toupper(hllower);
+    bool hldone = false;
+    int style;
+
+    for (uint i = 0; i < caption.size(); i++) {
+        if (!hldone && (caption[i] == hllower || caption[i] == hlupper)) {
+            style = C_DEF;
+            hldone = true;
+        } else style = C_DEF_HL2;
+
+
+        info_pane->printw(string(1, caption[i]), style);
+    }
+    info_pane->printw(": ", C_DEF_HL2);
+
+    string txt = text + "\n";
+    info_pane->printw(txt);
+}
+
+void CursesUi::update_display(const State &state)
+{
+    if (want_resize) {
+        resize();
+    }
+
+    /* this runs **at least** once per loop iteration
+       for example it can run more than once if we need to display
+       a 'processing' message during filtering
+     */
+
+    if (state.mode == MODE_INPUT || state.mode == MODE_STANDARD) {
+        Package *pkg;
+
+        erase();
+        list_pane->clear();
+        info_pane->clear();
+        status_pane->clear();
+        input_pane->clear();
+        queue_pane->clear();
+
+        /* info pane */
+        pkg = focused_pane->focusedpackage();
+        if (pkg) {
+            for (int i = 0; i < A_NONE; i++) {
+                AttributeEnum attr = (AttributeEnum)i;
+                string txt = pkg->getattr(attr);
+                if (txt.length() != 0) {
+                    printinfosection(attr, txt);
+                }
+            }
+        }
+
+        /* status bar */
+        status_pane->mvprintw(1, 0, "Sorted by: ", C_INV_HL1);
+        status_pane->printw(AttributeInfo::attrname(state.sortedby), C_INV);
+        status_pane->printw(" Colored by: ", C_INV_HL1);
+        status_pane->printw(AttributeInfo::attrname(state.coloredby), C_INV);
+        status_pane->printw(" Filtered by: ", C_INV_HL1);
+        status_pane->printw(((state.searchphrases.length() == 0)
+                             ? "-" : state.searchphrases), C_INV);
+
+        wnoutrefresh(stdscr);
+        list_pane->refresh();
+        queue_pane->refresh();
+        info_pane->refresh();
+        status_pane->refresh();
+
+        if (state.mode == MODE_INPUT) {
+            input_pane->printw(optostr(state.op) + state.inputbuf.getcontents());
+            input_pane->move(state.inputbuf.getpos() + 1, 0);
+            input_pane->refresh();
+        }
+    } else if (state.mode == MODE_HELP) {
+        help_pane->clear();
+        print_help();
+        help_pane->refresh();
+    }
+
+    doupdate();
+}
+
+#define PRINTH(a, b) help_pane->printw(a, A_BOLD); help_pane->printw(b);
+void CursesUi::print_help()
+{
+    PRINTH("esc: ", "cancel\n");
+    PRINTH("q: ", "quit\n");
+    PRINTH("1 to 0: ", "hotkeys (as configured in " APPLICATION_NAME ".conf)\n");
+    PRINTH("!: ", "execute command, replacing %p with selected package names\n");
+    PRINTH("@: ", "run the specified macro (as configured in " APPLICATION_NAME ".conf)\n");
+    PRINTH("r: ", "reload package info\n");
+    PRINTH("/: ", "filter packages by specified fields (using regexp)\n");
+    PRINTH("", "   note that filters can be chained.\n")
+    PRINTH("n: ", "filter packages by name (using regexp)\n");
+    PRINTH("c: ", "clear all package filters\n");
+    PRINTH("C: ", "clear the package queue\n");
+    PRINTH("?: ", "search packages\n");
+    PRINTH(".: ", "sort packages by specified field\n");
+    PRINTH(";: ", "colorcode packages by specified field\n");
+    PRINTH("tab: ", "switch focus between list and queue panes\n");
+    PRINTH("left/right arrows: ", "add/remove packages from the queue\n");
+    PRINTH("up/down arrows, pg up/down, home/end: ", "navigation\n");
+    PRINTH("up/down arrows (in input mode): ", "browse history\n");
+    help_pane->printw("\n");
+    help_pane->printw("configure macros, hotkeys and hooks in " APPLICATION_NAME ".conf\n");
+}
+#undef PRINTH

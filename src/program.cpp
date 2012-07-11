@@ -20,10 +20,10 @@
 Program::Program()
 {
     quit = false;
-    op = OP_NONE;
-    mode = MODE_STANDARD;
-    sortedby = A_NAME;
-    coloredby = A_INSTALLSTATE;
+    state.op = OP_NONE;
+    state.mode = MODE_STANDARD;
+    state.sortedby = A_NAME;
+    state.coloredby = A_INSTALLSTATE;
 }
 
 Program::~Program()
@@ -72,8 +72,8 @@ void Program::run_cmd(string cmd) const
 
 void Program::init_misc()
 {
-    colorcodepackages(string(1, AttributeInfo::attrtochar(coloredby)));
-    searchphrases.clear();
+    colorcodepackages(string(1, AttributeInfo::attrtochar(state.coloredby)));
+    state.searchphrases.clear();
 
     /* exec startup macro if it exists */
     execmacro("startup");
@@ -87,7 +87,7 @@ void Program::init()
 
     init_misc();
 
-    updatedisplay();
+    CursesUi::ui().update_display(state);
 }
 
 void Program::mainloop()
@@ -98,7 +98,7 @@ void Program::mainloop()
 
         if (ch == ERR || ch == KEY_RESIZE) continue;
 
-        if (mode == MODE_STANDARD) {
+        if (state.mode == MODE_STANDARD) {
             switch (ch) {
             case 'k':
             case KEY_UP:
@@ -146,7 +146,7 @@ void Program::mainloop()
                 CursesUi::ui().set_focus(PANE_LIST);
                 break;
             case 'h':
-                mode = MODE_HELP;
+                state.mode = MODE_HELP;
                 break;
             case 'q':
                 quit = true;
@@ -172,7 +172,7 @@ void Program::mainloop()
             case 'n':
             case 'd':
                 prepinputmode(OP_FILTER);
-                inputbuf.set(string(1, ch) + ":");
+                state.inputbuf.set(string(1, ch) + ":");
                 break;
             case '/':
             case '.':
@@ -185,135 +185,102 @@ void Program::mainloop()
             default:
                 break;
             }
-        } else if (mode == MODE_INPUT) {
+        } else if (state.mode == MODE_INPUT) {
             switch (ch) {
             case KEY_ESC:
                 exitinputmode(OP_NONE);
                 break;
             case KEY_RETURN:
-                exitinputmode(op);
+                exitinputmode(state.op);
                 break;
             case KEY_DC:
-                inputbuf.del();
+                state.inputbuf.del();
                 break;
             case KEY_BACKSPACE:
             case KEY_KONSOLEBACKSPACE:
-                inputbuf.backspace();
+                state.inputbuf.backspace();
                 break;
             case KEY_LEFT:
-                inputbuf.moveleft();
+                state.inputbuf.moveleft();
                 break;
             case KEY_RIGHT:
-                inputbuf.moveright();
+                state.inputbuf.moveright();
                 break;
             case KEY_HOME:
-                inputbuf.movestart();
+                state.inputbuf.movestart();
                 break;
             case KEY_END:
-                inputbuf.moveend();
+                state.inputbuf.moveend();
                 break;
             case KEY_UP:
-                if (!gethis(op)->empty()) {
-                    inputbuf.set(gethis(op)->moveback());
+                if (!gethis(state.op)->empty()) {
+                    state.inputbuf.set(gethis(state.op)->moveback());
                 }
                 break;
             case KEY_DOWN:
-                if (!gethis(op)->empty()) {
-                    inputbuf.set(gethis(op)->moveforward());
+                if (!gethis(state.op)->empty()) {
+                    state.inputbuf.set(gethis(state.op)->moveforward());
                 }
                 break;
             default:
-                inputbuf.insert(ch);
+                state.inputbuf.insert(ch);
                 break;
             }
-        } else if (mode == MODE_HELP) {
+        } else if (state.mode == MODE_HELP) {
             /* exit help screen with any key */
-            mode = MODE_STANDARD;
+            state.mode = MODE_STANDARD;
         }
 
-        updatedisplay();
+        CursesUi::ui().update_display(state);
     }
 }
 
 void Program::prepinputmode(FilterOperationEnum o)
 {
-    mode = MODE_INPUT;
+    state.mode = MODE_INPUT;
     curs_set(1);
-    inputbuf.clear();
+    state.inputbuf.clear();
     gethis(o)->reset();
-    op = o;
+    state.op = o;
 }
 
 void Program::exitinputmode(FilterOperationEnum o)
 {
-    mode = MODE_STANDARD;
+    state.mode = MODE_STANDARD;
     curs_set(0);
 
-    op = OP_NONE;
+    state.op = OP_NONE;
 
-    if (inputbuf.getcontents().length() == 0) {
+    if (state.inputbuf.getcontents().length() == 0) {
         return;
     }
 
     switch (o) {
     case OP_FILTER:
-        displayprocessingmsg();
-        filterpackages(inputbuf.getcontents());
+        filterpackages(state.inputbuf.getcontents());
         CursesUi::ui().list_pane->setlist(&filteredpackages);
         CursesUi::ui().list_pane->moveabs(0);
         flushinp();
         break;
     case OP_SORT:
-        sortpackages(inputbuf.getcontents());
+        sortpackages(state.inputbuf.getcontents());
         break;
     case OP_SEARCH:
-        searchpackages(inputbuf.getcontents());
+        searchpackages(state.inputbuf.getcontents());
         break;
     case OP_COLORCODE:
-        colorcodepackages(inputbuf.getcontents());
+        colorcodepackages(state.inputbuf.getcontents());
         break;
     case OP_EXEC:
-        execmd(inputbuf.getcontents());
+        execmd(state.inputbuf.getcontents());
         break;
     case OP_MACRO:
-        execmacro(inputbuf.getcontents());
+        execmacro(state.inputbuf.getcontents());
         break;
     default:
         break;
     }
 }
-
-void Program::displayprocessingmsg()
-{
-    CursesUi::ui().list_pane->setfooter("Processing...");
-    updatedisplay();
-}
-
-#define PRINTH(a, b) CursesUi::ui().help_pane->printw(a, A_BOLD); CursesUi::ui().help_pane->printw(b);
-void Program::print_help()
-{
-    PRINTH("esc: ", "cancel\n");
-    PRINTH("q: ", "quit\n");
-    PRINTH("1 to 0: ", "hotkeys (as configured in " APPLICATION_NAME ".conf)\n");
-    PRINTH("!: ", "execute command, replacing %p with selected package names\n");
-    PRINTH("@: ", "run the specified macro (as configured in " APPLICATION_NAME ".conf)\n");
-    PRINTH("r: ", "reload package info\n");
-    PRINTH("/: ", "filter packages by specified fields (using regexp)\n");
-    PRINTH("", "   note that filters can be chained.\n")
-    PRINTH("n: ", "filter packages by name (using regexp)\n");
-    PRINTH("c: ", "clear all package filters\n");
-    PRINTH("C: ", "clear the package queue\n");
-    PRINTH("?: ", "search packages\n");
-    PRINTH(".: ", "sort packages by specified field\n");
-    PRINTH(";: ", "colorcode packages by specified field\n");
-    PRINTH("tab: ", "switch focus between list and queue panes\n");
-    PRINTH("left/right arrows: ", "add/remove packages from the queue\n");
-    PRINTH("up/down arrows, pg up/down, home/end: ", "navigation\n");
-    PRINTH("up/down arrows (in input mode): ", "browse history\n");
-    CursesUi::ui().help_pane->printw("\n");
-    CursesUi::ui().help_pane->printw("configure macros, hotkeys and hooks in " APPLICATION_NAME ".conf\n");
-}
-#undef PRINTH
 
 void Program::loadpkgs()
 {
@@ -370,120 +337,13 @@ void Program::loadpkgs()
     filteredpackages = packages;
 }
 
-void Program::printinfosection(AttributeEnum attr, string text)
-{
-    string caption = AttributeInfo::attrname(attr);
-    char hllower = AttributeInfo::attrtochar(attr);
-    char hlupper = toupper(hllower);
-    bool hldone = false;
-    int style;
-
-    for (uint i = 0; i < caption.size(); i++) {
-        if (!hldone && (caption[i] == hllower || caption[i] == hlupper)) {
-            style = C_DEF;
-            hldone = true;
-        } else style = C_DEF_HL2;
-
-
-        CursesUi::ui().info_pane->printw(string(1, caption[i]), style);
-    }
-    CursesUi::ui().info_pane->printw(": ", C_DEF_HL2);
-
-    string txt = text + "\n";
-    CursesUi::ui().info_pane->printw(txt);
-}
-
-void Program::updatedisplay()
-{
-    /* TODO: resize() if want_resize == true */
-
-    /* this runs **at least** once per loop iteration
-       for example it can run more than once if we need to display
-       a 'processing' message during filtering
-     */
-
-    if (mode == MODE_INPUT || mode == MODE_STANDARD) {
-        Package *pkg;
-
-        erase();
-        CursesUi::ui().list_pane->clear();
-        CursesUi::ui().info_pane->clear();
-        CursesUi::ui().status_pane->clear();
-        CursesUi::ui().input_pane->clear();
-        CursesUi::ui().queue_pane->clear();
-
-        /* info pane */
-        pkg = CursesUi::ui().focused_pane->focusedpackage();
-        if (pkg) {
-            for (int i = 0; i < A_NONE; i++) {
-                AttributeEnum attr = (AttributeEnum)i;
-                string txt = pkg->getattr(attr);
-                if (txt.length() != 0)
-                    printinfosection(attr, txt);
-            }
-        }
-
-        /* status bar */
-        CursesUi::ui().status_pane->mvprintw(1, 0, "Sorted by: ", C_INV_HL1);
-        CursesUi::ui().status_pane->printw(AttributeInfo::attrname(sortedby), C_INV);
-        CursesUi::ui().status_pane->printw(" Colored by: ", C_INV_HL1);
-        CursesUi::ui().status_pane->printw(AttributeInfo::attrname(coloredby), C_INV);
-        CursesUi::ui().status_pane->printw(" Filtered by: ", C_INV_HL1);
-        CursesUi::ui().status_pane->printw(((searchphrases.length() == 0) ? "-" : searchphrases), C_INV);
-
-        wnoutrefresh(stdscr);
-        CursesUi::ui().list_pane->refresh();
-        CursesUi::ui().queue_pane->refresh();
-        CursesUi::ui().info_pane->refresh();
-        CursesUi::ui().status_pane->refresh();
-
-        if (mode == MODE_INPUT) {
-            CursesUi::ui().input_pane->printw(optostr(op) + inputbuf.getcontents());
-            CursesUi::ui().input_pane->move(inputbuf.getpos() + 1, 0);
-            CursesUi::ui().input_pane->refresh();
-        }
-    } else if (mode == MODE_HELP) {
-        CursesUi::ui().help_pane->clear();
-        print_help();
-        CursesUi::ui().help_pane->refresh();
-    }
-
-    doupdate();
-}
-
-string Program::optostr(FilterOperationEnum o) const
-{
-    switch (o) {
-    case OP_FILTER: return "/";
-    case OP_SORT: return ".";
-    case OP_SEARCH: return "?";
-    case OP_COLORCODE: return ";";
-    case OP_EXEC: return "!";
-    case OP_MACRO: return "@";
-    case OP_NONE: return "";
-    default: assert(0);
-    }
-
-    return "";
-}
-
-FilterOperationEnum Program::strtoopt(string str) const
-{
-    for (int i = 0; i < OP_NONE; i++) {
-        if (optostr((FilterOperationEnum)i) == str) {
-            return (FilterOperationEnum)i;
-        }
-    }
-    return OP_NONE;
-}
-
 void Program::clearfilter()
 {
     filteredpackages = packages;
     std::sort(filteredpackages.begin(), filteredpackages.end(),
-              boost::bind(&Filter::cmp, _1, _2, sortedby));
+              boost::bind(&Filter::cmp, _1, _2, state.sortedby));
 
-    searchphrases = "";
+    state.searchphrases = "";
     CursesUi::ui().list_pane->moveabs(0);
 }
 
@@ -530,7 +390,7 @@ void Program::execmacro(string str)
             return;
         }
 
-        inputbuf.set(cmd.substr(1));
+        state.inputbuf.set(cmd.substr(1));
         exitinputmode(op);
     }
 }
@@ -579,7 +439,7 @@ void Program::colorcodepackages(string str)
     for (; it != packages.end(); it++)
         Filter::assigncol(*it, attr);
 
-    coloredby = attr;
+    state.coloredby = attr;
 }
 
 void Program::searchpackages(string str)
@@ -645,7 +505,7 @@ void Program::sortpackages(string str)
     if (attr == A_NONE)
         return;
 
-    sortedby = attr;
+    state.sortedby = attr;
 
     std::sort(filteredpackages.begin(), filteredpackages.end(),
               boost::bind(&Filter::cmp, _1, _2, attr));
@@ -711,8 +571,8 @@ void Program::filterpackages(string str)
             }
         }
 
-        if (searchphrases.length() != 0) searchphrases += ", ";
-        searchphrases += str;
+        if (state.searchphrases.length() != 0) state.searchphrases += ", ";
+        state.searchphrases += str;
 
     } catch (boost::xpressive::regex_error &e) {
         /* we don't have any decent feedback mechanisms, so ignore faulty regexp */

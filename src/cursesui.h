@@ -18,13 +18,11 @@
 #ifndef CURSESUI_H
 #define CURSESUI_H
 
-#include <ncurses.h>
-#include <signal.h>
-#include <sys/ioctl.h>
 #include <vector>
 
 #include "cursesframe.h"
 #include "curseslistbox.h"
+#include "state.h"
 
 using std::vector;
 
@@ -44,17 +42,14 @@ public:
     /* Disable ncurses handling of the console. */
     void disable_curses();
 
-    /* Throws exception if terminal size is below a fixed limit. */
-    void ensure_min_term_size(uint w, uint h) const;
-
     /* Switches focus (if possible). */
     void switch_focus();
 
     /* Sets focus to the specified pane (if possible). */
     void set_focus(enum PaneEnum pane);
 
-    /* Adjusts all pane sizes and positions to the current terminal size. */
-    void resize();
+    /* Paints the screen, called at least once every mainloop iteration. */
+    void update_display(const State &state);
 
     /* TODO: set these private. */
     CursesListBox *list_pane,
@@ -67,6 +62,15 @@ public:
 
 private:
     static CursesUi instance;
+
+    /* Adjusts all pane sizes and positions to the current terminal size. */
+    void resize();
+
+    void print_help();
+    void printinfosection(AttributeEnum attr, string text);
+
+    /* Throws exception if terminal size is below a fixed limit. */
+    void ensure_min_term_size(uint w, uint h) const;
 };
 
 #endif // CURSESUI_H

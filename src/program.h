@@ -44,6 +44,7 @@
 #include "history.h"
 #include "inputbuffer.h"
 #include "globals.h"
+#include "state.h"
 
 using std::string;
 using std::vector;
@@ -60,22 +61,6 @@ typedef struct __alpm_list_t alpm_list_t;
 #define KEY_SPACE (32)
 #define KEY_TAB (9)
 #define KEY_KONSOLEBACKSPACE (127)
-
-enum ModeEnum {
-    MODE_STANDARD,
-    MODE_INPUT,
-    MODE_HELP
-};
-
-enum FilterOperationEnum {
-    OP_SEARCH,
-    OP_FILTER,
-    OP_SORT,
-    OP_COLORCODE,
-    OP_EXEC,
-    OP_MACRO,
-    OP_NONE
-};
 
 class Program
 {
@@ -107,12 +92,9 @@ private:
     void exitinputmode(FilterOperationEnum o);
     void prepinputmode(FilterOperationEnum o);
     History *gethis(FilterOperationEnum o);
-    void displayprocessingmsg();
-    string optostr(FilterOperationEnum o) const;
-    FilterOperationEnum strtoopt(string str) const;
 
 
-    ModeEnum mode;
+    State state;
 
     Config conf;
 
@@ -124,21 +106,12 @@ private:
 
     shared_ptr<map<string, string> > macros;
 
-    string searchphrases;
-
-    InputBuffer inputbuf;
-
     History hisfilter,
             hissort,
             hissearch,
             hiscolorcode,
             hisexec,
             hismacro;
-
-    AttributeEnum sortedby,
-                  coloredby;
-
-    FilterOperationEnum op;
 };
 
 #endif // PROGRAM_H
