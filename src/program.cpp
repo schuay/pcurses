@@ -17,6 +17,10 @@
 
 #include "program.h"
 
+#include <signal.h>
+#include <sys/wait.h>
+#include <boost/bind.hpp>
+
 Program::Program()
 {
     quit = false;

@@ -18,32 +18,10 @@
 #ifndef PROGRAM_H
 #define PROGRAM_H
 
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <algorithm>
-#include <iostream>
-#include <ncurses.h>
-#include <vector>
-#include <map>
-#include <stdarg.h>
-#include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/xpressive/regex_error.hpp>
-
-#include "package.h"
-#include "pcursesexception.h"
-#include "cursesframe.h"
-#include "curseslistbox.h"
 #include "cursesui.h"
 #include "config.h"
 #include "filter.h"
 #include "history.h"
-#include "inputbuffer.h"
-#include "globals.h"
 #include "state.h"
 
 using std::string;
@@ -73,15 +51,10 @@ public:
 
 private:
 
-    void ensureminwsize(uint w, uint h) const;
-    void do_resize();
     void run_cmd(string cmd) const;
     void loadpkgs();
     void init_misc();
-    void print_help();
     void deinit();
-    void printinfosection(AttributeEnum attr, string text);
-    void updatedisplay();
     void clearfilter();
     void filterpackages(string str);
     void sortpackages(string str);
