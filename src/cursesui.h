@@ -59,6 +59,10 @@ public:
     inline CursesListBox *focused() { return focused_pane; }
 
 private:
+    /* Prevent class construction and copying. */
+    CursesUi() { }
+    CursesUi(const CursesUi &) { }
+
     /* Adjusts all pane sizes and positions to the current terminal size. */
     void resize();
 
