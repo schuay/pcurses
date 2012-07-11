@@ -38,6 +38,7 @@
 #include "pcursesexception.h"
 #include "cursesframe.h"
 #include "curseslistbox.h"
+#include "cursesui.h"
 #include "config.h"
 #include "filter.h"
 #include "history.h"
@@ -92,11 +93,9 @@ private:
     void setfocus(CursesListBox *frame);
     void run_cmd(string cmd) const;
     void loadpkgs();
-    void init_curses();
     void init_misc();
     void print_help();
     void deinit();
-    void deinit_curses();
     void printinfosection(AttributeEnum attr, string text);
     void updatedisplay();
     void clearfilter();
@@ -119,14 +118,6 @@ private:
     Config conf;
 
     bool quit;
-
-    CursesListBox *list_pane,
-                  *queue_pane,
-                  *focused_pane;
-    CursesFrame *info_pane,
-                *input_pane,
-                *help_pane,
-                *status_pane;
 
     vector<Package *> packages,
            filteredpackages,

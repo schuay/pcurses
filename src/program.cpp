@@ -51,16 +51,17 @@ void Program::do_resize()
     endwin();
     refresh();
 
-    list_pane->reposition(w.ws_col, w.ws_row);
-    info_pane->reposition(w.ws_col, w.ws_row);
-    queue_pane->reposition(w.ws_col, w.ws_row);
-    status_pane->reposition(w.ws_col, w.ws_row);
-    input_pane->reposition(w.ws_col, w.ws_row);
-    help_pane->reposition(w.ws_col, w.ws_row);
+    CursesUi::ui().list_pane->reposition(w.ws_col, w.ws_row);
+    CursesUi::ui().info_pane->reposition(w.ws_col, w.ws_row);
+    CursesUi::ui().queue_pane->reposition(w.ws_col, w.ws_row);
+    CursesUi::ui().status_pane->reposition(w.ws_col, w.ws_row);
+    CursesUi::ui().input_pane->reposition(w.ws_col, w.ws_row);
+    CursesUi::ui().help_pane->reposition(w.ws_col, w.ws_row);
 
     updatedisplay();
 }
 
+/* REMOVEME */
 void Program::ensureminwsize(uint w, uint h) const
 {
     const uint minw = 60;
@@ -73,7 +74,7 @@ void Program::ensureminwsize(uint w, uint h) const
 
 void Program::deinit()
 {
-    deinit_curses();
+    CursesUi::ui().disable_curses();
 
     for (uint i = 0; i < packages.size(); i++)
         delete packages[i];
@@ -123,24 +124,28 @@ void Program::init()
 {
     loadpkgs();
 
-    init_curses();
+    CursesUi::ui().enable_curses();
+    CursesUi::ui().set_package_list(&filteredpackages);
+    CursesUi::ui().set_queue_list(&opqueue);
+
     init_misc();
 
     updatedisplay();
 }
 
+/* REMOVEME */
 void Program::setfocus(CursesListBox *frame)
 {
-    list_pane->setfocused(false);
-    queue_pane->setfocused(false);
+    CursesUi::ui().list_pane->setfocused(false);
+    CursesUi::ui().queue_pane->setfocused(false);
 
-    if (opqueue.empty() && frame == queue_pane) {
-        focused_pane = list_pane;
+    if (opqueue.empty() && frame == CursesUi::ui().queue_pane) {
+        CursesUi::ui().focused_pane = CursesUi::ui().list_pane;
     } else {
-        focused_pane = frame;
+        CursesUi::ui().focused_pane = frame;
     }
 
-    focused_pane->setfocused(true);
+    CursesUi::ui().focused_pane->setfocused(true);
 }
 
 void Program::mainloop()
@@ -159,48 +164,48 @@ void Program::mainloop()
             switch (ch) {
             case 'k':
             case KEY_UP:
-                focused_pane->move(-1);
+                CursesUi::ui().focused_pane->move(-1);
                 break;
             case 'j':
             case KEY_DOWN:
-                focused_pane->move(1);
+                CursesUi::ui().focused_pane->move(1);
                 break;
             case KEY_HOME:
-                focused_pane->moveabs(0);
+                CursesUi::ui().focused_pane->moveabs(0);
                 break;
             case KEY_END:
-                focused_pane->movetoend();
+                CursesUi::ui().focused_pane->movetoend();
                 break;
             case KEY_PPAGE:   /* page up */
-                focused_pane->move(list_pane->usableheight() * -1);
+                CursesUi::ui().focused_pane->move(CursesUi::ui().list_pane->usableheight() * -1);
                 break;
             case KEY_NPAGE:   /* page down */
-                focused_pane->move(list_pane->usableheight());
+                CursesUi::ui().focused_pane->move(CursesUi::ui().list_pane->usableheight());
                 break;
             case KEY_TAB:
-                setfocus((focused_pane == list_pane) ? queue_pane : list_pane);
+                setfocus((CursesUi::ui().focused_pane == CursesUi::ui().list_pane) ? CursesUi::ui().queue_pane : CursesUi::ui().list_pane);
                 break;
             case KEY_RIGHT:
-                if (focused_pane != list_pane) break;
+                if (CursesUi::ui().focused_pane != CursesUi::ui().list_pane) break;
                 if (filteredpackages.size() == 0) break;
 
-                if (std::find(opqueue.begin(), opqueue.end(), filteredpackages[list_pane->focusedindex()]) != opqueue.end()) {
+                if (std::find(opqueue.begin(), opqueue.end(), filteredpackages[CursesUi::ui().list_pane->focusedindex()]) != opqueue.end()) {
                     break;
                 }
-                opqueue.push_back(filteredpackages[list_pane->focusedindex()]);
-                queue_pane->movetoend();
-                focused_pane->move(1);
+                opqueue.push_back(filteredpackages[CursesUi::ui().list_pane->focusedindex()]);
+                CursesUi::ui().queue_pane->movetoend();
+                CursesUi::ui().focused_pane->move(1);
                 break;
             case KEY_LEFT:
-                if (focused_pane != queue_pane) break;
-                queue_pane->removeselected();
-                if (opqueue.empty()) setfocus(list_pane);
+                if (CursesUi::ui().focused_pane != CursesUi::ui().queue_pane) break;
+                CursesUi::ui().queue_pane->removeselected();
+                if (opqueue.empty()) setfocus(CursesUi::ui().list_pane);
                 break;
             case 'C':
                 while (!opqueue.empty()) {
-                    queue_pane->removeselected();
+                    CursesUi::ui().queue_pane->removeselected();
                 }
-                setfocus(list_pane);
+                setfocus(CursesUi::ui().list_pane);
                 break;
             case 'h':
                 mode = MODE_HELP;
@@ -316,8 +321,8 @@ void Program::exitinputmode(FilterOperationEnum o)
     case OP_FILTER:
         displayprocessingmsg();
         filterpackages(inputbuf.getcontents());
-        list_pane->setlist(&filteredpackages);
-        list_pane->moveabs(0);
+        CursesUi::ui().list_pane->setlist(&filteredpackages);
+        CursesUi::ui().list_pane->moveabs(0);
         flushinp();
         break;
     case OP_SORT:
@@ -342,11 +347,11 @@ void Program::exitinputmode(FilterOperationEnum o)
 
 void Program::displayprocessingmsg()
 {
-    list_pane->setfooter("Processing...");
+    CursesUi::ui().list_pane->setfooter("Processing...");
     updatedisplay();
 }
 
-#define PRINTH(a, b) help_pane->printw(a, A_BOLD); help_pane->printw(b);
+#define PRINTH(a, b) CursesUi::ui().help_pane->printw(a, A_BOLD); CursesUi::ui().help_pane->printw(b);
 void Program::print_help()
 {
     PRINTH("esc: ", "cancel\n");
@@ -367,8 +372,8 @@ void Program::print_help()
     PRINTH("left/right arrows: ", "add/remove packages from the queue\n");
     PRINTH("up/down arrows, pg up/down, home/end: ", "navigation\n");
     PRINTH("up/down arrows (in input mode): ", "browse history\n");
-    help_pane->printw("\n");
-    help_pane->printw("configure macros, hotkeys and hooks in " APPLICATION_NAME ".conf\n");
+    CursesUi::ui().help_pane->printw("\n");
+    CursesUi::ui().help_pane->printw("configure macros, hotkeys and hooks in " APPLICATION_NAME ".conf\n");
 }
 #undef PRINTH
 
@@ -427,84 +432,6 @@ void Program::loadpkgs()
     filteredpackages = packages;
 }
 
-void Program::init_curses()
-{
-    if (system("clear") == -1) {
-        throw PcursesException("system() failed");
-    }
-
-    setlocale(LC_ALL, "");
-
-    initscr();
-    start_color();
-    cbreak();
-    keypad(stdscr, TRUE);
-    curs_set(0);
-    noecho();
-
-    /* getch() is our loop speed limiter. we use the nonblocking version
-      to handle window resizes without waiting for the next key event, but
-      use a timeout of 50 ms to limit the cpu usage to acceptable levels.
-      50 ms is just an initial value and is subject to change depending on how
-      well it works */
-    timeout(50);
-
-    /* target ist archlinux so we know a proper ncurses will be used.
-       otherwise we would need to conditionally include this using
-       NCURSES_VERSION */
-    use_default_colors();
-
-    ensureminwsize(COLS, LINES);
-
-    init_pair(5, -1, -1);                   /* default (pane BG) */
-    init_pair(2, COLOR_GREEN, -1);          /* default highlight 1 */
-    init_pair(3, COLOR_CYAN, -1);           /* default highlight 2 */
-    init_pair(6, COLOR_BLUE, -1);
-    init_pair(7, COLOR_MAGENTA, -1);
-    init_pair(8, COLOR_RED, -1);
-    init_pair(9, COLOR_YELLOW, -1);
-    init_pair(1, COLOR_BLACK, COLOR_WHITE); /* inverted (status bar BG) */
-    init_pair(4, COLOR_BLUE, COLOR_WHITE);  /* inverted highlight 1 */
-
-    list_pane = new CursesListBox(new FrameInfo(FE_LIST, COLS, LINES));
-    info_pane = new CursesFrame(new FrameInfo(FE_INFO, COLS, LINES));
-    queue_pane = new CursesListBox(new FrameInfo(FE_QUEUE, COLS, LINES));
-    status_pane = new CursesFrame(new FrameInfo(FE_STATUS, COLS, LINES));
-    input_pane = new CursesFrame(new FrameInfo(FE_INPUT, COLS, LINES));
-    help_pane = new CursesFrame(new FrameInfo(FE_HELP, COLS, LINES));
-
-    list_pane->setbackground(C_DEF);
-    info_pane->setbackground(C_DEF);
-    queue_pane->setbackground(C_DEF);
-    status_pane->setbackground(C_INV);
-    input_pane->setbackground(C_DEF);
-    help_pane->setbackground(C_DEF);
-
-    setfocus(list_pane);
-    list_pane->setlist(&filteredpackages);
-    queue_pane->setlist(&opqueue);
-}
-
-void Program::deinit_curses()
-{
-    delete list_pane;
-    delete queue_pane;
-    delete info_pane;
-    delete status_pane;
-    delete input_pane;
-    delete help_pane;
-
-    nocbreak();
-    curs_set(1);
-    echo();
-
-    endwin();
-
-    if (system("clear") == -1) {
-        throw PcursesException("system() failed");
-    }
-}
-
 void Program::printinfosection(AttributeEnum attr, string text)
 {
     string caption = AttributeInfo::attrname(attr);
@@ -520,12 +447,12 @@ void Program::printinfosection(AttributeEnum attr, string text)
         } else style = C_DEF_HL2;
 
 
-        info_pane->printw(string(1, caption[i]), style);
+        CursesUi::ui().info_pane->printw(string(1, caption[i]), style);
     }
-    info_pane->printw(": ", C_DEF_HL2);
+    CursesUi::ui().info_pane->printw(": ", C_DEF_HL2);
 
     string txt = text + "\n";
-    info_pane->printw(txt);
+    CursesUi::ui().info_pane->printw(txt);
 }
 
 void Program::updatedisplay()
@@ -539,14 +466,14 @@ void Program::updatedisplay()
         Package *pkg;
 
         erase();
-        list_pane->clear();
-        info_pane->clear();
-        status_pane->clear();
-        input_pane->clear();
-        queue_pane->clear();
+        CursesUi::ui().list_pane->clear();
+        CursesUi::ui().info_pane->clear();
+        CursesUi::ui().status_pane->clear();
+        CursesUi::ui().input_pane->clear();
+        CursesUi::ui().queue_pane->clear();
 
         /* info pane */
-        pkg = focused_pane->focusedpackage();
+        pkg = CursesUi::ui().focused_pane->focusedpackage();
         if (pkg) {
             for (int i = 0; i < A_NONE; i++) {
                 AttributeEnum attr = (AttributeEnum)i;
@@ -557,28 +484,28 @@ void Program::updatedisplay()
         }
 
         /* status bar */
-        status_pane->mvprintw(1, 0, "Sorted by: ", C_INV_HL1);
-        status_pane->printw(AttributeInfo::attrname(sortedby), C_INV);
-        status_pane->printw(" Colored by: ", C_INV_HL1);
-        status_pane->printw(AttributeInfo::attrname(coloredby), C_INV);
-        status_pane->printw(" Filtered by: ", C_INV_HL1);
-        status_pane->printw(((searchphrases.length() == 0) ? "-" : searchphrases), C_INV);
+        CursesUi::ui().status_pane->mvprintw(1, 0, "Sorted by: ", C_INV_HL1);
+        CursesUi::ui().status_pane->printw(AttributeInfo::attrname(sortedby), C_INV);
+        CursesUi::ui().status_pane->printw(" Colored by: ", C_INV_HL1);
+        CursesUi::ui().status_pane->printw(AttributeInfo::attrname(coloredby), C_INV);
+        CursesUi::ui().status_pane->printw(" Filtered by: ", C_INV_HL1);
+        CursesUi::ui().status_pane->printw(((searchphrases.length() == 0) ? "-" : searchphrases), C_INV);
 
         wnoutrefresh(stdscr);
-        list_pane->refresh();
-        queue_pane->refresh();
-        info_pane->refresh();
-        status_pane->refresh();
+        CursesUi::ui().list_pane->refresh();
+        CursesUi::ui().queue_pane->refresh();
+        CursesUi::ui().info_pane->refresh();
+        CursesUi::ui().status_pane->refresh();
 
         if (mode == MODE_INPUT) {
-            input_pane->printw(optostr(op) + inputbuf.getcontents());
-            input_pane->move(inputbuf.getpos() + 1, 0);
-            input_pane->refresh();
+            CursesUi::ui().input_pane->printw(optostr(op) + inputbuf.getcontents());
+            CursesUi::ui().input_pane->move(inputbuf.getpos() + 1, 0);
+            CursesUi::ui().input_pane->refresh();
         }
     } else if (mode == MODE_HELP) {
-        help_pane->clear();
+        CursesUi::ui().help_pane->clear();
         print_help();
-        help_pane->refresh();
+        CursesUi::ui().help_pane->refresh();
     }
 
     doupdate();
@@ -617,7 +544,7 @@ void Program::clearfilter()
               boost::bind(&Filter::cmp, _1, _2, sortedby));
 
     searchphrases = "";
-    list_pane->moveabs(0);
+    CursesUi::ui().list_pane->moveabs(0);
 }
 
 History *Program::gethis(FilterOperationEnum o)
@@ -683,9 +610,9 @@ void Program::execmd(string str)
         str.replace(pos, needle.length(), pkgs);
     }
 
-    deinit_curses();
+    CursesUi::ui().disable_curses();
     run_cmd(str);
-    init_curses();
+    CursesUi::ui().enable_curses();
 }
 
 void Program::colorcodepackages(string str)
@@ -740,7 +667,7 @@ void Program::searchpackages(string str)
     }
 
     /* we start the search at the current package */
-    vector<Package *>::iterator begin = filteredpackages.begin() + list_pane->focusedindex() + 1;
+    vector<Package *>::iterator begin = filteredpackages.begin() + CursesUi::ui().list_pane->focusedindex() + 1;
     vector<Package *>::iterator it;
 
     it = std::find_if(begin, filteredpackages.end(),
@@ -757,7 +684,7 @@ void Program::searchpackages(string str)
         return;
 
     /* move focus to found pkg */
-    list_pane->moveabs(it - filteredpackages.begin());
+    CursesUi::ui().list_pane->moveabs(it - filteredpackages.begin());
 }
 
 void Program::sortpackages(string str)
