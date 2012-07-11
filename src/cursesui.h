@@ -51,6 +51,9 @@ public:
     /* Paints the screen, called at least once every mainloop iteration. */
     void update_display(const State &state);
 
+    /* If a resize has been requested, reposition all windows and update the display. */
+    void handle_resize(const State &state);
+
     inline CursesListBox *list() { return list_pane; }
     inline CursesListBox *queue() { return queue_pane; }
     inline CursesListBox *focused() { return focused_pane; }

@@ -91,8 +91,16 @@ void CursesUi::resize()
     CursesUi::ui().status_pane->reposition(w.ws_col, w.ws_row);
     CursesUi::ui().input_pane->reposition(w.ws_col, w.ws_row);
     CursesUi::ui().help_pane->reposition(w.ws_col, w.ws_row);
+}
 
-    /* TODO: updatedisplay(); */
+void CursesUi::handle_resize(const State &state)
+{
+    if (!want_resize) {
+        return;
+    }
+
+    resize();
+    update_display(state);
 }
 
 void CursesUi::enable_curses(vector<Package *> *pkgs, vector<Package *> *queue)

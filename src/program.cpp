@@ -100,6 +100,9 @@ void Program::mainloop()
     while (!quit) {
         ch = getch();
 
+        /* If a resize has been requested, handle it. */
+        CursesUi::ui().handle_resize(state);
+
         if (ch == ERR || ch == KEY_RESIZE) continue;
 
         if (state.mode == MODE_STANDARD) {
