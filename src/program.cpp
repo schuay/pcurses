@@ -394,19 +394,19 @@ void Program::loadpkgs()
     vector<string> repos = conf.getrepos();
     for (uint i = 0; i < repos.size(); i++) {
         /* i'm going to be lazy here and remind myself to handle siglevel properly later on */
-        alpm_db_register_sync(handle, repos[i].c_str(), ALPM_SIG_USE_DEFAULT);
+        alpm_register_syncdb(handle, repos[i].c_str(), ALPM_SIG_USE_DEFAULT);
     }
 
-    alpm_db_t *localdb = alpm_option_get_localdb(handle);
+    alpm_db_t *localdb = alpm_get_localdb(handle);
 
 
     /* create our package list */
-    alpm_list_t *dbs = alpm_list_copy(alpm_option_get_syncdbs(handle));
+    alpm_list_t *dbs = alpm_list_copy(alpm_get_syncdbs(handle));
     dbs = alpm_list_add(dbs, localdb);
     for (; dbs; dbs = alpm_list_next(dbs)) {
-        alpm_db_t *db = (alpm_db_t *)alpm_list_getdata(dbs);
+        alpm_db_t *db = (alpm_db_t *)dbs->data;
         for (alpm_list_t *pkgs = alpm_db_get_pkgcache(db); pkgs; pkgs = alpm_list_next(pkgs)) {
-            alpm_pkg_t *pkg = (alpm_pkg_t *)alpm_list_getdata(pkgs);
+            alpm_pkg_t *pkg = (alpm_pkg_t *)pkgs->data;
             Package *p = new Package(pkg, localdb);
             Package *parray[] = { p };
             if (!std::includes(packages.begin(), packages.end(),

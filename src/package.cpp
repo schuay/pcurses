@@ -104,7 +104,7 @@ string Package::deplist2str(alpm_list_t *l, string delim) const
 {
     string res = "";
     for (alpm_list_t *deps = l; deps != NULL; deps = alpm_list_next(deps)) {
-        alpm_depend_t *depend = (alpm_depend_t *)alpm_list_getdata(deps);
+        alpm_depend_t *depend = (alpm_depend_t *)deps->data;
         res += alpm_dep_compute_string(depend);
         if (deps->next != NULL) res += delim;
     }
@@ -115,7 +115,7 @@ string Package::list2str(alpm_list_t *l, string delim) const
 {
     string s, res = "";
     for (alpm_list_t *i = l; i != NULL; i = alpm_list_next(i)) {
-        s = (char *)alpm_list_getdata(i);
+        s = (char *)i->data;
         if (i != l) res += delim;
         res += s;
     }
