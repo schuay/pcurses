@@ -27,7 +27,7 @@ void parseargs(int argc, char *argv[])
     while ((opt = getopt(argc, argv, "hv")) != -1) {
         switch (opt) {
         case 'v':
-            fprintf(stdout, "%s %d.%d\n", APPLICATION_NAME, VERSION_MAJOR, VERSION_MINOR);
+            fprintf(stdout, "%s %d\n", APPLICATION_NAME, VERSION);
             exit(EXIT_SUCCESS);
             break;
         case 'h':
