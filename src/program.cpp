@@ -429,7 +429,9 @@ void Program::loadpkgs()
 
 void Program::init_curses()
 {
-    (void)system("clear");
+    if (system("clear") == -1) {
+        throw PcursesException("system() failed");
+    }
 
     setlocale(LC_ALL, "");
 
@@ -498,7 +500,9 @@ void Program::deinit_curses()
 
     endwin();
 
-    (void)system("clear");
+    if (system("clear") == -1) {
+        throw PcursesException("system() failed");
+    }
 }
 
 void Program::printinfosection(AttributeEnum attr, string text)
