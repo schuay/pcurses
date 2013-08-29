@@ -62,6 +62,7 @@ private:
     void execmacro(string str);
     void execmd(string str);
     void colorcodepackages(string str);
+    void colorcodepackages(const AttributeEnum attr);
     void exitinputmode(FilterOperationEnum o);
     void prepinputmode(FilterOperationEnum o);
     History *gethis(FilterOperationEnum o);

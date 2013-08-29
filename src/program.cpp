@@ -73,7 +73,7 @@ void Program::run_cmd(string cmd) const
 
 void Program::init_misc()
 {
-    colorcodepackages(string(1, AttributeInfo::attrtochar(state.coloredby)));
+    colorcodepackages(state.coloredby);
     state.searchphrases.clear();
 
     /* exec startup macro if it exists */
@@ -459,15 +459,17 @@ void Program::colorcodepackages(string str)
         i++;
     }
 
-    if (attr == A_NONE) {
-        return;
+    if (attr != A_NONE) {
+        colorcodepackages(attr);
     }
+}
 
+void Program::colorcodepackages(const AttributeEnum attr)
+{
     Filter::clearattrs();
 
-    vector<Package *>::iterator it = packages.begin();
-    for (; it != packages.end(); it++) {
-        Filter::assigncol(*it, attr);
+    for (auto p : packages) {
+        Filter::assigncol(p, attr);
     }
 
     state.coloredby = attr;
