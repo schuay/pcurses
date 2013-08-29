@@ -19,6 +19,15 @@
 
 #include <assert.h>
 
+State::
+State()
+{
+    mode = MODE_STANDARD;
+    sortedby = A_NAME;
+    coloredby = A_INSTALLSTATE;
+    op = OP_NONE;
+}
+
 string optostr(FilterOperationEnum o)
 {
     switch (o) {

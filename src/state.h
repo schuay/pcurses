@@ -42,6 +42,8 @@ enum FilterOperationEnum {
 };
 
 struct State {
+    State();
+
     ModeEnum mode;
     string searchphrases;
     InputBuffer inputbuf;

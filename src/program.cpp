@@ -24,10 +24,6 @@
 Program::Program()
 {
     quit = false;
-    state.op = OP_NONE;
-    state.mode = MODE_STANDARD;
-    state.sortedby = A_NAME;
-    state.coloredby = A_INSTALLSTATE;
 }
 
 Program::~Program()
