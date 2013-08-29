@@ -50,7 +50,9 @@ public:
     void mvprintw(int x, int y, string str, int attr = 0);
     void move(int x, int y);
     void clear();
-    void setfocused(bool b) { focused = b; }
+    void setfocused(bool b) {
+        focused = b;
+    }
 
     int usableheight() const;
     int usablewidth() const;

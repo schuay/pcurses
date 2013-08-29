@@ -39,8 +39,9 @@ void Program::deinit()
 {
     CursesUi::ui().disable_curses();
 
-    for (uint i = 0; i < packages.size(); i++)
+    for (uint i = 0; i < packages.size(); i++) {
         delete packages[i];
+    }
 
     filteredpackages.clear();
     packages.clear();
@@ -103,7 +104,9 @@ void Program::mainloop()
         /* If a resize has been requested, handle it. */
         CursesUi::ui().handle_resize(state);
 
-        if (ch == ERR || ch == KEY_RESIZE) continue;
+        if (ch == ERR || ch == KEY_RESIZE) {
+            continue;
+        }
 
         if (state.mode == MODE_STANDARD) {
             switch (ch) {
@@ -131,10 +134,15 @@ void Program::mainloop()
                 CursesUi::ui().switch_focus();
                 break;
             case KEY_RIGHT:
-                if (CursesUi::ui().focused() != CursesUi::ui().list()) break;
-                if (filteredpackages.size() == 0) break;
+                if (CursesUi::ui().focused() != CursesUi::ui().list()) {
+                    break;
+                }
+                if (filteredpackages.size() == 0) {
+                    break;
+                }
 
-                if (std::find(opqueue.begin(), opqueue.end(), filteredpackages[CursesUi::ui().list()->focusedindex()]) != opqueue.end()) {
+                if (std::find(opqueue.begin(), opqueue.end(),
+                              filteredpackages[CursesUi::ui().list()->focusedindex()]) != opqueue.end()) {
                     break;
                 }
                 opqueue.push_back(filteredpackages[CursesUi::ui().list()->focusedindex()]);
@@ -142,9 +150,13 @@ void Program::mainloop()
                 CursesUi::ui().focused()->move(1);
                 break;
             case KEY_LEFT:
-                if (CursesUi::ui().focused() != CursesUi::ui().queue()) break;
+                if (CursesUi::ui().focused() != CursesUi::ui().queue()) {
+                    break;
+                }
                 CursesUi::ui().queue()->removeselected();
-                if (opqueue.empty()) CursesUi::ui().set_focus(PANE_LIST);
+                if (opqueue.empty()) {
+                    CursesUi::ui().set_focus(PANE_LIST);
+                }
                 break;
             case 'C':
                 while (!opqueue.empty()) {
@@ -328,15 +340,17 @@ void Program::loadpkgs()
                                parray, parray + 1,
                                boost::bind(&Filter::cmp, _1, _2, A_NAME))) {
                 packages.push_back(p);
-            } else
+            } else {
                 delete p;
+            }
         }
         std::sort(packages.begin(), packages.end(), boost::bind(&Filter::cmp, _1, _2, A_NAME));
     }
     alpm_list_free(dbs);
 
-    if (alpm_release(handle) != 0)
+    if (alpm_release(handle) != 0) {
         throw PcursesException("failed to deinitialize alpm library");
+    }
 
 
     filteredpackages = packages;
@@ -357,13 +371,26 @@ History *Program::gethis(FilterOperationEnum o)
     History *v = NULL;
 
     switch (o) {
-    case OP_FILTER: v = &hisfilter; break;
-    case OP_SORT: v = &hissort; break;
-    case OP_SEARCH: v = &hissearch; break;
-    case OP_COLORCODE: v = &hiscolorcode; break;
-    case OP_EXEC: v = &hisexec; break;
-    case OP_MACRO: v = &hismacro; break;
-    default: assert(0);
+    case OP_FILTER:
+        v = &hisfilter;
+        break;
+    case OP_SORT:
+        v = &hissort;
+        break;
+    case OP_SEARCH:
+        v = &hissearch;
+        break;
+    case OP_COLORCODE:
+        v = &hiscolorcode;
+        break;
+    case OP_EXEC:
+        v = &hisexec;
+        break;
+    case OP_MACRO:
+        v = &hismacro;
+        break;
+    default:
+        assert(0);
     }
 
     return v;
@@ -422,8 +449,9 @@ void Program::execmd(string str)
 
 void Program::colorcodepackages(string str)
 {
-    if (str.length() < 1)
+    if (str.length() < 1) {
         return;
+    }
 
     gethis(OP_COLORCODE)->add(str);
 
@@ -435,14 +463,16 @@ void Program::colorcodepackages(string str)
         i++;
     }
 
-    if (attr == A_NONE)
+    if (attr == A_NONE) {
         return;
+    }
 
     Filter::clearattrs();
 
     vector<Package *>::iterator it = packages.begin();
-    for (; it != packages.end(); it++)
+    for (; it != packages.end(); it++) {
         Filter::assigncol(*it, attr);
+    }
 
     state.coloredby = attr;
 }
@@ -472,7 +502,8 @@ void Program::searchpackages(string str)
     }
 
     /* we start the search at the current package */
-    vector<Package *>::iterator begin = filteredpackages.begin() + CursesUi::ui().list()->focusedindex() + 1;
+    vector<Package *>::iterator begin = filteredpackages.begin() + CursesUi::ui().list()->focusedindex()
+                                        + 1;
     vector<Package *>::iterator it;
 
     it = std::find_if(begin, filteredpackages.end(),
@@ -485,8 +516,9 @@ void Program::searchpackages(string str)
     }
 
     /* not found, do nothing */
-    if (it == filteredpackages.end())
+    if (it == filteredpackages.end()) {
         return;
+    }
 
     /* move focus to found pkg */
     CursesUi::ui().list()->moveabs(it - filteredpackages.begin());
@@ -494,8 +526,9 @@ void Program::searchpackages(string str)
 
 void Program::sortpackages(string str)
 {
-    if (str.length() < 1)
+    if (str.length() < 1) {
         return;
+    }
 
     gethis(OP_SORT)->add(str);
 
@@ -507,8 +540,9 @@ void Program::sortpackages(string str)
         i++;
     }
 
-    if (attr == A_NONE)
+    if (attr == A_NONE) {
         return;
+    }
 
     state.sortedby = attr;
 
@@ -576,7 +610,9 @@ void Program::filterpackages(string str)
             }
         }
 
-        if (state.searchphrases.length() != 0) state.searchphrases += ", ";
+        if (state.searchphrases.length() != 0) {
+            state.searchphrases += ", ";
+        }
         state.searchphrases += str;
 
         /* List contents have changed, move to beginning. */

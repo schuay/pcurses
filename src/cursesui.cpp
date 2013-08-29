@@ -62,11 +62,15 @@ void CursesUi::set_focus(enum PaneEnum pane)
         p = PANE_LIST;
     }
 
-    switch (p)
-    {
-    case PANE_LIST: focused_pane = list_pane; break;
-    case PANE_QUEUE: focused_pane = queue_pane; break;
-    default: assert(0);
+    switch (p) {
+    case PANE_LIST:
+        focused_pane = list_pane;
+        break;
+    case PANE_QUEUE:
+        focused_pane = queue_pane;
+        break;
+    default:
+        assert(0);
     }
 
     list_pane->setfocused(p == PANE_LIST);
@@ -195,7 +199,9 @@ void CursesUi::printinfosection(AttributeEnum attr, string text)
         if (!hldone && (caption[i] == hllower || caption[i] == hlupper)) {
             style = C_DEF;
             hldone = true;
-        } else style = C_DEF_HL2;
+        } else {
+            style = C_DEF_HL2;
+        }
 
 
         info_pane->printw(string(1, caption[i]), style);

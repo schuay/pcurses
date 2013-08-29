@@ -40,14 +40,26 @@ public:
     FrameInfo(FrameEnum t, uint termw, uint termh);
     void recalcinfo(uint termw, uint termh);
 
-    uint getx() const { return x; }
-    uint gety() const { return y; }
-    uint getw() const { return w; }
-    uint geth() const { return h; }
+    uint getx() const {
+        return x;
+    }
+    uint gety() const {
+        return y;
+    }
+    uint getw() const {
+        return w;
+    }
+    uint geth() const {
+        return h;
+    }
 
-    bool gethasborder() const { return hasborder; }
+    bool gethasborder() const {
+        return hasborder;
+    }
 
-    string gettitle() const { return title; }
+    string gettitle() const {
+        return title;
+    }
 
 private:
 

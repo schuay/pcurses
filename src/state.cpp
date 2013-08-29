@@ -22,14 +22,22 @@
 string optostr(FilterOperationEnum o)
 {
     switch (o) {
-    case OP_FILTER: return "/";
-    case OP_SORT: return ".";
-    case OP_SEARCH: return "?";
-    case OP_COLORCODE: return ";";
-    case OP_EXEC: return "!";
-    case OP_MACRO: return "@";
-    case OP_NONE: return "";
-    default: assert(0);
+    case OP_FILTER:
+        return "/";
+    case OP_SORT:
+        return ".";
+    case OP_SEARCH:
+        return "?";
+    case OP_COLORCODE:
+        return ";";
+    case OP_EXEC:
+        return "!";
+    case OP_MACRO:
+        return "@";
+    case OP_NONE:
+        return "";
+    default:
+        assert(0);
     }
 
     return "";

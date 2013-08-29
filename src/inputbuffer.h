@@ -27,15 +27,22 @@ class InputBuffer
 public:
     InputBuffer();
 
-    string getcontents() const { return contents; }
-    size_t getpos() const { return pos; }
+    string getcontents() const {
+        return contents;
+    }
+    size_t getpos() const {
+        return pos;
+    }
 
     void set(string str);
     void insert(const char c);
 
     void backspace();
     void del();
-    void clear() { contents = ""; pos = 0; }
+    void clear() {
+        contents = "";
+        pos = 0;
+    }
 
     void movestart();
     void moveend();

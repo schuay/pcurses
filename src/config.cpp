@@ -39,7 +39,9 @@ string Config::getconfvalue(const string str) const
 
     if (regex_match(str, what, rex)) {
         return what[1];
-    } else return "";
+    } else {
+        return "";
+    }
 }
 
 void Config::parse_pcursesconf()
@@ -59,8 +61,9 @@ void Config::parse_pcursesconf()
         string line;
         std::getline(conf, line);
 
-        if (line.length() == 0)
+        if (line.length() == 0) {
             continue;
+        }
 
         if (regex_match(line, what, comment)) {
             continue;
@@ -89,8 +92,9 @@ void Config::parse_pacmanconf()
         string line;
         std::getline(conf, line);
 
-        if (line.length() == 0)
+        if (line.length() == 0) {
             continue;
+        }
 
         if (regex_match(line, what, secrex)) {
             if (what[1] == "options") {
@@ -103,8 +107,9 @@ void Config::parse_pacmanconf()
             }
         }
 
-        if (section != CS_OPTIONS)
+        if (section != CS_OPTIONS) {
             continue;
+        }
 
         if (boost::starts_with(line, s_rootdir)) {
             rootdir = getconfvalue(line);

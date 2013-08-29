@@ -49,14 +49,28 @@ public:
     void parse_pacmanconf();
     void parse_pcursesconf();
 
-    string getpacmanconffile() const { return pacmanconffile; }
-    string getpcursesconffile() const { return pcursesconffile; }
-    string getrootdir() const { return rootdir; }
-    string getdbpath() const { return dbpath; }
-    string getlogfile() const { return logfile; }
+    string getpacmanconffile() const {
+        return pacmanconffile;
+    }
+    string getpcursesconffile() const {
+        return pcursesconffile;
+    }
+    string getrootdir() const {
+        return rootdir;
+    }
+    string getdbpath() const {
+        return dbpath;
+    }
+    string getlogfile() const {
+        return logfile;
+    }
 
-    vector<string> getrepos() const { return repos; }
-    shared_ptr<map<string, string> > getmacros() const { return macros; }
+    vector<string> getrepos() const {
+        return repos;
+    }
+    shared_ptr<map<string, string> > getmacros() const {
+        return macros;
+    }
 
 private:
 

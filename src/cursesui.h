@@ -54,9 +54,15 @@ public:
     /* If a resize has been requested, reposition all windows and update the display. */
     void handle_resize(const State &state);
 
-    inline CursesListBox *list() { return list_pane; }
-    inline CursesListBox *queue() { return queue_pane; }
-    inline CursesListBox *focused() { return focused_pane; }
+    inline CursesListBox *list() {
+        return list_pane;
+    }
+    inline CursesListBox *queue() {
+        return queue_pane;
+    }
+    inline CursesListBox *focused() {
+        return focused_pane;
+    }
 
 private:
     /* Prevent class construction and copying. */

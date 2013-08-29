@@ -30,7 +30,9 @@ void History::reset()
 
 string History::moveforward()
 {
-    if (pos != history.begin()) pos--;
+    if (pos != history.begin()) {
+        pos--;
+    }
     return *pos;
 }
 
@@ -42,14 +44,17 @@ string History::moveback()
     }
 
     list<string>::iterator it = pos;
-    if (pos != history.end() && ++it != history.end()) pos++;
+    if (pos != history.end() && ++it != history.end()) {
+        pos++;
+    }
     return *pos;
 }
 
 void History::add(string s)
 {
-    if (s.length() == 0)
+    if (s.length() == 0) {
         return;
+    }
 
     history.remove(s);
     history.push_front(s);

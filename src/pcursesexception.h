@@ -25,9 +25,13 @@ using std::string;
 class PcursesException
 {
 public:
-    PcursesException(string msg) { _msg = msg; }
+    PcursesException(string msg) {
+        _msg = msg;
+    }
 
-    string getmessage() const { return _msg; }
+    string getmessage() const {
+        return _msg;
+    }
 
 private:
     string _msg;

@@ -31,8 +31,9 @@ CursesFrame::CursesFrame(FrameInfo *frameinfo)
 
 CursesFrame::~CursesFrame()
 {
-    if (w_border != NULL)
+    if (w_border != NULL) {
         delwin(w_border);
+    }
     delwin(w_main);
     delete finfo;
 }
@@ -67,15 +68,17 @@ string CursesFrame::fitstrtowin(string in, int x) const
     in = escapestring(in);
     int len = in.length();
 
-    if (len == 0 || in[len - 1] != '\n')
+    if (len == 0 || in[len - 1] != '\n') {
         return in;
+    }
 
     /* avoid situations which gives us double line breaks through wrapping */
 
     int pos = (x == -1) ? getcurx(w_main) : x;
 
-    if ((pos - 1 + len - 1) % usablewidth() != 0)
+    if ((pos - 1 + len - 1) % usablewidth() != 0) {
         return in;
+    }
 
     return in.substr(0, len - 1);
 }
@@ -98,16 +101,24 @@ void CursesFrame::refresh()
 
 void CursesFrame::printw(string str, int attr)
 {
-    if (attr != 0) wattron(w_main, attr);
+    if (attr != 0) {
+        wattron(w_main, attr);
+    }
     wprintw(w_main, fitstrtowin(str).c_str());
-    if (attr != 0) wattroff(w_main, attr);
+    if (attr != 0) {
+        wattroff(w_main, attr);
+    }
 }
 
 void CursesFrame::mvprintw(int x, int y, string str, int attr)
 {
-    if (attr != 0) wattron(w_main, attr);
+    if (attr != 0) {
+        wattron(w_main, attr);
+    }
     mvwprintw(w_main, y, x, fitstrtowin(str, x).c_str());
-    if (attr != 0) wattroff(w_main, attr);
+    if (attr != 0) {
+        wattroff(w_main, attr);
+    }
 }
 
 string CursesFrame::escapestring(string str) const

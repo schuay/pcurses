@@ -40,7 +40,8 @@ Package::Package(alpm_pkg_t *pkg, alpm_db_t *localdb)
     _licenses = list2str(alpm_pkg_get_licenses(_pkg), " ");
     _groups = list2str(alpm_pkg_get_groups(_pkg), " ");
 
-    _optdepends = deplist2str(alpm_pkg_get_optdepends(_pkg), "\n            "); /* line up correctly in info pane */
+    _optdepends = deplist2str(alpm_pkg_get_optdepends(_pkg),
+                              "\n            "); /* line up correctly in info pane */
     _conflicts = deplist2str(alpm_pkg_get_conflicts(_pkg), " ");
     _provides = deplist2str(alpm_pkg_get_provides(_pkg), " ");
     _replaces = deplist2str(alpm_pkg_get_replaces(_pkg), " ");
@@ -67,7 +68,7 @@ string Package::size2str(off_t size)
 
     float fsize = size;
 
-    int currentunit = 0;
+    int currentunit =  0;
     string units[] = {"B", "KB", "MB", "GB", "TB"};
     int unitssize = sizeof(units) / sizeof(units[0]);
 
@@ -83,7 +84,9 @@ string Package::size2str(off_t size)
 
 string Package::trimstr(const char *c) const
 {
-    if (c == NULL) return "";
+    if (c == NULL) {
+        return "";
+    }
 
     string str = c;
 
@@ -92,10 +95,11 @@ string Package::trimstr(const char *c) const
     size_t startpos = str.find_first_not_of(" \t\n");
     size_t endpos = str.find_last_not_of(" \t\n");
 
-    if ((string::npos == startpos) || (string::npos == endpos))
+    if ((string::npos == startpos) || (string::npos == endpos)) {
         return "";
-    else
+    } else {
         return str.substr(startpos, endpos - startpos + 1);
+    }
 }
 
 
@@ -106,7 +110,9 @@ string Package::deplist2str(alpm_list_t *l, string delim) const
     for (alpm_list_t *deps = l; deps != NULL; deps = alpm_list_next(deps)) {
         alpm_depend_t *depend = (alpm_depend_t *)deps->data;
         res += alpm_dep_compute_string(depend);
-        if (deps->next != NULL) res += delim;
+        if (deps->next != NULL) {
+            res += delim;
+        }
     }
     return res;
 }
@@ -116,7 +122,9 @@ string Package::list2str(alpm_list_t *l, string delim) const
     string s, res = "";
     for (alpm_list_t *i = l; i != NULL; i = alpm_list_next(i)) {
         s = (char *)i->data;
-        if (i != l) res += delim;
+        if (i != l) {
+            res += delim;
+        }
         res += s;
     }
     return res;
@@ -124,39 +132,65 @@ string Package::list2str(alpm_list_t *l, string delim) const
 
 string Package::getattr(AttributeEnum attr) const
 {
-    switch(attr) {
-    case A_NAME: return getname();
-    case A_VERSION: return getversion();
-    case A_URL: return geturl();
-    case A_REPO: return getrepo();
-    case A_PACKAGER: return getpackager();
-    case A_BUILDDATE: return getbuilddate();
-    case A_INSTALLSTATE: return getreason();
-    case A_UPDATESTATE: return getupdatestate();
-    case A_DESC: return getdesc();
-    case A_ARCH: return getarch();
-    case A_LICENSES: return getlicenses();
-    case A_GROUPS: return getgroups();
-    case A_DEPENDS: return getdepends();
-    case A_OPTDEPENDS: return getoptdepends();
-    case A_CONFLICTS: return getconflicts();
-    case A_PROVIDES: return getprovides();
-    case A_REPLACES: return getreplaces();
-    case A_SIGNATURE: return getsignature();
-    case A_SIZE: return getsize();
-    case A_ISIZE: return getisize();
-    case A_NONE: return "";
-    default: throw PcursesException("Invalid attribute passed.");
+    switch (attr) {
+    case A_NAME:
+        return getname();
+    case A_VERSION:
+        return getversion();
+    case A_URL:
+        return geturl();
+    case A_REPO:
+        return getrepo();
+    case A_PACKAGER:
+        return getpackager();
+    case A_BUILDDATE:
+        return getbuilddate();
+    case A_INSTALLSTATE:
+        return getreason();
+    case A_UPDATESTATE:
+        return getupdatestate();
+    case A_DESC:
+        return getdesc();
+    case A_ARCH:
+        return getarch();
+    case A_LICENSES:
+        return getlicenses();
+    case A_GROUPS:
+        return getgroups();
+    case A_DEPENDS:
+        return getdepends();
+    case A_OPTDEPENDS:
+        return getoptdepends();
+    case A_CONFLICTS:
+        return getconflicts();
+    case A_PROVIDES:
+        return getprovides();
+    case A_REPLACES:
+        return getreplaces();
+    case A_SIGNATURE:
+        return getsignature();
+    case A_SIZE:
+        return getsize();
+    case A_ISIZE:
+        return getisize();
+    case A_NONE:
+        return "";
+    default:
+        throw PcursesException("Invalid attribute passed.");
     }
 }
 
 off_t Package::getoffattr(AttributeEnum attr) const
 {
-    switch(attr) {
-    case A_BUILDDATE: return (off_t)_builddate;
-    case A_SIZE: return _size;
-    case A_ISIZE: return _installsize;
-    default: throw PcursesException("Invalid attribute passed.");
+    switch (attr) {
+    case A_BUILDDATE:
+        return (off_t)_builddate;
+    case A_SIZE:
+        return _size;
+    case A_ISIZE:
+        return _installsize;
+    default:
+        throw PcursesException("Invalid attribute passed.");
     }
 }
 

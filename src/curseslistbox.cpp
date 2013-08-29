@@ -40,7 +40,9 @@ void CursesListBox::removeselected()
 {
     size_t pos = focusedindex();
 
-    if (!isinbounds(pos)) return;
+    if (!isinbounds(pos)) {
+        return;
+    }
 
     if (pos == list->size() - 1) {
         move(-1);
@@ -50,23 +52,29 @@ void CursesListBox::removeselected()
 
 void CursesListBox::moveabs(int pos)
 {
-    if (list->size() == 0)
+    if (list->size() == 0) {
         return;
+    }
 
-    if (pos < 0) pos = 0;
-    else if (pos >= (int)list->size()) pos = (int)list->size() - 1;
+    if (pos < 0) {
+        pos = 0;
+    } else if (pos >= (int)list->size()) {
+        pos = (int)list->size() - 1;
+    }
 
     /* target visible, do not scroll window */
     if (pos >= windowpos && pos <= windowpos + usableheight()) {
         cursorpos = pos - windowpos;
-    /* scrolling required (up) */
+        /* scrolling required (up) */
     } else if (pos < windowpos) {
         windowpos = pos;
         cursorpos = 0;
-    /* scrolling required (down) */
+        /* scrolling required (down) */
     } else {
         windowpos = pos - usableheight();
-        if (windowpos < 0) windowpos = 0;
+        if (windowpos < 0) {
+            windowpos = 0;
+        }
         cursorpos = pos - windowpos;
     }
 }
@@ -78,10 +86,12 @@ void CursesListBox::movetoend()
 
 bool CursesListBox::isinbounds(int pos) const
 {
-    if (pos < 0)
+    if (pos < 0) {
         return false;
-    if ((uint)(pos) >= list->size())
+    }
+    if ((uint)(pos) >= list->size()) {
         return false;
+    }
     return true;
 }
 
@@ -90,10 +100,11 @@ void CursesListBox::updatefocus()
     int lsize = (int)list->size();
 
     if (focusedindex() >= lsize) {
-        if (lsize - usableheight() < 0)
+        if (lsize - usableheight() < 0) {
             windowpos = 0;
-        else
+        } else {
             windowpos = lsize - usableheight();
+        }
 
         cursorpos = lsize - windowpos - 1;
     }
@@ -105,14 +116,22 @@ chtype CursesListBox::getcol(int index) const
     int col = index % colnum;
 
     switch (col) {
-    case 0: return C_DEF;
-    case 1: return C_DEF_HL1;
-    case 2: return C_DEF_HL2;
-    case 3: return C_DEF_HL3;
-    case 4: return C_DEF_HL4;
-    case 5: return C_DEF_HL5;
-    case 6: return C_DEF_HL6;
-    default: assert(0);
+    case 0:
+        return C_DEF;
+    case 1:
+        return C_DEF_HL1;
+    case 2:
+        return C_DEF_HL2;
+    case 3:
+        return C_DEF_HL3;
+    case 4:
+        return C_DEF_HL4;
+    case 5:
+        return C_DEF_HL5;
+    case 6:
+        return C_DEF_HL6;
+    default:
+        assert(0);
     }
 
     return C_DEF;
@@ -125,8 +144,12 @@ int CursesListBox::focusedindex() const
 
 Package *CursesListBox::focusedpackage() const
 {
-    if (list->size() == 0) return NULL;
-    if (!isinbounds(focusedindex())) return NULL;
+    if (list->size() == 0) {
+        return NULL;
+    }
+    if (!isinbounds(focusedindex())) {
+        return NULL;
+    }
 
     return list->at(focusedindex());
 }
@@ -138,13 +161,16 @@ void CursesListBox::refresh()
     setheader(boost::str(boost::format("(%d)") % list->size()));
 
     for (int i = 0; i <= usableheight(); i++) {
-        if (windowpos + i > (int)list->size() - 1)
+        if (windowpos + i > (int)list->size() - 1) {
             break;
+        }
 
         pkg = list->at(windowpos + i);
 
         int attr = getcol(pkg->getcolindex());
-        if (i == cursorpos) attr |= A_REVERSE;
+        if (i == cursorpos) {
+            attr |= A_REVERSE;
+        }
 
         mvprintw(0, i, pkg->getname().substr(0, usablewidth() + 1), attr);
     }

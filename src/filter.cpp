@@ -43,8 +43,12 @@ void Filter::setattrs(string s)
     for (uint i = 0; i < s.length(); i++) {
         attr = AttributeInfo::chartoattr(s[i]);
 
-        if (attr == A_NONE) continue;
-        if (find(Filter::attrlist.begin(), Filter::attrlist.end(), attr) != Filter::attrlist.end()) continue;
+        if (attr == A_NONE) {
+            continue;
+        }
+        if (find(Filter::attrlist.begin(), Filter::attrlist.end(), attr) != Filter::attrlist.end()) {
+            continue;
+        }
 
         Filter::attrlist.push_back(attr);
     }
@@ -57,9 +61,9 @@ void Filter::assigncol(Package *a, AttributeEnum attr)
 
     map<string, int>::iterator it = groups.find(s);
 
-    if (it != groups.end())
+    if (it != groups.end()) {
         colindex = it->second;
-    else {
+    } else {
         colindex = groups.size();
         groups[s] = colindex;
     }
@@ -82,8 +86,9 @@ bool Filter::notmatchesre(const Package *a, const sregex needle)
     bool found = false;
     smatch what;
 
-    for (uint i = 0; i < Filter::attrlist.size(); i++)
+    for (uint i = 0; i < Filter::attrlist.size(); i++) {
         found = found || regex_search(a->getattr(Filter::attrlist[i]), what, needle);
+    }
 
     return !found;
 }
@@ -107,8 +112,9 @@ bool Filter::notmatches(const Package *a, const string needle)
 
 bool Filter::cmp(const Package *lhs, const Package *rhs, AttributeEnum attr)
 {
-    if (attr == A_SIZE || attr == A_ISIZE || attr == A_BUILDDATE)
+    if (attr == A_SIZE || attr == A_ISIZE || attr == A_BUILDDATE) {
         return lhs->getoffattr(attr) < rhs->getoffattr(attr);
+    }
 
     return lhs->getattr(attr) < rhs->getattr(attr);
 }
