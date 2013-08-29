@@ -17,6 +17,9 @@
 
 #include "history.h"
 
+using std::list;
+using std::string;
+
 History::History()
 {
     reset();

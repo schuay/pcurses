@@ -20,10 +20,6 @@
 
 #include <string>
 
-#include "pcursesexception.h"
-
-using std::string;
-
 /* caution: the order of AttributeEnum members currently determines
    the display order */
 enum AttributeEnum {
@@ -55,7 +51,7 @@ class AttributeInfo
 public:
     static AttributeEnum chartoattr(char c);
     static char attrtochar(AttributeEnum attr);
-    static string attrname(AttributeEnum attr);
+    static std::string attrname(AttributeEnum attr);
 };
 
 #endif // ATTRIBUTEINFO_H

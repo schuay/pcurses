@@ -28,7 +28,7 @@ State()
     op = OP_NONE;
 }
 
-string optostr(FilterOperationEnum o)
+std::string optostr(FilterOperationEnum o)
 {
     switch (o) {
     case OP_FILTER:
@@ -52,7 +52,7 @@ string optostr(FilterOperationEnum o)
     return "";
 }
 
-FilterOperationEnum strtoopt(string str)
+FilterOperationEnum strtoopt(std::string str)
 {
     for (int i = 0; i < OP_NONE; i++) {
         if (optostr((FilterOperationEnum)i) == str) {

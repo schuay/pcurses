@@ -17,6 +17,10 @@
 
 #include "cursesframe.h"
 
+#include "frameinfo.h"
+
+using std::string;
+
 CursesFrame::CursesFrame(FrameInfo *frameinfo)
     : overflowind("..."), w_main(NULL), w_border(NULL), focused(false), finfo(frameinfo)
 {

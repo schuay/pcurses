@@ -17,6 +17,24 @@
 
 #include "config.h"
 
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/xpressive/xpressive.hpp>
+#include <fstream>
+#include <iostream>
+
+#include "globals.h"
+#include "pcursesexception.h"
+
+using std::string;
+using std::vector;
+using std::map;
+using std::cerr;
+using std::endl;
+using boost::xpressive::sregex;
+using boost::xpressive::smatch;
+using boost::xpressive::regex_constants::icase;
+using boost::shared_ptr;
+
 Config::Config()
 {
     pacmanconffile = "/etc/pacman.conf";

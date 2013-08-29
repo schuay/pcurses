@@ -21,23 +21,20 @@
 #include <list>
 #include <string>
 
-using std::string;
-using std::list;
-
 class History
 {
 public:
     History();
 
     void reset();
-    string moveforward();
-    string moveback();
-    void add(string s);
+    std::string moveforward();
+    std::string moveback();
+    void add(std::string s);
     bool empty() const;
 
 private:
-    list<string> history;
-    list<string>::iterator pos;
+    std::list<std::string> history;
+    std::list<std::string>::iterator pos;
     bool inhis;
 };
 

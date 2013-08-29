@@ -20,22 +20,11 @@
 
 #include <alpm.h>
 #include <string>
-#include <ctime>
-#include <boost/xpressive/xpressive.hpp>
-#include <boost/algorithm/string.hpp>
 #include <vector>
-#include <sstream>
 
-#include "pcursesexception.h"
 #include "attributeinfo.h"
 
 typedef struct __alpm_pkg_t alpm_pkg_t;
-
-using std::string;
-using std::vector;
-using boost::xpressive::sregex;
-using boost::xpressive::smatch;
-using boost::xpressive::regex_constants::icase;
 
 enum InstallReasonEnum {
     IRE_EXPLICIT,
@@ -62,28 +51,28 @@ class Package
 public:
     Package(alpm_pkg_t *pkg, alpm_db_t *localdb);
 
-    string getarch() const;
-    string getbuilddate() const;
-    string getconflicts() const;
-    string getdepends() const;
-    string getdesc() const;
-    string getgroups() const;
-    string getisize() const;
-    string getlicenses() const;
-    string getname() const;
-    string getoptdepends() const;
-    string getpackager() const;
-    string getprovides() const;
-    string getreason() const;
-    string getreplaces() const;
-    string getrepo() const;
-    string getsignature() const;
-    string getsize() const;
-    string getupdatestate() const;
-    string geturl() const;
-    string getversion() const;
+    std::string getarch() const;
+    std::string getbuilddate() const;
+    std::string getconflicts() const;
+    std::string getdepends() const;
+    std::string getdesc() const;
+    std::string getgroups() const;
+    std::string getisize() const;
+    std::string getlicenses() const;
+    std::string getname() const;
+    std::string getoptdepends() const;
+    std::string getpackager() const;
+    std::string getprovides() const;
+    std::string getreason() const;
+    std::string getreplaces() const;
+    std::string getrepo() const;
+    std::string getsignature() const;
+    std::string getsize() const;
+    std::string getupdatestate() const;
+    std::string geturl() const;
+    std::string getversion() const;
 
-    string getattr(AttributeEnum attr) const;
+    std::string getattr(AttributeEnum attr) const;
     off_t getoffattr(AttributeEnum attr) const;
 
     void setcolindex(int index);
@@ -94,29 +83,29 @@ public:
 
 private:
 
-    string trimstr(const char *c) const;
-    string deplist2str(alpm_list_t *l, string delim) const;
-    string list2str(alpm_list_t *l, string delim) const;
-    static string size2str(off_t size);
+    std::string trimstr(const char *c) const;
+    std::string deplist2str(alpm_list_t *l, std::string delim) const;
+    std::string list2str(alpm_list_t *l, std::string delim) const;
+    static std::string size2str(off_t size);
 
-    string _name,
-           _url,
-           _packager,
-           _desc,
-           _version,
-           _dbname,
-           _arch,
-           _licenses,
-           _groups,
-           _depends,
-           _optdepends,
-           _conflicts,
-           _provides,
-           _replaces,
-           _sizestr,
-           _signature,
-           _installsizestr,
-           _localversion;
+    std::string _name,
+        _url,
+        _packager,
+        _desc,
+        _version,
+        _dbname,
+        _arch,
+        _licenses,
+        _groups,
+        _depends,
+        _optdepends,
+        _conflicts,
+        _provides,
+        _replaces,
+        _sizestr,
+        _signature,
+        _installsizestr,
+        _localversion;
 
     int _colindex;
 

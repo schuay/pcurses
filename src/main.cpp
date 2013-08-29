@@ -15,10 +15,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.  *
  ************************************************************************* */
 
+#include <iostream>
 #include <unistd.h>
 
-#include "program.h"
 #include "globals.h"
+#include "pcursesexception.h"
+#include "program.h"
 
 void parseargs(int argc, char *argv[])
 {

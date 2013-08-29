@@ -21,10 +21,6 @@
 #include <ncurses.h>
 #include <string>
 
-#include "frameinfo.h"
-
-using std::string;
-
 #define C_DEF (COLOR_PAIR(5))
 #define C_DEF_HL1 (COLOR_PAIR(2))
 #define C_DEF_HL2 (COLOR_PAIR(3))
@@ -35,6 +31,8 @@ using std::string;
 #define C_INV (COLOR_PAIR(1))
 #define C_INV_HL1 (COLOR_PAIR(4))
 
+class FrameInfo;
+
 class CursesFrame
 {
 public:
@@ -43,11 +41,11 @@ public:
 
     void reposition(int termw, int termh);
     void setbackground(chtype col);
-    void setheader(string str);
-    void setfooter(string str);
+    void setheader(std::string str);
+    void setfooter(std::string str);
     virtual void refresh();
-    void printw(string str, int attr = 0);
-    void mvprintw(int x, int y, string str, int attr = 0);
+    void printw(std::string str, int attr = 0);
+    void mvprintw(int x, int y, std::string str, int attr = 0);
     void move(int x, int y);
     void clear();
     void setfocused(bool b) {
@@ -59,15 +57,15 @@ public:
 
 protected:
 
-    string fitstrtowin(string in, int x = -1) const;
-    string escapestring(string str) const;
+    std::string fitstrtowin(std::string in, int x = -1) const;
+    std::string escapestring(std::string str) const;
 
-    const string overflowind;
+    const std::string overflowind;
 
     WINDOW *w_main,
            *w_border;
-    string header,
-           footer;
+    std::string header,
+        footer;
 
     bool focused;
 

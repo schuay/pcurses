@@ -17,6 +17,17 @@
 
 #include "filter.h"
 
+#include <algorithm>
+#include <boost/algorithm/string.hpp>
+
+#include "package.h"
+
+using boost::xpressive::smatch;
+using boost::xpressive::sregex;
+using std::vector;
+using std::map;
+using std::string;
+
 /* allocating static member
    http://stackoverflow.com/questions/272900/c-undefined-reference-to-static-class-member
  */

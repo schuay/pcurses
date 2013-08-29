@@ -18,35 +18,35 @@
 #ifndef FILTER_H
 #define FILTER_H
 
-#include <vector>
+#include <boost/xpressive/xpressive.hpp>
 #include <map>
-#include <algorithm>
+#include <vector>
 
-#include "package.h"
+#include "attributeinfo.h"
 
-using std::vector;
-using std::map;
-using std::string;
+class Package;
 
 class Filter
 {
 public:
-    static void setattrs(string s);
+    static void setattrs(std::string s);
     static void clearattrs();
 
     static bool cmp(const Package *lhs, const Package *rhs, AttributeEnum attr);
-    static bool matchesre(const Package *a, const sregex needle);
-    static bool matches(const Package *a, const string needle);
-    static bool notmatchesre(const Package *a, const sregex needle);
-    static bool notmatches(const Package *a, const string needle);
+    static bool matchesre(const Package *a,
+                          const boost::xpressive::sregex needle);
+    static bool matches(const Package *a, const std::string needle);
+    static bool notmatchesre(const Package *a,
+                             const boost::xpressive::sregex needle);
+    static bool notmatches(const Package *a, const std::string needle);
 
     static void assigncol(Package *a, AttributeEnum attr);
 
 private:
 
-    static vector<AttributeEnum> attrlist;
+    static std::vector<AttributeEnum> attrlist;
 
-    static map<string, int> groups;
+    static std::map<std::string, int> groups;
 };
 
 #endif // FILTER_H

@@ -17,11 +17,21 @@
 
 #include "cursesui.h"
 
+#include <assert.h>
 #include <ncurses.h>
 #include <signal.h>
 #include <sys/ioctl.h>
+#include <unistd.h>
 
+#include "cursesframe.h"
+#include "curseslistbox.h"
+#include "frameinfo.h"
 #include "globals.h"
+#include "package.h"
+#include "pcursesexception.h"
+#include "state.h"
+
+using std::vector;
 
 /* Static instance. */
 CursesUi CursesUi::instance;

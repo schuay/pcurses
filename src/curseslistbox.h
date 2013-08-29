@@ -19,19 +19,17 @@
 #define CURSESLISTBOX_H
 
 #include <vector>
-#include <boost/format.hpp>
 
 #include "cursesframe.h"
-#include "package.h"
 
-using std::vector;
+class Package;
 
 class CursesListBox : public CursesFrame
 {
 public:
     CursesListBox(FrameInfo *frameinfo);
 
-    void setlist(vector<Package *> *l);
+    void setlist(std::vector<Package *> *l);
     bool empty() const {
         return (list == NULL) || list->empty();
     }

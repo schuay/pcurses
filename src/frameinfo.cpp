@@ -17,6 +17,10 @@
 
 #include "frameinfo.h"
 
+#include <assert.h>
+
+using std::string;
+
 FrameInfo::FrameInfo(FrameEnum t, uint termw, uint termh) : type(t)
 {
     recalcinfo(termw, termh);

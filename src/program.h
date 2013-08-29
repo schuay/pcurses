@@ -18,27 +18,11 @@
 #ifndef PROGRAM_H
 #define PROGRAM_H
 
-#include "cursesui.h"
 #include "config.h"
-#include "filter.h"
 #include "history.h"
 #include "state.h"
 
-using std::string;
-using std::vector;
-using std::map;
-using boost::shared_ptr;
-
-typedef struct __alpm_list_t alpm_list_t;
-
-#define PIPE_READ 0
-#define PIPE_WRITE 1
-
-#define KEY_ESC (27)
-#define KEY_RETURN (10)
-#define KEY_SPACE (32)
-#define KEY_TAB (9)
-#define KEY_KONSOLEBACKSPACE (127)
+class Package;
 
 class Program
 {
@@ -50,23 +34,21 @@ public:
     void mainloop();
 
 private:
-
-    void run_cmd(string cmd) const;
+    void run_cmd(std::string cmd) const;
     void loadpkgs();
     void init_misc();
     void deinit();
     void clearfilter();
-    void filterpackages(string str);
-    void sortpackages(string str);
-    void searchpackages(string str);
-    void execmacro(string str);
-    void execmd(string str);
-    void colorcodepackages(string str);
+    void filterpackages(std::string str);
+    void sortpackages(std::string str);
+    void searchpackages(std::string str);
+    void execmacro(std::string str);
+    void execmd(std::string str);
+    void colorcodepackages(std::string str);
     void colorcodepackages(const AttributeEnum attr);
     void exitinputmode(FilterOperationEnum o);
     void prepinputmode(FilterOperationEnum o);
     History *gethis(FilterOperationEnum o);
-
 
     State state;
 
@@ -74,11 +56,11 @@ private:
 
     bool quit;
 
-    vector<Package *> packages,
-           filteredpackages,
-           opqueue;
+    std::vector<Package *> packages,
+        filteredpackages,
+        opqueue;
 
-    shared_ptr<map<string, string> > macros;
+    boost::shared_ptr<std::map<std::string, std::string> > macros;
 
     History hisfilter,
             hissort,

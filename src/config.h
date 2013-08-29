@@ -20,25 +20,8 @@
 
 #include <string>
 #include <vector>
-#include <iostream>
-#include <fstream>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/xpressive/xpressive.hpp>
 #include <boost/shared_ptr.hpp>
 #include <map>
-
-#include "pcursesexception.h"
-#include "globals.h"
-
-using std::string;
-using std::vector;
-using std::map;
-using std::cerr;
-using std::endl;
-using boost::xpressive::sregex;
-using boost::xpressive::smatch;
-using boost::xpressive::regex_constants::icase;
-using boost::shared_ptr;
 
 class Config
 {
@@ -49,42 +32,42 @@ public:
     void parse_pacmanconf();
     void parse_pcursesconf();
 
-    string getpacmanconffile() const {
+    std::string getpacmanconffile() const {
         return pacmanconffile;
     }
-    string getpcursesconffile() const {
+    std::string getpcursesconffile() const {
         return pcursesconffile;
     }
-    string getrootdir() const {
+    std::string getrootdir() const {
         return rootdir;
     }
-    string getdbpath() const {
+    std::string getdbpath() const {
         return dbpath;
     }
-    string getlogfile() const {
+    std::string getlogfile() const {
         return logfile;
     }
 
-    vector<string> getrepos() const {
+    std::vector<std::string> getrepos() const {
         return repos;
     }
-    shared_ptr<map<string, string> > getmacros() const {
+    boost::shared_ptr<std::map<std::string, std::string> > getmacros() const {
         return macros;
     }
 
 private:
 
-    string getconfvalue(const string) const;
+    std::string getconfvalue(const std::string) const;
 
-    string pacmanconffile,
-           pcursesconffile,
-           rootdir,
-           dbpath,
-           logfile;
+    std::string pacmanconffile,
+        pcursesconffile,
+        rootdir,
+        dbpath,
+        logfile;
 
-    vector<string> repos;
+    std::vector<std::string> repos;
 
-    shared_ptr<map<string, string> > macros;
+    boost::shared_ptr<std::map<std::string, std::string> > macros;
 
     enum ConfSection {
         CS_NONE,

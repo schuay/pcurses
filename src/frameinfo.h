@@ -18,11 +18,8 @@
 #ifndef FRAMEINFO_H
 #define FRAMEINFO_H
 
-#include <assert.h>
 #include <string>
 #include <sys/types.h>
-
-using std::string;
 
 enum FrameEnum {
     FE_LIST,
@@ -57,7 +54,7 @@ public:
         return hasborder;
     }
 
-    string gettitle() const {
+    std::string gettitle() const {
         return title;
     }
 
@@ -67,7 +64,7 @@ private:
 
     bool hasborder;
 
-    string title;
+    std::string title;
 
     const FrameEnum type;
 };

@@ -17,6 +17,19 @@
 
 #include "package.h"
 
+#include <boost/xpressive/xpressive.hpp>
+#include <boost/algorithm/string.hpp>
+#include <ctime>
+#include <sstream>
+
+#include "pcursesexception.h"
+
+using std::string;
+using std::vector;
+using boost::xpressive::regex_constants::icase;
+using boost::xpressive::sregex;
+using boost::xpressive::smatch;
+
 Package::Package(alpm_pkg_t *pkg, alpm_db_t *localdb)
 {
     alpm_pkg_t *_pkg = pkg;

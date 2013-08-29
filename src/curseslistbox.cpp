@@ -17,6 +17,12 @@
 
 #include "curseslistbox.h"
 
+#include <boost/format.hpp>
+
+#include "package.h"
+
+using std::vector;
+
 CursesListBox::CursesListBox(FrameInfo *frameinfo)
     : CursesFrame(frameinfo),
       list(NULL),

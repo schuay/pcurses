@@ -17,9 +17,38 @@
 
 #include "program.h"
 
+#include <boost/algorithm/string.hpp>
+#include <boost/bind.hpp>
+#include <iostream>
+#include <ncurses.h>
 #include <signal.h>
 #include <sys/wait.h>
-#include <boost/bind.hpp>
+
+#include "cursesframe.h"
+#include "curseslistbox.h"
+#include "cursesui.h"
+#include "filter.h"
+#include "package.h"
+#include "pcursesexception.h"
+
+using std::string;
+using std::vector;
+using std::map;
+using boost::shared_ptr;
+using boost::xpressive::regex_constants::icase;
+using boost::xpressive::smatch;
+using boost::xpressive::sregex;
+
+typedef struct __alpm_list_t alpm_list_t;
+
+#define PIPE_READ 0
+#define PIPE_WRITE 1
+
+#define KEY_ESC (27)
+#define KEY_RETURN (10)
+#define KEY_SPACE (32)
+#define KEY_TAB (9)
+#define KEY_KONSOLEBACKSPACE (127)
 
 Program::Program()
 {

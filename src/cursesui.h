@@ -20,16 +20,17 @@
 
 #include <vector>
 
-#include "cursesframe.h"
-#include "curseslistbox.h"
-#include "state.h"
-
-using std::vector;
+#include "attributeinfo.h"
 
 enum PaneEnum {
     PANE_LIST,
     PANE_QUEUE
 };
+
+class CursesListBox;
+class CursesFrame;
+class Package;
+class State;
 
 class CursesUi
 {
@@ -37,7 +38,7 @@ public:
     static CursesUi &ui();
 
     /* Enable ncurses handling of the console. */
-    void enable_curses(vector<Package *> *pkgs, vector<Package *> *queue);
+    void enable_curses(std::vector<Package *> *pkgs, std::vector<Package *> *queue);
 
     /* Disable ncurses handling of the console. */
     void disable_curses();
@@ -73,7 +74,7 @@ private:
     void resize();
 
     void print_help();
-    void printinfosection(AttributeEnum attr, string text);
+    void printinfosection(AttributeEnum attr, std::string text);
 
     /* Throws exception if terminal size is below a fixed limit. */
     void ensure_min_term_size(uint w, uint h) const;

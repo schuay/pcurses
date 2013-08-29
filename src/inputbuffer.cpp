@@ -17,6 +17,8 @@
 
 #include "inputbuffer.h"
 
+using std::string;
+
 InputBuffer::InputBuffer()
 {
     pos = 0;

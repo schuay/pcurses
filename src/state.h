@@ -23,8 +23,6 @@
 #include "inputbuffer.h"
 #include "attributeinfo.h"
 
-using std::string;
-
 enum ModeEnum {
     MODE_STANDARD,
     MODE_INPUT,
@@ -45,14 +43,14 @@ struct State {
     State();
 
     ModeEnum mode;
-    string searchphrases;
+    std::string searchphrases;
     InputBuffer inputbuf;
     AttributeEnum sortedby,
                   coloredby;
     FilterOperationEnum op;
 };
 
-string optostr(FilterOperationEnum o);
-FilterOperationEnum strtoopt(string str);
+std::string optostr(FilterOperationEnum o);
+FilterOperationEnum strtoopt(std::string str);
 
 #endif // STATE_H

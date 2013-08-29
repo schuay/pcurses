@@ -17,6 +17,10 @@
 
 #include "attributeinfo.h"
 
+#include "pcursesexception.h"
+
+using std::string;
+
 AttributeEnum AttributeInfo::chartoattr(char c)
 {
     c = tolower(c);

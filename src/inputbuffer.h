@@ -20,21 +20,19 @@
 
 #include <string>
 
-using std::string;
-
 class InputBuffer
 {
 public:
     InputBuffer();
 
-    string getcontents() const {
+    std::string getcontents() const {
         return contents;
     }
     size_t getpos() const {
         return pos;
     }
 
-    void set(string str);
+    void set(std::string str);
     void insert(const char c);
 
     void backspace();
@@ -50,7 +48,7 @@ public:
     void moveright();
 
 private:
-    string contents;
+    std::string contents;
     size_t pos;
 };
 
