@@ -60,7 +60,7 @@ private:
         filteredpackages,
         opqueue;
 
-    boost::shared_ptr<std::map<std::string, std::string> > macros;
+    std::map<std::string, std::string> macros;
 
     History hisfilter,
             hissort,

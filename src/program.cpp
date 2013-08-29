@@ -34,7 +34,6 @@
 using std::string;
 using std::vector;
 using std::map;
-using boost::shared_ptr;
 using boost::xpressive::regex_constants::icase;
 using boost::xpressive::smatch;
 using boost::xpressive::sregex;
@@ -434,9 +433,9 @@ void Program::execmacro(const string &str)
         boost::trim(macropart);
 
         map<string, string>::iterator it;
-        it = macros->find(macropart);
+        it = macros.find(macropart);
 
-        if (it == macros->end()) {
+        if (it == macros.end()) {
             return;
         }
 

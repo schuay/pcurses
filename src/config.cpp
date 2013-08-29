@@ -33,7 +33,6 @@ using std::endl;
 using boost::xpressive::sregex;
 using boost::xpressive::smatch;
 using boost::xpressive::regex_constants::icase;
-using boost::shared_ptr;
 
 Config::Config()
 {
@@ -42,8 +41,6 @@ Config::Config()
     rootdir = "/";
     dbpath = "/var/lib/pacman";
     logfile = "/var/log/pacman.log";
-
-    macros.reset(new map<string, string>());
 }
 
 Config::~Config()
@@ -86,7 +83,7 @@ void Config::parse_pcursesconf()
         if (regex_match(line, what, comment)) {
             continue;
         } else if (regex_match(line, what, macro)) {
-            macros->insert(std::pair<string, string>(what[1], what[2]));
+            macros.insert(std::pair<string, string>(what[1], what[2]));
         }
     }
 }

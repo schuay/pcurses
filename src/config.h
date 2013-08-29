@@ -20,7 +20,6 @@
 
 #include <string>
 #include <vector>
-#include <boost/shared_ptr.hpp>
 #include <map>
 
 class Config
@@ -51,7 +50,7 @@ public:
     std::vector<std::string> getrepos() const {
         return repos;
     }
-    boost::shared_ptr<std::map<std::string, std::string> > getmacros() const {
+    std::map<std::string, std::string> getmacros() const {
         return macros;
     }
 
@@ -67,7 +66,7 @@ private:
 
     std::vector<std::string> repos;
 
-    boost::shared_ptr<std::map<std::string, std::string> > macros;
+    std::map<std::string, std::string> macros;
 
     enum ConfSection {
         CS_NONE,
