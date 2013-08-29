@@ -343,9 +343,9 @@ void Program::loadpkgs()
     alpm_option_set_logfile(handle, conf.getlogfile().c_str());
 
     vector<string> repos = conf.getrepos();
-    for (uint i = 0; i < repos.size(); i++) {
+    for (const string & repo : repos) {
         /* i'm going to be lazy here and remind myself to handle siglevel properly later on */
-        alpm_register_syncdb(handle, repos[i].c_str(), ALPM_SIG_USE_DEFAULT);
+        alpm_register_syncdb(handle, repo.c_str(), ALPM_SIG_USE_DEFAULT);
     }
 
     alpm_db_t *localdb = alpm_get_localdb(handle);
@@ -428,8 +428,8 @@ void Program::execmacro(const string &str)
     vector<string> strs;
     boost::split(strs, str, boost::is_any_of(","));
 
-    for (uint i = 0; i < strs.size(); i++) {
-        string macropart = strs[i];
+    for (const string & s : strs) {
+        string macropart = s;
         boost::trim(macropart);
 
         map<string, string>::iterator it;
@@ -456,8 +456,8 @@ void Program::execmd(const string &str)
     gethis(OP_EXEC)->add(str);
 
     string pkgs = "";
-    for (uint i = 0; i < opqueue.size(); i++) {
-        pkgs += opqueue[i]->getname() + " ";
+    for (const Package * p : opqueue) {
+        pkgs += p->getname() + " ";
     }
 
     const string needle = "%p";
