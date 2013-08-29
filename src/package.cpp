@@ -39,8 +39,8 @@ Package::Package(alpm_pkg_t *pkg, alpm_db_t *localdb)
 
     _licenses = list2str(alpm_pkg_get_licenses(_pkg), " ");
     _groups = list2str(alpm_pkg_get_groups(_pkg), " ");
-    _optdepends = list2str(alpm_pkg_get_optdepends(_pkg), "\n            "); /* line up correctly in info pane */
 
+    _optdepends = deplist2str(alpm_pkg_get_optdepends(_pkg), "\n            "); /* line up correctly in info pane */
     _conflicts = deplist2str(alpm_pkg_get_conflicts(_pkg), " ");
     _provides = deplist2str(alpm_pkg_get_provides(_pkg), " ");
     _replaces = deplist2str(alpm_pkg_get_replaces(_pkg), " ");
