@@ -34,17 +34,17 @@ public:
     void mainloop();
 
 private:
-    void run_cmd(std::string cmd) const;
+    void run_cmd(const std::string &cmd) const;
     void loadpkgs();
     void init_misc();
     void deinit();
     void clearfilter();
-    void filterpackages(std::string str);
-    void sortpackages(std::string str);
-    void searchpackages(std::string str);
-    void execmacro(std::string str);
-    void execmd(std::string str);
-    void colorcodepackages(std::string str);
+    void filterpackages(const std::string &str);
+    void sortpackages(const std::string &str);
+    void searchpackages(const std::string &str);
+    void execmacro(const std::string &str);
+    void execmd(const std::string &str);
+    void colorcodepackages(const std::string &str);
     void colorcodepackages(const AttributeEnum attr);
     void exitinputmode(FilterOperationEnum o);
     void prepinputmode(FilterOperationEnum o);

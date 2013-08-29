@@ -73,7 +73,7 @@ void Program::deinit()
     opqueue.clear();
 }
 
-void Program::run_cmd(string cmd) const
+void Program::run_cmd(const string &cmd) const
 {
     pid_t pid;
     int status;
@@ -421,7 +421,7 @@ History *Program::gethis(FilterOperationEnum o)
     return v;
 }
 
-void Program::execmacro(string str)
+void Program::execmacro(const string &str)
 {
     gethis(OP_MACRO)->add(str);
 
@@ -452,7 +452,7 @@ void Program::execmacro(string str)
     }
 }
 
-void Program::execmd(string str)
+void Program::execmd(const string &str)
 {
     gethis(OP_EXEC)->add(str);
 
@@ -463,16 +463,17 @@ void Program::execmd(string str)
 
     const string needle = "%p";
     size_t  pos;
-    while ((pos = str.find(needle)) != string::npos) {
-        str.replace(pos, needle.length(), pkgs);
+    string processed_str = str;
+    while ((pos = processed_str.find(needle)) != string::npos) {
+        processed_str.replace(pos, needle.length(), pkgs);
     }
 
     CursesUi::ui().disable_curses();
-    run_cmd(str);
+    run_cmd(processed_str);
     CursesUi::ui().enable_curses(&filteredpackages, &opqueue);
 }
 
-void Program::colorcodepackages(string str)
+void Program::colorcodepackages(const string &str)
 {
     if (str.length() < 1) {
         return;
@@ -504,7 +505,7 @@ void Program::colorcodepackages(const AttributeEnum attr)
     state.coloredby = attr;
 }
 
-void Program::searchpackages(string str)
+void Program::searchpackages(const string &str)
 {
     string fieldlist, searchphrase;
 
@@ -551,7 +552,7 @@ void Program::searchpackages(string str)
     CursesUi::ui().list()->moveabs(it - filteredpackages.begin());
 }
 
-void Program::sortpackages(string str)
+void Program::sortpackages(const string &str)
 {
     if (str.length() < 1) {
         return;
@@ -577,7 +578,7 @@ void Program::sortpackages(string str)
               boost::bind(&Filter::cmp, _1, _2, attr));
 }
 
-void Program::filterpackages(string str)
+void Program::filterpackages(const string &str)
 {
     string fieldlist, searchphrase, negate;
 
