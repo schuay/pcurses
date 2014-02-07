@@ -78,9 +78,7 @@ current package selection of pcurses and pacman,
 
 !sudo pacman -S '%p'
 
-will be expanded to 
-
-echo 'sudo pacman -S pcurses pacman'
+will be expanded to 'sudo pacman -S pcurses pacman' and executed with 'bash'.
 
 A few useful commands could be
 
