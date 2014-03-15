@@ -25,10 +25,12 @@ class InputBuffer
 public:
     InputBuffer();
 
-    std::string getcontents() const {
+    std::string getcontents() const
+    {
         return contents;
     }
-    size_t getpos() const {
+    size_t getpos() const
+    {
         return pos;
     }
 
@@ -37,7 +39,8 @@ public:
 
     void backspace();
     void del();
-    void clear() {
+    void clear()
+    {
         contents = "";
         pos = 0;
     }

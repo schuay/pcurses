@@ -37,24 +37,30 @@ public:
     FrameInfo(FrameEnum t, uint termw, uint termh);
     void recalcinfo(uint termw, uint termh);
 
-    uint getx() const {
+    uint getx() const
+    {
         return x;
     }
-    uint gety() const {
+    uint gety() const
+    {
         return y;
     }
-    uint getw() const {
+    uint getw() const
+    {
         return w;
     }
-    uint geth() const {
+    uint geth() const
+    {
         return h;
     }
 
-    bool gethasborder() const {
+    bool gethasborder() const
+    {
         return hasborder;
     }
 
-    std::string gettitle() const {
+    std::string gettitle() const
+    {
         return title;
     }
 

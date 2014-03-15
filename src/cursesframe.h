@@ -48,7 +48,8 @@ public:
     void mvprintw(int x, int y, std::string str, int attr = 0);
     void move(int x, int y);
     void clear();
-    void setfocused(bool b) {
+    void setfocused(bool b)
+    {
         focused = b;
     }
 

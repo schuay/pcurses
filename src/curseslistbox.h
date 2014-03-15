@@ -30,7 +30,8 @@ public:
     CursesListBox(FrameInfo *frameinfo);
 
     void setlist(std::vector<Package *> *l);
-    bool empty() const {
+    bool empty() const
+    {
         return (list == NULL) || list->empty();
     }
     void move(int step);

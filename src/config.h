@@ -31,29 +31,37 @@ public:
     void parse_pacmanconf();
     void parse_pcursesconf();
 
-    std::string getpacmanconffile() const {
+    std::string getpacmanconffile() const
+    {
         return pacmanconffile;
     }
-    std::string getpcursesconffile() const {
+    std::string getpcursesconffile() const
+    {
         return pcursesconffile;
     }
-    void setpcursesconffile(const std::string &s) {
+    void setpcursesconffile(const std::string &s)
+    {
         pcursesconffile = s;
     }
-    std::string getrootdir() const {
+    std::string getrootdir() const
+    {
         return rootdir;
     }
-    std::string getdbpath() const {
+    std::string getdbpath() const
+    {
         return dbpath;
     }
-    std::string getlogfile() const {
+    std::string getlogfile() const
+    {
         return logfile;
     }
 
-    std::vector<std::string> getrepos() const {
+    std::vector<std::string> getrepos() const
+    {
         return repos;
     }
-    std::map<std::string, std::string> getmacros() const {
+    std::map<std::string, std::string> getmacros() const
+    {
         return macros;
     }
 
