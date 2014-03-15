@@ -36,7 +36,8 @@ Keybindings are displayed by pressing the 'h' (Help) key in pcurses.
 
 Filtering takes the following syntax:
 
-nd:game 1 23
+nd!:game
+1 234
 
 1 is a list of field specifiers. These tell pcurses which fields to search.
 Field specifiers are the highlighted characters in the field names in the info
@@ -44,15 +45,18 @@ pane.  In this example, this means that the Name and Description are searched
 for the phrase 'game'. To keep all _non_matching packages instead, append '!'
 to the field list..
 
-2 the character ':' separates the field specifier list from the search phrase.
+2 negates the following query, i.e. a filter expression of /nd!:gnome will
+return all packages NOT matching 'gnome'.
+
+3 the character ':' separates the field specifier list from the search phrase.
 If this character is not present, the entire string is interpreted as the
 search phrase.
 
-3 is the actual search phrase. If it contains only alphanumeric characters, a
+4 is the actual search phrase. If it contains only alphanumeric characters, a
 simple and quick string search is used. Otherwise, it is treated as a regular
 expression (which is a bit slower). The search is case INSENSITIVE.
 
-1 and 2 are OPTIONAL.
+1, 2 and 3 are OPTIONAL.
 
 These searches can be chained. This means that a search for 'n:^a', followed by
 'b:2010' will show all packages beginning with the letter 'a' and having a
