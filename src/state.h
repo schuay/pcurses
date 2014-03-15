@@ -39,6 +39,23 @@ enum FilterOperationEnum {
     OP_NONE
 };
 
+enum ControlOperationEnum {
+    CTRL_SCROLL_UP = 0,
+    CTRL_SCROLL_DOWN,
+    CTRL_SCROLL_HOME,
+    CTRL_SCROLL_END,
+    CTRL_SCROLL_PAGEUP,
+    CTRL_SCROLL_PAGEDOWN,
+    CTRL_SWITCH_FOCUS,
+    CTRL_QUEUE_PUSH,
+    CTRL_QUEUE_POP,
+    CTRL_QUEUE_CLEAR,
+    CTRL_HELP,
+    CTRL_QUIT,
+    CTRL_RELOAD,
+    CTRL_FILTER_CLEAR,
+};
+
 struct State {
     State();
 
