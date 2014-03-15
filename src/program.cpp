@@ -136,63 +136,41 @@ void Program::mainloop()
             switch (ch) {
             case 'k':
             case KEY_UP:
-                CursesUi::ui().focused()->move(-1);
+                execctrl(CTRL_SCROLL_UP);
                 break;
             case 'j':
             case KEY_DOWN:
-                CursesUi::ui().focused()->move(1);
+                execctrl(CTRL_SCROLL_DOWN);
                 break;
             case KEY_HOME:
-                CursesUi::ui().focused()->moveabs(0);
+                execctrl(CTRL_SCROLL_HOME);
                 break;
             case KEY_END:
-                CursesUi::ui().focused()->movetoend();
+                execctrl(CTRL_SCROLL_END);
                 break;
-            case KEY_PPAGE:   /* page up */
-                CursesUi::ui().focused()->move(CursesUi::ui().list()->usableheight() * -1);
+            case KEY_PPAGE:
+                execctrl(CTRL_SCROLL_PAGEUP);
                 break;
-            case KEY_NPAGE:   /* page down */
-                CursesUi::ui().focused()->move(CursesUi::ui().list()->usableheight());
+            case KEY_NPAGE:
+                execctrl(CTRL_SCROLL_PAGEDOWN);
                 break;
             case KEY_TAB:
-                CursesUi::ui().switch_focus();
+                execctrl(CTRL_SWITCH_FOCUS);
                 break;
             case KEY_RIGHT:
-                if (CursesUi::ui().focused() != CursesUi::ui().list()) {
-                    break;
-                }
-                if (filteredpackages.size() == 0) {
-                    break;
-                }
-
-                if (std::find(opqueue.begin(), opqueue.end(),
-                              filteredpackages[CursesUi::ui().list()->focusedindex()]) != opqueue.end()) {
-                    break;
-                }
-                opqueue.push_back(filteredpackages[CursesUi::ui().list()->focusedindex()]);
-                CursesUi::ui().queue()->movetoend();
-                CursesUi::ui().focused()->move(1);
+                execctrl(CTRL_QUEUE_PUSH);
                 break;
             case KEY_LEFT:
-                if (CursesUi::ui().focused() != CursesUi::ui().queue()) {
-                    break;
-                }
-                CursesUi::ui().queue()->removeselected();
-                if (opqueue.empty()) {
-                    CursesUi::ui().set_focus(PANE_LIST);
-                }
+                execctrl(CTRL_QUEUE_POP);
                 break;
             case 'C':
-                while (!opqueue.empty()) {
-                    CursesUi::ui().queue()->removeselected();
-                }
-                CursesUi::ui().set_focus(PANE_LIST);
+                execctrl(CTRL_QUEUE_CLEAR);
                 break;
             case 'h':
-                state.mode = MODE_HELP;
+                execctrl(CTRL_HELP);
                 break;
             case 'q':
-                quit = true;
+                execctrl(CTRL_QUIT);
                 break;
             case '1':
             case '2':
@@ -207,10 +185,10 @@ void Program::mainloop()
                 execmacro(string(1, ch));
                 break;
             case 'r':
-                deinit();
-                init();
+                execctrl(CTRL_RELOAD);
+                break;
             case 'c':
-                clearfilter();
+                execctrl(CTRL_FILTER_CLEAR);
                 break;
             case 'n':
             case 'd':
@@ -343,7 +321,7 @@ void Program::loadpkgs()
     alpm_option_set_logfile(handle, conf.getlogfile().c_str());
 
     vector<string> repos = conf.getrepos();
-    for (const string & repo : repos) {
+    for (const string &repo : repos) {
         /* i'm going to be lazy here and remind myself to handle siglevel properly later on */
         alpm_register_syncdb(handle, repo.c_str(), ALPM_SIG_USE_DEFAULT);
     }
@@ -420,6 +398,79 @@ History *Program::gethis(FilterOperationEnum o)
     return v;
 }
 
+void Program::execctrl(const ControlOperationEnum op)
+{
+    switch (op) {
+    case CTRL_SCROLL_UP:
+        CursesUi::ui().focused()->move(-1);
+        break;
+    case CTRL_SCROLL_DOWN:
+        CursesUi::ui().focused()->move(1);
+        break;
+    case CTRL_SCROLL_HOME:
+        CursesUi::ui().focused()->moveabs(0);
+        break;
+    case CTRL_SCROLL_END:
+        CursesUi::ui().focused()->movetoend();
+        break;
+    case CTRL_SCROLL_PAGEUP:
+        CursesUi::ui().focused()->move(CursesUi::ui().list()->usableheight() * -1);
+        break;
+    case CTRL_SCROLL_PAGEDOWN:
+        CursesUi::ui().focused()->move(CursesUi::ui().list()->usableheight());
+        break;
+    case CTRL_SWITCH_FOCUS:
+        CursesUi::ui().switch_focus();
+        break;
+    case CTRL_QUEUE_PUSH:
+        if (CursesUi::ui().focused() != CursesUi::ui().list()) {
+            break;
+        }
+        if (filteredpackages.size() == 0) {
+            break;
+        }
+
+        if (std::find(opqueue.begin(), opqueue.end(),
+                      filteredpackages[CursesUi::ui().list()->focusedindex()]) != opqueue.end()) {
+            break;
+        }
+        opqueue.push_back(filteredpackages[CursesUi::ui().list()->focusedindex()]);
+        CursesUi::ui().queue()->movetoend();
+        CursesUi::ui().focused()->move(1);
+        break;
+    case CTRL_QUEUE_POP:
+        if (CursesUi::ui().focused() != CursesUi::ui().queue()) {
+            break;
+        }
+        CursesUi::ui().queue()->removeselected();
+        if (opqueue.empty()) {
+            CursesUi::ui().set_focus(PANE_LIST);
+        }
+        break;
+    case CTRL_QUEUE_CLEAR:
+        while (!opqueue.empty()) {
+            CursesUi::ui().queue()->removeselected();
+        }
+        CursesUi::ui().set_focus(PANE_LIST);
+        break;
+    case CTRL_HELP:
+        state.mode = MODE_HELP;
+        break;
+    case CTRL_QUIT:
+        quit = true;
+        break;
+    case CTRL_RELOAD:
+        deinit();
+        init();
+        break;
+    case CTRL_FILTER_CLEAR:
+        clearfilter();
+        break;
+    default:
+        assert(0);
+    }
+}
+
 void Program::execmacro(const string &str)
 {
     gethis(OP_MACRO)->add(str);
@@ -428,7 +479,7 @@ void Program::execmacro(const string &str)
     vector<string> strs;
     boost::split(strs, str, boost::is_any_of(","));
 
-    for (const string & s : strs) {
+    for (const string &s : strs) {
         string macropart = s;
         boost::trim(macropart);
 
@@ -456,7 +507,7 @@ void Program::execmd(const string &str)
     gethis(OP_EXEC)->add(str);
 
     string pkgs = "";
-    for (const Package * p : opqueue) {
+    for (const Package *p : opqueue) {
         pkgs += p->getname() + " ";
     }
 
