@@ -22,19 +22,24 @@
 #include "pcursesexception.h"
 #include "program.h"
 
+static char *opt_conf_file = nullptr;
+
 void parseargs(int argc, char *argv[])
 {
     int opt;
 
-    while ((opt = getopt(argc, argv, "hv")) != -1) {
+    while ((opt = getopt(argc, argv, "hvf:")) != -1) {
         switch (opt) {
+        case 'f':
+            opt_conf_file = optarg;
+            break;
         case 'v':
             fprintf(stdout, "%s %d\n", APPLICATION_NAME, VERSION);
             exit(EXIT_SUCCESS);
             break;
         case 'h':
         default:
-            fprintf(stderr, "Usage: %s [-h] [-v]\n", APPLICATION_NAME);
+            fprintf(stderr, "Usage: %s [-h] [-v] [-f CONF_FILE]\n", APPLICATION_NAME);
             exit(EXIT_FAILURE);
         }
     }
@@ -49,7 +54,7 @@ int main(int argc, char *argv[])
     Program *p = new Program();
 
     try {
-        p->init();
+        p->init(opt_conf_file);
         p->mainloop();
     } catch (PcursesException e) {
         err = e.getmessage();

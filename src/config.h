@@ -37,6 +37,9 @@ public:
     std::string getpcursesconffile() const {
         return pcursesconffile;
     }
+    void setpcursesconffile(const std::string &s) {
+        pcursesconffile = s;
+    }
     std::string getrootdir() const {
         return rootdir;
     }

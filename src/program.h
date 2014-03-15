@@ -30,7 +30,7 @@ public:
     Program();
     ~Program();
 
-    void init();
+    void init(const char *conf_file = NULL);
     void mainloop();
 
 private:
