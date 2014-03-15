@@ -35,22 +35,27 @@ public:
     {
         return pacmanconffile;
     }
+
     std::string getpcursesconffile() const
     {
         return pcursesconffile;
     }
+
     void setpcursesconffile(const std::string &s)
     {
         pcursesconffile = s;
     }
+
     std::string getrootdir() const
     {
         return rootdir;
     }
+
     std::string getdbpath() const
     {
         return dbpath;
     }
+
     std::string getlogfile() const
     {
         return logfile;
@@ -60,6 +65,7 @@ public:
     {
         return repos;
     }
+
     std::map<std::string, std::string> getmacros() const
     {
         return macros;
