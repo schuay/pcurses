@@ -23,6 +23,7 @@
 #include <ncurses.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <unordered_map>
 
 #include "cursesframe.h"
 #include "curseslistbox.h"
@@ -201,6 +202,7 @@ void Program::mainloop()
             case ';':
             case '!':
             case '@':
+            case '%':
                 prepinputmode(strtoopt(string(1, ch)));
                 break;
             default:
@@ -295,6 +297,9 @@ void Program::exitinputmode(FilterOperationEnum o)
         break;
     case OP_MACRO:
         execmacro(state.inputbuf.getcontents());
+        break;
+    case OP_CTRL:
+        execctrl(state.inputbuf.getcontents());
         break;
     default:
         break;
@@ -391,11 +396,46 @@ History *Program::gethis(FilterOperationEnum o)
     case OP_MACRO:
         v = &hismacro;
         break;
+    case OP_CTRL:
+        v = &hisctrl;
+        break;
     default:
         assert(0);
     }
 
     return v;
+}
+
+ControlOperationEnum Program::parsectrl(const std::string &str) const
+{
+    static std::unordered_map<std::string, ControlOperationEnum> mapping({
+        { "scroll_up", CTRL_SCROLL_UP }
+        , { "scroll_down", CTRL_SCROLL_DOWN }
+        , { "scroll_home", CTRL_SCROLL_HOME }
+        , { "scroll_end", CTRL_SCROLL_END }
+        , { "scroll_pageup", CTRL_SCROLL_PAGEUP }
+        , { "scroll_pagedown", CTRL_SCROLL_PAGEDOWN }
+        , { "switch_focus", CTRL_SWITCH_FOCUS }
+        , { "queue_push", CTRL_QUEUE_PUSH }
+        , { "queue_pop", CTRL_QUEUE_POP }
+        , { "queue_clear", CTRL_QUEUE_CLEAR }
+        , { "help", CTRL_HELP }
+        , { "quit", CTRL_QUIT }
+        , { "reload", CTRL_RELOAD }
+        , { "filter_clear", CTRL_FILTER_CLEAR }
+    });
+
+    try {
+        return mapping[str];
+    } catch (const std::out_of_range &) {
+        return CTRL_NONE;
+    }
+}
+
+void Program::execctrl(const std::string &str)
+{
+    gethis(OP_CTRL)->add(str);
+    execctrl(parsectrl(str));
 }
 
 void Program::execctrl(const ControlOperationEnum op)
@@ -466,6 +506,8 @@ void Program::execctrl(const ControlOperationEnum op)
     case CTRL_FILTER_CLEAR:
         clearfilter();
         break;
+    case CTRL_NONE:
+        return; /* No error handling possible. */
     default:
         assert(0);
     }

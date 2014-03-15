@@ -43,6 +43,8 @@ std::string optostr(FilterOperationEnum o)
         return "!";
     case OP_MACRO:
         return "@";
+    case OP_CTRL:
+        return "%";
     case OP_NONE:
         return "";
     default:

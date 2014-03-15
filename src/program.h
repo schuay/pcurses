@@ -42,6 +42,8 @@ private:
     void filterpackages(const std::string &str);
     void sortpackages(const std::string &str);
     void searchpackages(const std::string &str);
+    ControlOperationEnum parsectrl(const std::string &str) const;
+    void execctrl(const std::string &op);
     void execctrl(const ControlOperationEnum op);
     void execmacro(const std::string &str);
     void execmd(const std::string &str);
@@ -68,7 +70,8 @@ private:
             hissearch,
             hiscolorcode,
             hisexec,
-            hismacro;
+            hismacro,
+            hisctrl;
 };
 
 #endif // PROGRAM_H

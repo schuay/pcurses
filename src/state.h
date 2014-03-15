@@ -36,6 +36,7 @@ enum FilterOperationEnum {
     OP_COLORCODE,
     OP_EXEC,
     OP_MACRO,
+    OP_CTRL,
     OP_NONE
 };
 
@@ -54,6 +55,7 @@ enum ControlOperationEnum {
     CTRL_QUIT,
     CTRL_RELOAD,
     CTRL_FILTER_CLEAR,
+    CTRL_NONE,
 };
 
 struct State {
