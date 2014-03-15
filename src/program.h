@@ -30,7 +30,7 @@ public:
     Program();
     ~Program();
 
-    void init();
+    void init(char* opt_pcursesconffile = NULL);
     void mainloop();
 
 private:

@@ -109,8 +109,12 @@ void Program::init_misc()
     execmacro("startup");
 }
 
-void Program::init()
+void Program::init(char* opt_pcursesconffile)
 {
+    if (opt_pcursesconffile) {
+        conf.setpcursesconffile(opt_pcursesconffile);
+    }
+
     loadpkgs();
 
     CursesUi::ui().enable_curses(&filteredpackages, &opqueue);
