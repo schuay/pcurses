@@ -5,7 +5,7 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(pcurses_VERSION 3)
+set(pcurses_VERSION 4)
 set(pcurses_APPLICATION_NAME pcurses)
 
 configure_file(
