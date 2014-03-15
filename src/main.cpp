@@ -24,7 +24,7 @@
 
 static char *opt_conf_file = nullptr;
 
-void parseargs(int argc, char *argv[])
+static void parseargs(int argc, char *argv[])
 {
     int opt;
 
