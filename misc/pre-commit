@@ -21,7 +21,7 @@ for file in `git diff-index --cached --name-only HEAD --diff-filter=ACMR | egrep
     nf=`git checkout-index --temp ${file} | cut -f 1`
     newfile=`mktemp /tmp/${nf}.XXXXXX` || exit 1
     astyle ${ASTYLE_PARAMETERS} < $nf > $newfile 2>> /dev/null
-    diff -u -p "${nf}" "${newfile}"
+    head -c -1 "${newfile}" | diff -u -p "${nf}" -
     r=$?
     rm "${newfile}"
     rm "${nf}"
