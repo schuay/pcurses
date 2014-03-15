@@ -89,6 +89,16 @@ A few useful commands could be
 Caution: package infos are not reloaded automatically. After db changes,
 trigger a manual reload by pressing 'r'.
 
+Control commands
+----------------
+
+Control commands may be used to trigger keyboard shortcut actions such as
+'scroll up' from macros. Available commands are:
+
+scroll_up, scroll_down, scroll_home, scroll_end, scroll_pageup,scroll_pagedown,
+switch_focus, queue_push, queue_pop, queue_clear, help, quit, reload,
+filter_clear.
+
 Macros
 ------
 
