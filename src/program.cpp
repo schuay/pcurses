@@ -18,7 +18,6 @@
 #include "program.h"
 
 #include <boost/algorithm/string.hpp>
-#include <boost/bind.hpp>
 #include <iostream>
 #include <ncurses.h>
 #include <signal.h>
@@ -337,6 +336,9 @@ void Program::loadpkgs()
 
     alpm_db_t *localdb = alpm_get_localdb(handle);
 
+    const auto cmp_pkg_name = [] (const Package *lhs, const Package *rhs) {
+        return Filter::cmp(lhs, rhs, A_NAME);
+    };
 
     /* create our package list */
     alpm_list_t *dbs = alpm_list_copy(alpm_get_syncdbs(handle));
@@ -348,14 +350,13 @@ void Program::loadpkgs()
             Package *p = new Package(pkg, localdb);
             Package *parray[] = { p };
             if (!std::includes(packages.begin(), packages.end(),
-                               parray, parray + 1,
-                               boost::bind(&Filter::cmp, _1, _2, A_NAME))) {
+                               parray, parray + 1, cmp_pkg_name)) {
                 packages.push_back(p);
             } else {
                 delete p;
             }
         }
-        std::sort(packages.begin(), packages.end(), boost::bind(&Filter::cmp, _1, _2, A_NAME));
+        std::sort(packages.begin(), packages.end(), cmp_pkg_name);
     }
     alpm_list_free(dbs);
 
@@ -370,8 +371,11 @@ void Program::loadpkgs()
 void Program::clearfilter()
 {
     filteredpackages = packages;
+    const AttributeEnum sortedby = state.sortedby;
     std::sort(filteredpackages.begin(), filteredpackages.end(),
-              boost::bind(&Filter::cmp, _1, _2, state.sortedby));
+              [sortedby] (const Package *lhs, const Package *rhs) {
+                  return Filter::cmp(lhs, rhs, sortedby);
+              });
 
     state.searchphrases = "";
     CursesUi::ui().list()->moveabs(0);
@@ -625,18 +629,21 @@ void Program::searchpackages(const string &str)
         return;
     }
 
+    const auto search_by_phrase = [&searchphrase] (const Package *a) {
+        return Filter::matches(a, searchphrase);
+    };
+
     /* we start the search at the current package */
     vector<Package *>::iterator begin = filteredpackages.begin() + CursesUi::ui().list()->focusedindex()
                                         + 1;
     vector<Package *>::iterator it;
 
-    it = std::find_if(begin, filteredpackages.end(),
-                      boost::bind(&Filter::matches, _1, searchphrase));
+    it = std::find_if(begin, filteredpackages.end(), search_by_phrase);
 
     /* if not found (and original search didn't start at beginning) wrap around */
     if (it == filteredpackages.end() && begin != filteredpackages.begin()) {
         it = std::find_if(filteredpackages.begin(), filteredpackages.end(),
-                          boost::bind(&Filter::matches, _1, searchphrase));
+                          search_by_phrase);
     }
 
     /* not found, do nothing */
@@ -671,7 +678,9 @@ void Program::sortpackages(const string &str)
     state.sortedby = attr;
 
     std::sort(filteredpackages.begin(), filteredpackages.end(),
-              boost::bind(&Filter::cmp, _1, _2, attr));
+              [attr] (const Package *lhs, const Package *rhs) {
+                  return Filter::cmp(lhs, rhs, attr);
+              });
 }
 
 void Program::filterpackages(const string &str)
@@ -710,27 +719,33 @@ void Program::filterpackages(const string &str)
     /* catch invalid regex input by user */
     try {
         if (regex_match(searchphrase, what, resimple)) {
-            bool (*fn)(const Package *, const string) = negate.empty()
-                    ? &Filter::notmatches : &Filter::matches;
+            const auto matcher_fn = negate.empty() ? &Filter::notmatches
+                                                   : &Filter::matches;
+            const auto find_by_phrase = [&] (const Package *a) {
+                return matcher_fn(a, searchphrase);
+            };
+
             vector<Package *>::iterator it =
                 std::find_if(filteredpackages.begin(), filteredpackages.end(),
-                             boost::bind(fn, _1, searchphrase));
+                             find_by_phrase);
             while (it != filteredpackages.end()) {
                 filteredpackages.erase(it);
-                it = std::find_if(it, filteredpackages.end(),
-                                  boost::bind(fn, _1, searchphrase));
+                it = std::find_if(it, filteredpackages.end(), find_by_phrase);
             }
         } else {
-            bool (*fn)(const Package *, const sregex) = negate.empty()
-                    ? &Filter::notmatchesre : &Filter::matchesre;
+            const auto matcher_fn = negate.empty() ? &Filter::notmatchesre
+                                                   : &Filter::matchesre;
             sregex needle = sregex::compile(searchphrase, icase);
+            const auto find_by_re = [&] (const Package *a) {
+                return matcher_fn(a, needle);
+            };
+
             vector<Package *>::iterator it =
                 std::find_if(filteredpackages.begin(), filteredpackages.end(),
-                             boost::bind(fn, _1, needle));
+                             find_by_re);
             while (it != filteredpackages.end()) {
                 filteredpackages.erase(it);
-                it = std::find_if(it, filteredpackages.end(),
-                                  boost::bind(fn, _1, needle));
+                it = std::find_if(it, filteredpackages.end(), find_by_re);
             }
         }
 
@@ -741,7 +756,7 @@ void Program::filterpackages(const string &str)
 
         /* List contents have changed, move to beginning. */
         CursesUi::ui().list()->moveabs(0);
-    } catch (boost::xpressive::regex_error &e) {
+    } catch (const boost::xpressive::regex_error &e) {
         /* we don't have any decent feedback mechanisms, so ignore faulty regexp */
     }
 }
