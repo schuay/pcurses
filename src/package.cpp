@@ -68,6 +68,14 @@ Package::Package(alpm_pkg_t *pkg, alpm_db_t *localdb)
         _localversion = alpm_pkg_get_version(_localpkg);
         _updatestate = (alpm_pkg_vercmp(_version.c_str(), _localversion.c_str()) > 0) ?
                        USE_UPDATEAVAILABLE : USE_UPTODATE;
+
+        alpm_list_t *requiredbylist = alpm_pkg_compute_requiredby(_localpkg);
+        _requiredby = list2str(requiredbylist, " ");
+        alpm_list_free(requiredbylist);
+
+        alpm_list_t *optionalforlist = alpm_pkg_compute_optionalfor(_localpkg);
+        _optionalfor = list2str(optionalforlist, " ");
+        alpm_list_free(optionalforlist);
     }
 
     _reason = ((_localpkg == NULL) ? IRE_NOTINSTALLED :
@@ -180,6 +188,10 @@ string Package::getattr(AttributeEnum attr) const
         return getprovides();
     case A_REPLACES:
         return getreplaces();
+    case A_REQUIREDBY:
+        return getrequiredby();
+    case A_OPTIONALFOR:
+        return getoptionalfor();
     case A_SIGNATURE:
         return getsignature();
     case A_SIZE:
@@ -308,6 +320,16 @@ string Package::getprovides() const
 string Package::getreplaces() const
 {
     return _replaces;
+}
+
+string Package::getrequiredby() const
+{
+    return _requiredby;
+}
+
+string Package::getoptionalfor() const
+{
+    return _optionalfor;
 }
 
 string Package::getsignature() const

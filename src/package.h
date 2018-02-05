@@ -66,6 +66,8 @@ public:
     std::string getreason() const;
     std::string getreplaces() const;
     std::string getrepo() const;
+    std::string getrequiredby() const;
+    std::string getoptionalfor() const;
     std::string getsignature() const;
     std::string getsize() const;
     std::string getupdatestate() const;
@@ -102,6 +104,8 @@ private:
         _conflicts,
         _provides,
         _replaces,
+        _requiredby,
+        _optionalfor,
         _sizestr,
         _signature,
         _installsizestr,
