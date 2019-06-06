@@ -54,6 +54,8 @@ AttributeEnum AttributeInfo::chartoattr(char c)
         return A_OPTDEPENDS;
     case 'p':
         return A_PROVIDES;
+    case 'q':
+        return A_REQUIREDBY;
     case 'r':
         return A_REPO;
     case 's':
@@ -64,6 +66,8 @@ AttributeEnum AttributeInfo::chartoattr(char c)
         return A_URL;
     case 'v':
         return A_VERSION;
+    case 'y':
+        return A_OPTIONALFOR;
     case 'z':
         return A_SIZE;
     default:
@@ -112,6 +116,10 @@ string AttributeInfo::attrname(AttributeEnum attr)
         return "Provides";
     case A_REPLACES:
         return "Replaces";
+    case A_REQUIREDBY:
+        return "Required by";
+    case A_OPTIONALFOR:
+        return "Optionally required by";
     case A_REPO:
         return "Repo";
     case A_SIGNATURE:

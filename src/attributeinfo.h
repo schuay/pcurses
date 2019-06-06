@@ -40,6 +40,8 @@ enum AttributeEnum {
     A_CONFLICTS,
     A_PROVIDES,
     A_REPLACES,
+    A_REQUIREDBY,
+    A_OPTIONALFOR,
     A_SIZE,
     A_ISIZE,
     A_OPTDEPENDS,
