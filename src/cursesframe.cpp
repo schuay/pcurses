@@ -96,7 +96,7 @@ void CursesFrame::refresh()
         mvwprintw(w_border, 0, 1, header.c_str());
         wattroff(w_border, A_BOLD | headercol);
 
-        mvwprintw(w_border, w_border->_maxy, 1, footer.c_str());
+        mvwprintw(w_border, getmaxy(w_border) - 1, 1, footer.c_str());
 
         wnoutrefresh(w_border);
     }
@@ -144,12 +144,12 @@ void CursesFrame::clear()
 
 int CursesFrame::usableheight() const
 {
-    return w_main->_maxy;
+    return getmaxy(w_main);
 }
 
 int CursesFrame::usablewidth() const
 {
-    return w_main->_maxx;
+    return getmaxx(w_main);
 }
 
 void CursesFrame::setfooter(string str)
