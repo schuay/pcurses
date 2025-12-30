@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.0)
+cmake_minimum_required (VERSION 3.10)
 project (pcurses)
 
 if (NOT CMAKE_BUILD_TYPE)
@@ -20,7 +20,7 @@ find_package(Curses REQUIRED)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     add_definitions(
-        -Wall -Wextra -Werror -O2 -pedantic -fPIC -std=gnu++11
+        -Wall -Wextra -Werror -O2 -pedantic -fPIC -std=c++17
         -D_FILE_OFFSET_BITS=64
     )
 endif(CMAKE_COMPILER_IS_GNUCXX)
