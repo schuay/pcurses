@@ -62,7 +62,7 @@ Package::Package(alpm_pkg_t *pkg, alpm_db_t *localdb)
 
     _signature = alpm_pkg_get_base64_sig(_pkg) ? "Yes" : "None";
 
-    if (_localpkg == NULL) {
+    if (_localpkg == nullptr) {
         _updatestate = USE_NOTINSTALLED;
     } else {
         _localversion = alpm_pkg_get_version(_localpkg);
@@ -78,7 +78,7 @@ Package::Package(alpm_pkg_t *pkg, alpm_db_t *localdb)
         alpm_list_free(optionalforlist);
     }
 
-    _reason = ((_localpkg == NULL) ? IRE_NOTINSTALLED :
+    _reason = ((_localpkg == nullptr) ? IRE_NOTINSTALLED :
                (alpm_pkg_get_reason(_localpkg) == ALPM_PKG_REASON_DEPEND) ? IRE_ASDEPS :
                IRE_EXPLICIT);
 }
@@ -105,7 +105,7 @@ string Package::size2str(off_t size)
 
 string Package::trimstr(const char *c) const
 {
-    if (c == NULL) {
+    if (c == nullptr) {
         return "";
     }
 
@@ -131,7 +131,7 @@ string Package::deplist2str(alpm_list_t *l, string delim) const
     for (alpm_list_t *deps = l; deps != NULL; deps = alpm_list_next(deps)) {
         alpm_depend_t *depend = (alpm_depend_t *)deps->data;
         res += alpm_dep_compute_string(depend);
-        if (deps->next != NULL) {
+        if (deps->next != nullptr) {
             res += delim;
         }
     }

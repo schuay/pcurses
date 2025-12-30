@@ -81,7 +81,7 @@ void Program::run_cmd(const string &cmd) const
     pid = fork();
     if (pid == 0) {
         /* child */
-        execlp("bash", "bash", "-ic", cmd.c_str(), (char *)NULL);
+        execlp("bash", "bash", "-ic", cmd.c_str(), (char *)nullptr);
     } else {
         /* parent (or error, which we blissfully ignore */
 
@@ -322,7 +322,7 @@ void Program::loadpkgs()
 
     alpm_handle_t *handle =
         alpm_initialize(conf.getrootdir().c_str(), conf.getdbpath().c_str(), &err);
-    if (handle == NULL) {
+    if (handle == nullptr) {
         throw PcursesException(alpm_strerror(err));
     }
 
@@ -383,7 +383,7 @@ void Program::clearfilter()
 
 History *Program::gethis(FilterOperationEnum o)
 {
-    History *v = NULL;
+    History *v = nullptr;
 
     switch (o) {
     case OP_FILTER:

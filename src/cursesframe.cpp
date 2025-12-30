@@ -22,7 +22,7 @@
 using std::string;
 
 CursesFrame::CursesFrame(FrameInfo *frameinfo)
-    : overflowind("..."), w_main(NULL), w_border(NULL), focused(false), finfo(frameinfo)
+    : overflowind("..."), w_main(nullptr), w_border(nullptr), focused(false), finfo(frameinfo)
 {
     if (finfo->gethasborder()) {
         w_border = newwin(finfo->geth(), finfo->getw(), finfo->gety(), finfo->getx());
@@ -35,7 +35,7 @@ CursesFrame::CursesFrame(FrameInfo *frameinfo)
 
 CursesFrame::~CursesFrame()
 {
-    if (w_border != NULL) {
+    if (w_border != nullptr) {
         delwin(w_border);
     }
     delwin(w_main);
@@ -88,7 +88,7 @@ string CursesFrame::fitstrtowin(string in, int x) const
 }
 void CursesFrame::refresh()
 {
-    if (w_border != NULL) {
+    if (w_border != nullptr) {
         box(w_border, ACS_VLINE, ACS_HLINE);
 
         int headercol = focused ? C_INV : C_DEF;
