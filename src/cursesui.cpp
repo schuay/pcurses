@@ -17,7 +17,9 @@
 
 #include "cursesui.h"
 
-#include <assert.h>
+#include <cassert>
+#include <clocale>
+#include <cstdlib>
 #include <ncurses.h>
 #include <signal.h>
 #include <sys/ioctl.h>
