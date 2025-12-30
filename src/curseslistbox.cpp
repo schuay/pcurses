@@ -25,7 +25,7 @@ using std::vector;
 
 CursesListBox::CursesListBox(FrameInfo *frameinfo)
     : CursesFrame(frameinfo),
-      list(NULL),
+      list(nullptr),
       windowpos(0),
       cursorpos(0)
 {
@@ -151,10 +151,10 @@ int CursesListBox::focusedindex() const
 Package *CursesListBox::focusedpackage() const
 {
     if (list->size() == 0) {
-        return NULL;
+        return nullptr;
     }
     if (!isinbounds(focusedindex())) {
-        return NULL;
+        return nullptr;
     }
 
     return list->at(focusedindex());
