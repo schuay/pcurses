@@ -1,7 +1,7 @@
 PCURSES
 -------
 
-A curses frontend to libalpm (Arch Linux Package Manager).
+A curses frontend to libalpm.
 
 
 FEATURES
@@ -13,37 +13,6 @@ Package browsing in a curses frontend, including:
  * customizable sorting
  * external command execution with package list string replacements
  * user defined macros and hotkeys
-
-
-INSTALLATION
-------------
-
-Requirements:
- * CMake 3.10+
- * C++17 compatible compiler (GCC 7+, Clang 5+)
- * ncurses
- * boost
- * libalpm (pacman library)
-
-Build and install:
-    make
-    sudo make install
-
-Or manually with CMake:
-    mkdir build && cd build
-    cmake -DCMAKE_BUILD_TYPE=Release ..
-    make
-    sudo make install
-
-
-QUICK START GUIDE
------------------
-
-Starting pcurses:
-    pcurses              # Start with default config
-    pcurses -f CONFIG    # Use custom config file
-    pcurses -v           # Show version
-    pcurses -h           # Show help
 
 
 QUICK TUTORIAL
@@ -98,60 +67,6 @@ Previous filters are cleared by pressing the 'c' key.
 Pressing the up and down keys while in input mode will scroll through all
 previous history.
 
-
-COMMON USAGE EXAMPLES
----------------------
-
-Show only installed packages:
-    Press '/' then type: i:explicit
-    (Shows packages explicitly installed)
-    
-    Or: i:dependency
-    (Shows packages installed as dependencies)
-
-Search for packages by name:
-    Press 'n' then type the package name (e.g., 'firefox')
-    This is a shortcut for '/n:firefox'
-
-Search in package descriptions:
-    Press '/' then type: d:web browser
-    (Searches for "web browser" in descriptions)
-
-Show packages from specific repository:
-    Press '/' then type: r:^core$
-    (Shows only packages from 'core' repo)
-    
-    Or: r:community
-    (Shows packages from repos containing 'community')
-
-Show packages with updates available:
-    Press '/' then type: d:update available
-    (Filters packages that can be updated)
-
-Show packages by size:
-    Press '.' then type: z
-    (Sorts by package size)
-
-Show packages by install date:
-    Press '.' then type: i
-    (Sorts by install date)
-
-Color code packages by repository:
-    Press ';' then type: r
-    (Color codes packages by their repository)
-
-Find packages by maintainer:
-    Press '/' then type: m:maintainer_name
-
-Combine multiple filters:
-    1. Press '/' type: r:core
-    2. Press '/' type: d:system
-    (Shows core repo packages with "system" in description)
-
-Clear all filters:
-    Press 'c'
-
-
 Sorting and colorcoding
 -----------------------
 
@@ -169,16 +84,11 @@ current package selection of pcurses and pacman,
 
 will be expanded to 'sudo pacman -S pcurses pacman' and executed with 'bash'.
 
-Useful commands:
+A few useful commands could be
 
-    !pacman -Sy                 # Sync package database
-    !sudo pacman -S %p          # Install queued packages
-    !sudo pacman -Rs %p         # Remove queued packages with dependencies
-    !sudo pacman -R %p          # Remove queued packages only
-    !sudo pacman -Syu           # Full system upgrade
-    !pacman -Qi %p              # Show detailed info for queued packages
-    !pacman -Ql %p              # List files owned by queued packages
-    !pacman -Qdt                # List orphaned packages
+!pacman -Sy
+!sudo pacman -S %p
+!sudo pacman -Rs %p
 
 Caution: package infos are not reloaded automatically. After db changes,
 trigger a manual reload by pressing 'r'.
@@ -213,97 +123,11 @@ All macros can be executed in pcurses by pressing the '@' key and entering the
 macro name.
 
 
-KEYBOARD SHORTCUTS REFERENCE
------------------------------
-
-Navigation:
-    Up/Down arrows      - Move cursor up/down
-    Page Up/Down        - Scroll page up/down
-    Home/End            - Jump to first/last package
-    Tab                 - Switch focus between package list and queue
-
-Queue Management:
-    Right arrow         - Add selected package to queue
-    Left arrow          - Remove selected package from queue
-    C (Shift+c)         - Clear entire queue
-
-Filtering & Searching:
-    /                   - Filter packages (by fields)
-    n                   - Filter by name (shortcut for /n:)
-    ?                   - Search packages
-    c                   - Clear all filters
-
-Sorting & Display:
-    .                   - Sort packages by field
-    ;                   - Color code packages by field
-
-Actions:
-    !                   - Execute command (use %p for package queue)
-    @                   - Run macro
-    %                   - Run control command
-    r                   - Reload package information
-    h                   - Show help
-    q                   - Quit pcurses
-    Esc                 - Cancel current input
-
-History:
-    Up/Down (in input)  - Browse command history
-
-
-FIELD SPECIFIERS
-----------------
-
-When filtering, sorting, or color coding, use these field specifiers:
-
-    n - Name            Package name
-    v - Version         Package version
-    d - Description     Package description
-    r - Repository      Repository name (core, extra, community, etc.)
-    s - Size            Package size
-    i - Install date    When package was installed
-    b - Build date      When package was built
-    g - Groups          Package groups
-    p - Provides        What the package provides
-    l - Licenses        Package license
-    o - Depends on      Package dependencies
-    q - Required by     Packages that depend on this
-    f - Optional for    Packages that optionally need this
-    c - Conflicts       Conflicting packages
-    e - Replaces        Packages this replaces
-    u - Update state    Installation/update status
-    m - Packager        Package maintainer
-    a - Architecture    CPU architecture (x86_64, any, etc.)
-    w - Download size   Size of package download
-    k - Install script  Has install script (yes/no)
-    t - Install reason  Why installed (explicit/dependency)
-
-
 FURTHER READING
 ---------------
 
 For some of the things I've been thinking about or am planning on doing, read
 the CONCEPTS file.
-
-
-TROUBLESHOOTING
----------------
-
-Application crashes or displays errors:
-    - Ensure your system is up to date: sudo pacman -Syu
-    - Try reloading package info with 'r' key
-    - Check /var/log/pacman.log for pacman errors
-
-Terminal too small:
-    - Minimum terminal size: 60 columns x 20 rows
-    - Resize your terminal window or use fullscreen
-
-Packages not updating:
-    - Press 'r' to manually reload package information
-    - Changes made outside pcurses require manual reload
-
-Config file location:
-    - Default: /etc/pcurses.conf
-    - Custom: pcurses -f /path/to/config
 
 
 BUGS
@@ -318,16 +142,3 @@ CONTACT
 
 Visit the pcurses github page at https://github.com/schuay/pcurses or write me
 a mail at jakob.gruber@gmail.com
-
-COMPATIBILITY
--------------
-
-This version has been updated for compatibility with:
- * C++17 standard
- * GCC 15+ / Clang 12+
- * CMake 3.10+
- * Modern ncurses (6.0+)
- * Boost 1.70+
- * Latest libalpm/pacman
-
-Updated: December 2025
